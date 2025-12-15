@@ -4,7 +4,8 @@
       "Bash(sqlite3:*)",
       "Bash(node -e:*)",
       "Bash(python:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

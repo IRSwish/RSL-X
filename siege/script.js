@@ -232,7 +232,6 @@ function getChampionDataForCondition(name) {
 
     // Get all forms of this champion
     const allForms = getAllChampionForms(name);
-    console.log(`[DEBUG] ${name} - allForms.length: ${allForms.length}`, allForms.length > 0 ? allForms[0] : null);
 
     if (allForms.length === 0) return null;
 
@@ -240,7 +239,6 @@ function getChampionDataForCondition(name) {
 
     // If it's a Mythical and has multiple forms, return both
     if (mainData.rarity === "Mythical" && allForms.length > 1) {
-        console.log(`[Mythic] ${name} - Found ${allForms.length} forms:`, allForms);
         return {
             main: allForms[0],
             alternate: allForms[1]
@@ -373,8 +371,6 @@ function getValidatedConditions(team) {
         return [];
     }
 
-    console.log("[getValidatedConditions] Team:", team);
-
     const validatedConditions = [];
 
     try {
@@ -394,8 +390,6 @@ function getValidatedConditions(team) {
     } catch (e) {
         console.error("Erreur getValidatedConditions", e);
     }
-
-    console.log("[getValidatedConditions] Validated conditions:", validatedConditions);
 
     return validatedConditions;
 }
@@ -1187,7 +1181,12 @@ function refreshTeamsPresetsDropdown() {
         const member = clanMembers[pseudo];
         const presets = member.presets || {};
         Object.values(presets).forEach(preset => {
-            const validatedConditions = getValidatedConditions(preset);
+            // Use cached conditions if available, otherwise calculate and cache
+            let validatedConditions = preset.cachedConditions;
+            if (!validatedConditions || !Array.isArray(validatedConditions)) {
+                validatedConditions = getValidatedConditions(preset);
+                preset.cachedConditions = validatedConditions;
+            }
             validatedConditions.forEach(condId => {
                 const condType = getConditionType(condId);
                 if (condType !== 'effects' && condType !== 'Effects') {
@@ -1333,7 +1332,12 @@ function refreshTeamsPresetsDropdown() {
             }
 
             // Conditions (validated only, no effects)
-            const validatedConditions = getValidatedConditions(preset);
+            // Use cached conditions if available, otherwise calculate and cache
+            let validatedConditions = preset.cachedConditions;
+            if (!validatedConditions || !Array.isArray(validatedConditions)) {
+                validatedConditions = getValidatedConditions(preset);
+                preset.cachedConditions = validatedConditions;
+            }
             // Filter out effects (Irradiance and Stronghold bonus)
             const nonEffectConditions = validatedConditions.filter(condId => {
                 const condType = getConditionType(condId);
@@ -4009,7 +4013,7 @@ function createTooltipContent(postId) {
 
     // Get selected member from filter
     const memberFilter = document.getElementById("memberFilter");
-    const selectedMember = memberFilter ? memberFilter.value : "";
+    const selectedMember = memberFilter ? (memberFilter.dataset.value || "") : "";
 
     // Afficher toutes les équipes
     teamsWithMembers.forEach((team, index) => {
@@ -4526,8 +4530,6 @@ function disableViewerControls() {
 }
 
 function initializeAppWithRoom(roomId) {
-    console.log('Initializing app with room:', roomId);
-
     // Show logout button
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
@@ -5292,7 +5294,6 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function savePresetChampion(memberPseudo, presetId, slotName, championName) {
-        console.log("💾 savePresetChampion:", { memberPseudo, presetId, slotName, championName });
         if (!currentRoomId) {
             console.error("❌ No currentRoomId");
             return;
@@ -5344,6 +5345,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
         const preset = member.presets[presetId];
         const validatedConditions = getValidatedConditions(preset);
+
+        // Cache the validated conditions in the preset
+        preset.cachedConditions = validatedConditions;
+
+        // Save to Firebase
+        if (currentRoomId) {
+            const presetPath = `rooms/${currentRoomId}/members/${memberPseudo}/presets/${presetId}/cachedConditions`;
+            update(ref(realtimeDb, presetPath), validatedConditions);
+        }
 
         // Find the conditions grid for this preset
         const presetRows = document.querySelectorAll('.preset-row');
