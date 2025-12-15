@@ -1,5 +1,4 @@
 // Version: 2025-01-12-018 - Don't auto-save while typing
-console.log("🚀 Script loaded - Version 2025-01-12-018");
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 import { setupAuthUI, getCurrentRoom, isViewer, exportSiegeData, importSiegeData, showChangePasswordModal, logout } from "./auth.js";
@@ -44,7 +43,6 @@ async function loadSiegeDB() {
         const res = await fetch("/siege/siege.db");
         const buf = await res.arrayBuffer();
         siegeDB = new SQL.Database(new Uint8Array(buf));
-        console.log("Siege DB loaded");
     } catch (e) {
         console.error("Erreur chargement siege.db", e);
     }
@@ -59,7 +57,6 @@ async function loadChampionDB() {
         const res = await fetch("/tools/champions-index/champions.db");
         const buf = await res.arrayBuffer();
         championsDB = new SQL.Database(new Uint8Array(buf));
-        console.log("Champions DB loaded");
     } catch (e) {
         console.error("Erreur chargement champions.db", e);
     }
@@ -208,6 +205,55 @@ function getChampionFullData(name) {
     }
 }
 
+// Get ALL forms of a champion (for Mythics with multiple forms)
+// Mythics have the same name but appear on multiple rows in the database
+function getAllChampionForms(name) {
+    if (!championsDB || !name) return [];
+    try {
+        const stmt = championsDB.prepare(
+            "SELECT name, faction, rarity, affinity, type, image, auratext, aura FROM champions WHERE name = ?;"
+        );
+        stmt.bind([name]);
+        const forms = [];
+        while (stmt.step()) {
+            forms.push(stmt.getAsObject());
+        }
+        stmt.free();
+        return forms;
+    } catch (e) {
+        console.error("Erreur getAllChampionForms", e);
+        return [];
+    }
+}
+
+// Get champion data for condition validation, checking both forms for Mythics
+function getChampionDataForCondition(name) {
+    if (!name) return null;
+
+    // Get all forms of this champion
+    const allForms = getAllChampionForms(name);
+    console.log(`[DEBUG] ${name} - allForms.length: ${allForms.length}`, allForms.length > 0 ? allForms[0] : null);
+
+    if (allForms.length === 0) return null;
+
+    const mainData = allForms[0];
+
+    // If it's a Mythical and has multiple forms, return both
+    if (mainData.rarity === "Mythical" && allForms.length > 1) {
+        console.log(`[Mythic] ${name} - Found ${allForms.length} forms:`, allForms);
+        return {
+            main: allForms[0],
+            alternate: allForms[1]
+        };
+    }
+
+    // For non-Mythics or single-form champions
+    return {
+        main: mainData,
+        alternate: null
+    };
+}
+
 // Get alliance for a given faction
 function getAllianceForFaction(faction) {
     if (!championsDB || !faction) return null;
@@ -260,33 +306,57 @@ function validateTeamCondition(team, conditionId) {
             return true;
         }
 
-        // Get champion data for all champions in team
-        const champData = champions.map(name => getChampionFullData(name)).filter(c => c !== null);
+        // Get champion data for all champions in team (including both forms for Mythics)
+        const champDataList = champions.map(name => getChampionDataForCondition(name)).filter(c => c !== null);
 
-        if (champData.length === 0) {
+        if (champDataList.length === 0) {
             return false;
         }
 
         // Validate based on condition type (case-insensitive)
         const condTypeLower = condType.toLowerCase();
+
+        // Helper function to check if a champion (checking both forms for Mythics) matches a condition
+        const championMatches = (champDataObj, checkFunc) => {
+            if (!champDataObj) return false;
+
+            // Check main form
+            if (checkFunc(champDataObj.main)) return true;
+
+            // If it's a Mythic, also check alternate form
+            if (champDataObj.alternate && checkFunc(champDataObj.alternate)) return true;
+
+            return false;
+        };
+
         switch (condTypeLower) {
             case 'rarity':
-                return champData.every(c => c.rarity === condName);
+                return champDataList.every(champDataObj =>
+                    championMatches(champDataObj, c => c.rarity === condName)
+                );
 
             case 'factions':
-                return champData.every(c => c.faction === condName);
+                return champDataList.every(champDataObj =>
+                    championMatches(champDataObj, c => c.faction === condName)
+                );
 
             case 'type':
-                return champData.every(c => c.type === condName);
+                return champDataList.every(champDataObj =>
+                    championMatches(champDataObj, c => c.type === condName)
+                );
 
             case 'affinity':
-                return champData.every(c => c.affinity === condName);
+                return champDataList.every(champDataObj =>
+                    championMatches(champDataObj, c => c.affinity === condName)
+                );
 
             case 'alliance':
-                return champData.every(c => {
-                    const alliance = getAllianceForFaction(c.faction);
-                    return alliance === condName;
-                });
+                return champDataList.every(champDataObj =>
+                    championMatches(champDataObj, c => {
+                        const alliance = getAllianceForFaction(c.faction);
+                        return alliance === condName;
+                    })
+                );
 
             default:
                 return false;
@@ -302,6 +372,8 @@ function getValidatedConditions(team) {
     if (!siegeDB || !team) {
         return [];
     }
+
+    console.log("[getValidatedConditions] Team:", team);
 
     const validatedConditions = [];
 
@@ -322,6 +394,8 @@ function getValidatedConditions(team) {
     } catch (e) {
         console.error("Erreur getValidatedConditions", e);
     }
+
+    console.log("[getValidatedConditions] Validated conditions:", validatedConditions);
 
     return validatedConditions;
 }
@@ -692,21 +766,8 @@ function updateConditionFilterDisplay() {
 }
 
 function getBuildingTrapSlots(level) {
-    if (!siegeDB) return 0;
-    try {
-        const stmt = siegeDB.prepare("SELECT trapslots FROM buildings WHERE name = ? AND level = ?;");
-        stmt.bind(["Stronghold", level]);
-        if (stmt.step()) {
-            const row = stmt.getAsObject();
-            stmt.free();
-            return row.trapslots || 0;
-        }
-        stmt.free();
-        return 0;
-    } catch (e) {
-        console.error("Erreur getBuildingTrapSlots", e);
-        return 0;
-    }
+    // Traps are not yet implemented, return 0 for now
+    return 0;
 }
 
 function updateStats() {
@@ -716,7 +777,6 @@ function updateStats() {
     let trapsUsed = 0;
     let trapsMax = 0;
 
-    console.log("=== UPDATE STATS DEBUG ===");
     postIds.forEach(postId => {
         const postEl = document.getElementById(postId);
         if (!postEl) return;
@@ -738,7 +798,6 @@ function updateStats() {
                 }
             });
             totalTeamsPlaced += placedCount;
-            console.log(`${postId} (post): placed=${placedCount}, max=${maxTeams}`);
 
             // Count bonuses: teams with member selected + condition checked
             teams.forEach(team => {
@@ -762,7 +821,6 @@ function updateStats() {
                 }
             });
             totalTeamsPlaced += placedCount;
-            console.log(`${postId} (${postType}): placed=${placedCount}, max=${maxSlots}, level=${level}, buildingType=${buildingType}`);
 
             // Count bonuses based on building type (not radiation)
             if (postType === "magictower" || postType === "stronghold" || postType === "defensetower") {
@@ -781,9 +839,6 @@ function updateStats() {
             }
         }
     });
-
-    console.log(`TOTAL: placed=${totalTeamsPlaced}, max=${totalTeamsMax}`);
-    console.log("=== END DEBUG ===");
 
     // Update display
     document.getElementById("statTeams").textContent = `${totalTeamsPlaced}/${totalTeamsMax}`;
@@ -1009,11 +1064,29 @@ function deleteClanMember(pseudo) {
     const firstConfirm = confirm(`Are you sure you want to delete member "${pseudo}"?`);
     if (!firstConfirm) return;
 
-    const secondConfirm = confirm(`⚠️ FINAL WARNING ⚠️\n\nThis will permanently delete "${pseudo}" and remove them from all teams.\n\nThis action CANNOT be undone!\n\nClick OK to confirm deletion.`);
+    const secondConfirm = confirm(`⚠️ FINAL WARNING ⚠️\n\nThis will permanently delete "${pseudo}" and remove all their teams from all posts.\n\nThis action CANNOT be undone!\n\nClick OK to confirm deletion.`);
     if (!secondConfirm) return;
 
+    // Delete the member
     delete clanMembers[pseudo];
 
+    // Remove all teams belonging to this member from all posts
+    Object.keys(postDataCache).forEach(postId => {
+        const postData = postDataCache[postId];
+        if (postData && Array.isArray(postData.teams)) {
+            // Filter out teams belonging to the deleted member
+            const updatedTeams = postData.teams.filter(team => team.member !== pseudo);
+
+            // Update the post data
+            postDataCache[postId].teams = updatedTeams;
+
+            // Save to Firebase
+            const postRef = ref(db, `rooms/${currentRoomId}/siege/${postId}`);
+            set(postRef, postDataCache[postId]);
+        }
+    });
+
+    // Save updated members to Firebase
     const refMembers = ref(db, `rooms/${currentRoomId}/siege/members`);
     set(refMembers, clanMembers);
 }
@@ -1108,6 +1181,79 @@ function refreshTeamsPresetsDropdown() {
         return;
     }
 
+    // Collect all unique conditions from presets
+    const allConditionsSet = new Set();
+    membersWithPresets.forEach(pseudo => {
+        const member = clanMembers[pseudo];
+        const presets = member.presets || {};
+        Object.values(presets).forEach(preset => {
+            const validatedConditions = getValidatedConditions(preset);
+            validatedConditions.forEach(condId => {
+                const condType = getConditionType(condId);
+                if (condType !== 'effects' && condType !== 'Effects') {
+                    allConditionsSet.add(String(condId));
+                }
+            });
+        });
+    });
+
+    // Add condition filter if there are conditions
+    if (allConditionsSet.size > 0) {
+        const filterDiv = document.createElement("div");
+        filterDiv.className = "preset-condition-filter";
+
+        const filterLabel = document.createElement("div");
+        filterLabel.className = "preset-condition-filter-label";
+        filterLabel.textContent = "Filter by Condition:";
+        filterDiv.appendChild(filterLabel);
+
+        const filterOptions = document.createElement("div");
+        filterOptions.className = "preset-condition-filter-options";
+
+        // Add condition options sorted by ID (no "All" option)
+        const conditionIds = Array.from(allConditionsSet).sort((a, b) => parseInt(a) - parseInt(b));
+        conditionIds.forEach(condId => {
+            const condIcon = getConditionIcon(condId);
+            const condName = getConditionName(condId);
+
+            const option = document.createElement("div");
+            option.className = "preset-condition-filter-option";
+            option.dataset.conditionId = condId;
+            option.title = condName; // Add tooltip
+
+            if (condIcon) {
+                const img = document.createElement("img");
+                img.src = condIcon;
+                img.alt = condName;
+                option.appendChild(img);
+            }
+
+            const text = document.createElement("span");
+            text.textContent = condName;
+            option.appendChild(text);
+
+            option.addEventListener("click", () => {
+                // Toggle behavior: if already active, deactivate it
+                if (option.classList.contains("active")) {
+                    option.classList.remove("active");
+                    filterPresetsByCondition(""); // Show all
+                } else {
+                    // Deactivate all others and activate this one
+                    filterOptions.querySelectorAll(".preset-condition-filter-option").forEach(opt => {
+                        opt.classList.remove("active");
+                    });
+                    option.classList.add("active");
+                    filterPresetsByCondition(condId);
+                }
+            });
+
+            filterOptions.appendChild(option);
+        });
+
+        filterDiv.appendChild(filterOptions);
+        dropdown.appendChild(filterDiv);
+    }
+
     // Display each member's presets
     membersWithPresets.forEach(pseudo => {
         const member = clanMembers[pseudo];
@@ -1194,6 +1340,9 @@ function refreshTeamsPresetsDropdown() {
                 return condType !== 'effects' && condType !== 'Effects';
             });
 
+            // Store conditions in data attribute for filtering
+            teamDiv.dataset.conditions = JSON.stringify(nonEffectConditions);
+
             if (nonEffectConditions.length > 0) {
                 const conditionsDiv = document.createElement("div");
                 conditionsDiv.className = "preset-dropdown-conditions";
@@ -1225,10 +1374,20 @@ function refreshTeamsPresetsDropdown() {
                     preset: preset
                 }));
                 teamDiv.style.opacity = "0.5";
+                // Hide dropdown during drag
+                const dropdown = document.getElementById("teamsPresetsDropdown");
+                if (dropdown) {
+                    dropdown.style.visibility = "hidden";
+                }
             });
 
             teamDiv.addEventListener("dragend", (e) => {
                 teamDiv.style.opacity = "1";
+                // Show dropdown after drop
+                const dropdown = document.getElementById("teamsPresetsDropdown");
+                if (dropdown) {
+                    dropdown.style.visibility = "visible";
+                }
             });
 
             teamsContainer.appendChild(teamDiv);
@@ -1237,6 +1396,42 @@ function refreshTeamsPresetsDropdown() {
         memberDiv.appendChild(teamsContainer);
         dropdown.appendChild(memberDiv);
     });
+}
+
+// Filter presets by condition
+function filterPresetsByCondition(conditionId) {
+    const dropdown = document.getElementById("teamsPresetsDropdown");
+    if (!dropdown) return;
+
+    const allTeams = dropdown.querySelectorAll(".preset-dropdown-team");
+    const allMembers = dropdown.querySelectorAll(".preset-dropdown-member");
+
+    if (conditionId === "") {
+        // Show all
+        allTeams.forEach(team => team.classList.remove("filtered-out"));
+        allMembers.forEach(member => member.classList.remove("filtered-out"));
+    } else {
+        // Filter by condition
+        allTeams.forEach(team => {
+            const conditions = JSON.parse(team.dataset.conditions || "[]");
+            const hasCondition = conditions.some(condId => String(condId) === String(conditionId));
+            if (hasCondition) {
+                team.classList.remove("filtered-out");
+            } else {
+                team.classList.add("filtered-out");
+            }
+        });
+
+        // Hide members with no visible teams
+        allMembers.forEach(member => {
+            const visibleTeams = member.querySelectorAll(".preset-dropdown-team:not(.filtered-out)");
+            if (visibleTeams.length === 0) {
+                member.classList.add("filtered-out");
+            } else {
+                member.classList.remove("filtered-out");
+            }
+        });
+    }
 }
 
 // Setup drag & drop zone on a post/building
@@ -1296,7 +1491,6 @@ function addPresetToPost(postId, memberPseudo, preset) {
 
     const refPost = ref(db, `rooms/${currentRoomId}/siege/${postId}`);
     set(refPost, updatedData).then(() => {
-        console.log(`Preset added to ${postId}`);
     }).catch(err => {
         console.error("Error adding preset to post:", err);
     });
@@ -1334,7 +1528,6 @@ function updateVisualForInput(inputEl, champImgEl, rarityImgEl) {
 
 function updateLeadAura(teamRow) {
     const auraDisplay = teamRow.querySelector(".lead-aura-display");
-    console.log("updateLeadAura - auraDisplay:", auraDisplay);
     if (!auraDisplay) return;
 
     // Trouver le champion 4 (lead)
@@ -1349,7 +1542,6 @@ function updateLeadAura(teamRow) {
 
     const leadInput = leadSlot.querySelector(".champ-input");
     const leadName = leadInput ? leadInput.value.trim() : "";
-    console.log("updateLeadAura - leadName:", leadName);
 
     if (!leadName || !championsDB) {
         auraDisplay.innerHTML = "";
@@ -1358,9 +1550,7 @@ function updateLeadAura(teamRow) {
     }
 
     const lead = getChampionByNameExact(leadName);
-    console.log("updateLeadAura - lead:", lead);
     if (!lead || !lead.auratext || !lead.aura) {
-        console.log("updateLeadAura - pas d'aura trouvée");
         auraDisplay.innerHTML = "";
         auraDisplay.style.display = "none";
         return;
@@ -1388,7 +1578,6 @@ function updateLeadAura(teamRow) {
     }
 
     // Afficher l'aura
-    console.log("updateLeadAura - zone:", zone, "value:", value);
     auraDisplay.innerHTML = `
         <div class="lead-aura-container">
             <img class="lead-aura-icon" src="/tools/champions-index/img/aura/${lead.aura}.webp" alt="Aura">
@@ -4366,7 +4555,6 @@ window.addEventListener("DOMContentLoaded", () => {
     // Listen for room ready event
     window.addEventListener('roomReady', (e) => {
         const { roomId, accessMode, isViewerMode } = e.detail;
-        console.log(`Room ready: ${roomId} (${accessMode})`);
 
         // Disable UI if viewer mode
         if (isViewerMode) {
@@ -4785,7 +4973,6 @@ window.addEventListener("DOMContentLoaded", () => {
     let currentPresetsMember = null;
 
     window.openPresetsModal = function(memberPseudo) {
-        console.log("Opening presets modal for:", memberPseudo);
         currentPresetsMember = memberPseudo;
         const modal = document.getElementById("presetsModal");
         const title = document.getElementById("presetsModalTitle");
@@ -5150,7 +5337,6 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function updatePresetConditions(memberPseudo, presetId) {
-        console.log("🔄 updatePresetConditions called:", { memberPseudo, presetId });
         const member = clanMembers[memberPseudo];
         if (!member || !member.presets || !member.presets[presetId]) {
             return;
@@ -5161,24 +5347,20 @@ window.addEventListener("DOMContentLoaded", () => {
 
         // Find the conditions grid for this preset
         const presetRows = document.querySelectorAll('.preset-row');
-        console.log("📊 Found preset rows:", presetRows.length);
 
         presetRows.forEach(row => {
             const conditionsGrid = row.querySelector('.preset-conditions-grid');
             if (conditionsGrid) {
-                console.log("🎯 Updating conditions grid");
                 // Simpler: just update all rows (they'll be refreshed correctly)
                 conditionsGrid.innerHTML = "";
                 validatedConditions.forEach(condId => {
                     const condIcon = getConditionIcon(condId);
-                    console.log("🖼️ Condition icon:", condId, condIcon);
                     if (condIcon) {
                         const img = document.createElement("img");
                         img.src = condIcon;
                         img.className = "preset-condition-icon";
                         img.title = getConditionName(condId);
                         conditionsGrid.appendChild(img);
-                        console.log("➕ Added condition icon to grid");
                     }
                 });
             }
@@ -5232,7 +5414,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Add preset button
     document.getElementById("addPresetBtn").addEventListener("click", () => {
-        console.log("Add preset clicked, current member:", currentPresetsMember);
         if (!currentPresetsMember) {
             console.error("No current member selected");
             return;
@@ -5241,15 +5422,12 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     function addNewPreset(memberPseudo) {
-        console.log("addNewPreset called for:", memberPseudo);
-        console.log("currentRoomId:", currentRoomId);
         if (!currentRoomId) {
             console.error("No room ID");
             return;
         }
 
         const member = clanMembers[memberPseudo];
-        console.log("Member:", member);
         if (!member) {
             console.error("Member not found");
             return;
