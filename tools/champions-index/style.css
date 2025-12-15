@@ -25,6 +25,8 @@ body.modal-open {overflow: hidden;}
 .type-grid { grid-template-columns:repeat(2,1fr); }
 .rarity-btn,.affinity-btn,.type-btn {   font-size: 12px; border:2px solid transparent; background:#1a1a1a; color:#fff; border-radius:8px; padding:4px 8px; transition:.2s; width:55px; height:55px; display:flex; justify-content:center; align-items:center; }
 .rarity-btn img,.affinity-btn img { width:28px; height:28px; object-fit:contain; }
+.type-btn img { width:48px; height:48px; object-fit:contain; }
+
 .rarity-btn:hover,.affinity-btn:hover,.type-btn:hover {transform:scale(1.1); border:2px solid #d4af37;}
 .rarity-btn.active,.affinity-btn.active,.type-btn.active { border-color:#d4af37; background:rgba(212,175,55,.15); box-shadow:0 0 6px rgba(212,175,55,.4); }
 

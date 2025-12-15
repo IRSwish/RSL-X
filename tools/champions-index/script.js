@@ -409,21 +409,29 @@ function displayChampions() {
       // --- Zones ---
       let matchesAuraZone = true;
       if (selectedAuraZones.length) {
-        let zones = [];
+        const selectedZone = selectedAuraZones[0];
 
-        if (auraText.includes("all battles")) {
-          zones = ["Arena","Dungeons","Faction Wars","Doom Tower"];
+        // Si "All Battles" est sélectionné, on filtre uniquement les auras qui fonctionnent partout
+        if (selectedZone === "All Battles") {
+          matchesAuraZone = auraText.includes("all battles");
         } else {
-          if (auraText.includes("arena"))         zones.push("Arena");
-          if (auraText.includes("dungeon"))       zones.push("Dungeons");
-          if (auraText.includes("faction wars"))  zones.push("Faction Wars");
-          if (auraText.includes("doom tower"))    zones.push("Doom Tower");
-        }
+          // Pour les autres zones, on vérifie si l'aura mentionne cette zone OU "all battles"
+          let zones = [];
 
-        if (!zones.length) {
-          matchesAuraZone = false;
-        } else {
-          matchesAuraZone = selectedAuraZones.some(z => zones.includes(z));
+          if (auraText.includes("all battles")) {
+            zones = ["Arena","Dungeons","Faction Wars","Doom Tower"];
+          } else {
+            if (auraText.includes("arena"))         zones.push("Arena");
+            if (auraText.includes("dungeon"))       zones.push("Dungeons");
+            if (auraText.includes("faction wars"))  zones.push("Faction Wars");
+            if (auraText.includes("doom tower"))    zones.push("Doom Tower");
+          }
+
+          if (!zones.length) {
+            matchesAuraZone = false;
+          } else {
+            matchesAuraZone = zones.includes(selectedZone);
+          }
         }
       }
 
