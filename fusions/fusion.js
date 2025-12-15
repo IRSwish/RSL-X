@@ -780,7 +780,7 @@ function buildResourcesPanel(data) {
     rareNames.forEach(name => {
       const c = counts.get(name);
       if (!c) return;
-      const total = (c.validated || 0) + (c.planned || 0);
+      const total = (c.validated || 0); // Only validated copies for rare champions
       totalRareCopies += total;
       pushCopies(name, 'RARE', rareAff, 4, total);
     });
