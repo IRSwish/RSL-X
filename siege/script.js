@@ -480,6 +480,7 @@ function connectRoom(roomId) {
             updateTooltipOnMap(id);  // Mettre à jour le tooltip hover
             updateMembersList();  // Mettre à jour le compteur de teams par membre
             updateConditionsFilter();  // Mettre à jour le filtre des conditions
+            updateStats();  // Mettre à jour les statistiques
         });
     });
     updateSummaryTable();
@@ -490,28 +491,75 @@ function connectRoom(roomId) {
 }
 
 function updateMemberFilter() {
-    const select = document.getElementById("memberFilter");
-    if (!select) return;
+    const memberFilter = document.getElementById("memberFilter");
+    if (!memberFilter) return;
 
-    const currentValue = select.value;
-    select.innerHTML = '<option value="">All</option>';
+    const currentValue = memberFilter.dataset.value || "";
 
+    // Build custom select options
+    const optionsContainer = memberFilter.querySelector(".custom-select-options");
+    if (!optionsContainer) return;
+
+    optionsContainer.innerHTML = '';
+
+    // Add "All" option
+    const allOption = document.createElement("div");
+    allOption.className = "custom-select-option";
+    allOption.dataset.value = "";
+    allOption.textContent = "All";
+    if (currentValue === "") {
+        allOption.classList.add("selected");
+    }
+    optionsContainer.appendChild(allOption);
+
+    // Add "Empty Posts" option
+    const emptyOption = document.createElement("div");
+    emptyOption.className = "custom-select-option";
+    emptyOption.dataset.value = "__EMPTY__";
+    emptyOption.textContent = "Empty Posts";
+    if (currentValue === "__EMPTY__") {
+        emptyOption.classList.add("selected");
+    }
+    optionsContainer.appendChild(emptyOption);
+
+    // Add member options
     Object.keys(clanMembers).sort().forEach(name => {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        select.appendChild(opt);
+        const option = document.createElement("div");
+        option.className = "custom-select-option";
+        option.dataset.value = name;
+        option.textContent = name;
+        if (currentValue === name) {
+            option.classList.add("selected");
+        }
+        optionsContainer.appendChild(option);
     });
 
-    select.value = currentValue;
+    // Update trigger display
+    updateMemberFilterDisplay();
+}
+
+function updateMemberFilterDisplay() {
+    const memberFilter = document.getElementById("memberFilter");
+    if (!memberFilter) return;
+
+    const trigger = memberFilter.querySelector(".custom-select-trigger");
+    const selectedValue = memberFilter.dataset.value || "";
+
+    if (selectedValue === "") {
+        trigger.querySelector("span").textContent = "All";
+    } else if (selectedValue === "__EMPTY__") {
+        trigger.querySelector("span").textContent = "Empty Posts";
+    } else {
+        trigger.querySelector("span").textContent = selectedValue;
+    }
 }
 
 function applyFilters() {
     const memberFilter = document.getElementById("memberFilter");
     const conditionFilter = document.getElementById("conditionFilter");
 
-    const selectedMember = memberFilter ? memberFilter.value : "";
-    const selectedCondition = conditionFilter ? conditionFilter.value : "";
+    const selectedMember = memberFilter ? (memberFilter.dataset.value || "") : "";
+    const selectedCondition = conditionFilter ? (conditionFilter.dataset.value || "") : "";
 
     postIds.forEach(postId => {
         const postEl = document.getElementById(postId);
@@ -525,9 +573,17 @@ function applyFilters() {
 
         // Filter by member
         if (selectedMember !== "") {
-            const hasMember = teams.some(team => team.member === selectedMember);
-            if (!hasMember) {
-                showPost = false;
+            if (selectedMember === "__EMPTY__") {
+                // Show only empty posts (no teams with members assigned)
+                const hasAnyMember = teams.some(team => team.member);
+                if (hasAnyMember) {
+                    showPost = false;
+                }
+            } else {
+                const hasMember = teams.some(team => team.member === selectedMember);
+                if (!hasMember) {
+                    showPost = false;
+                }
             }
         }
 
@@ -553,7 +609,7 @@ function updateConditionsFilter() {
     const conditionFilter = document.getElementById("conditionFilter");
     if (!conditionFilter) return;
 
-    const currentValue = conditionFilter.value;
+    const currentValue = conditionFilter.dataset.value || "";
 
     // Collect all unique conditions from regular posts (META conditions)
     const conditionsSet = new Set();
@@ -577,45 +633,162 @@ function updateConditionsFilter() {
     // Sort conditions by ID
     const conditionIds = Array.from(conditionsSet).sort((a, b) => parseInt(a) - parseInt(b));
 
-    // Clear and rebuild options
-    conditionFilter.innerHTML = '';
+    // Build custom select options
+    const optionsContainer = conditionFilter.querySelector(".custom-select-options");
+    if (!optionsContainer) return;
+
+    optionsContainer.innerHTML = '';
 
     // Add "All" option
-    const allOption = document.createElement("option");
-    allOption.value = "";
+    const allOption = document.createElement("div");
+    allOption.className = "custom-select-option";
+    allOption.dataset.value = "";
     allOption.textContent = "All";
-    conditionFilter.appendChild(allOption);
+    if (currentValue === "") {
+        allOption.classList.add("selected");
+    }
+    optionsContainer.appendChild(allOption);
 
-    // Add condition options
+    // Add condition options with icons
     conditionIds.forEach(condId => {
         const icon = getConditionIcon(condId);
         const name = getConditionName(condId);
-        const option = document.createElement("option");
-        option.value = condId;
+        const option = document.createElement("div");
+        option.className = "custom-select-option";
+        option.dataset.value = condId;
+        option.dataset.icon = icon || '';
         option.textContent = name;
-        option.setAttribute("data-icon", icon || '');
-        option.style.backgroundImage = `url('${icon}')`;
-        conditionFilter.appendChild(option);
+        if (icon) {
+            option.style.setProperty('--icon-url', `url('${icon}')`);
+        }
+        if (currentValue === condId) {
+            option.classList.add("selected");
+        }
+        optionsContainer.appendChild(option);
     });
 
-    conditionFilter.value = currentValue;
-
-    // Update icon background
-    updateConditionFilterIcon();
+    // Update trigger display
+    updateConditionFilterDisplay();
 }
 
-function updateConditionFilterIcon() {
+function updateConditionFilterDisplay() {
     const conditionFilter = document.getElementById("conditionFilter");
     if (!conditionFilter) return;
 
-    const selectedOption = conditionFilter.options[conditionFilter.selectedIndex];
-    const iconUrl = selectedOption ? selectedOption.getAttribute("data-icon") : null;
-    if (iconUrl && iconUrl !== "") {
-        conditionFilter.style.backgroundImage = `url('${iconUrl}')`;
+    const trigger = conditionFilter.querySelector(".custom-select-trigger");
+    const selectedValue = conditionFilter.dataset.value || "";
+
+    if (selectedValue === "") {
+        trigger.querySelector("span").textContent = "All";
+        trigger.style.removeProperty('--icon-url');
     } else {
-        // "All" selected - no icon
-        conditionFilter.style.backgroundImage = "none";
+        const name = getConditionName(selectedValue);
+        const icon = getConditionIcon(selectedValue);
+        trigger.querySelector("span").textContent = name;
+        if (icon) {
+            trigger.style.setProperty('--icon-url', `url('${icon}')`);
+        }
     }
+}
+
+function getBuildingTrapSlots(level) {
+    if (!siegeDB) return 0;
+    try {
+        const stmt = siegeDB.prepare("SELECT trapslots FROM buildings WHERE name = ? AND level = ?;");
+        stmt.bind(["Stronghold", level]);
+        if (stmt.step()) {
+            const row = stmt.getAsObject();
+            stmt.free();
+            return row.trapslots || 0;
+        }
+        stmt.free();
+        return 0;
+    } catch (e) {
+        console.error("Erreur getBuildingTrapSlots", e);
+        return 0;
+    }
+}
+
+function updateStats() {
+    let totalTeamsPlaced = 0;
+    let totalTeamsMax = 0;
+    let bonusesValidated = 0;
+    let trapsUsed = 0;
+    let trapsMax = 0;
+
+    console.log("=== UPDATE STATS DEBUG ===");
+    postIds.forEach(postId => {
+        const postEl = document.getElementById(postId);
+        if (!postEl) return;
+
+        const postType = postEl.getAttribute("data-type");
+        const data = postDataCache[postId] || {};
+        const teams = data.teams || [];
+
+        if (postType === "post") {
+            // Regular posts: only 1 slot
+            const maxTeams = 1;
+            totalTeamsMax += maxTeams;
+
+            // Count teams that have at least member OR champions (up to max)
+            let placedCount = 0;
+            teams.forEach((team, index) => {
+                if (index < maxTeams && (team.member || team.c1 || team.c2 || team.c3 || team.c4)) {
+                    placedCount++;
+                }
+            });
+            totalTeamsPlaced += placedCount;
+            console.log(`${postId} (post): placed=${placedCount}, max=${maxTeams}`);
+
+            // Count bonuses: teams with member selected + condition checked
+            teams.forEach(team => {
+                if (team.member && team.condition) {
+                    bonusesValidated++;
+                }
+            });
+        } else {
+            // Buildings: manashrine, magictower, defensetower, stronghold
+            // Get max slots from database
+            const level = data.buildingLevel || 1;
+            const buildingType = getBuildingTypeFromPostId(postId);
+            const maxSlots = getBuildingSlots(buildingType, level);
+            totalTeamsMax += maxSlots;
+
+            // Count teams that have at least member OR champions (up to max)
+            let placedCount = 0;
+            teams.forEach((team, index) => {
+                if (index < maxSlots && (team.member || team.c1 || team.c2 || team.c3 || team.c4)) {
+                    placedCount++;
+                }
+            });
+            totalTeamsPlaced += placedCount;
+            console.log(`${postId} (${postType}): placed=${placedCount}, max=${maxSlots}, level=${level}, buildingType=${buildingType}`);
+
+            // Count bonuses based on building type (not radiation)
+            if (postType === "magictower" || postType === "stronghold" || postType === "defensetower") {
+                // Magic towers, stronghold, and defense towers: count if they have a bonus selected (stored in data.condition)
+                if (data.condition) {
+                    bonusesValidated++;
+                }
+            }
+            // Note: manashrine doesn't count for bonuses
+
+            // Count traps for stronghold
+            if (postId === "stronghold") {
+                trapsMax = getBuildingTrapSlots(level);
+                // TODO: count actual traps when implemented
+                trapsUsed = 0;
+            }
+        }
+    });
+
+    console.log(`TOTAL: placed=${totalTeamsPlaced}, max=${totalTeamsMax}`);
+    console.log("=== END DEBUG ===");
+
+    // Update display
+    document.getElementById("statTeams").textContent = `${totalTeamsPlaced}/${totalTeamsMax}`;
+    document.getElementById("statBonuses").textContent = `${bonusesValidated}/28`;
+    document.getElementById("statTraps").textContent = `${trapsUsed}/${trapsMax}`;
 }
 
 function updateMembersList() {
@@ -1262,6 +1435,63 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
     const teamsContainer = document.getElementById("teamsContainer");
     const teamRow = document.createElement("div");
     teamRow.className = "team-row";
+    teamRow.draggable = true;
+    teamRow.dataset.teamIndex = index;
+
+    // Drag & drop handlers
+    teamRow.addEventListener("dragstart", (e) => {
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", index.toString());
+        teamRow.classList.add("dragging");
+    });
+
+    teamRow.addEventListener("dragend", () => {
+        teamRow.classList.remove("dragging");
+        // Remove all drag-over classes
+        document.querySelectorAll(".team-row.drag-over").forEach(row => {
+            row.classList.remove("drag-over");
+        });
+    });
+
+    teamRow.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        const draggingElement = document.querySelector(".team-row.dragging");
+        if (draggingElement && draggingElement !== teamRow) {
+            teamRow.classList.add("drag-over");
+        }
+    });
+
+    teamRow.addEventListener("dragleave", () => {
+        teamRow.classList.remove("drag-over");
+    });
+
+    teamRow.addEventListener("drop", (e) => {
+        e.preventDefault();
+        teamRow.classList.remove("drag-over");
+
+        const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
+        const toIndex = index;
+
+        if (fromIndex !== toIndex) {
+            // Swap teams in the modal
+            const allTeamRows = Array.from(teamsContainer.querySelectorAll(".team-row"));
+            const fromRow = allTeamRows[fromIndex];
+            const toRow = allTeamRows[toIndex];
+
+            if (fromRow && toRow) {
+                // Swap positions in DOM
+                if (fromIndex < toIndex) {
+                    toRow.parentNode.insertBefore(fromRow, toRow.nextSibling);
+                } else {
+                    toRow.parentNode.insertBefore(fromRow, toRow);
+                }
+
+                // Update data indices and save
+                saveCurrentPost();
+            }
+        }
+    });
 
     // --- Boutons monter/descendre ---
     const moveButtons = document.createElement("div");
@@ -1378,18 +1608,25 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
 
     // logique pour vider la team
     clearBtn.onclick = () => {
-    const memberSelect = teamRow.querySelector(".member-select");
-    if (memberSelect) memberSelect.value = "";
+        const memberSelect = teamRow.querySelector(".member-select");
+        if (memberSelect) memberSelect.value = "";
 
-    teamRow.querySelectorAll(".champ-input").forEach(ci => ci.value = "");
-    teamRow.querySelectorAll(".champ-img").forEach(img => {
-        img.src = "";
-        img.style.display = "none";
-    });
-    teamRow.querySelectorAll(".rarity-img").forEach(img => {
-        img.src = "";
-        img.style.display = "none";
-    });
+        teamRow.querySelectorAll(".champ-input").forEach(ci => ci.value = "");
+        teamRow.querySelectorAll(".champ-img").forEach(img => {
+            img.src = "";
+            img.style.display = "none";
+        });
+        teamRow.querySelectorAll(".rarity-img").forEach(img => {
+            img.src = "";
+            img.style.display = "none";
+        });
+
+        // Clear team condition
+        const conditionInput = teamRow.querySelector(".team-condition-value");
+        if (conditionInput) conditionInput.value = "";
+
+        // Save changes to database
+        saveCurrentPost();
     };
 
 
@@ -2639,8 +2876,31 @@ function renderConditionsUI(postId, data) {
                 valueInput.type = "hidden";
                 valueInput.className = "condition-value";
 
+                // Add clear button for condition
+                const clearBtn = document.createElement("button");
+                clearBtn.type = "button";
+                clearBtn.className = "clear-condition-btn";
+                clearBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+                clearBtn.title = "Clear condition";
+
+                clearBtn.addEventListener("click", () => {
+                    const index = parseInt(slot.dataset.index);
+                    valueInput.value = "";
+                    img.src = "";
+                    img.style.display = "none";
+
+                    // Update data
+                    const data = postDataCache[currentPostId] || {};
+                    const conditionsArr = Array.isArray(data.conditions) ? data.conditions : [];
+                    conditionsArr[index] = "";
+                    data.conditions = conditionsArr;
+                    postDataCache[currentPostId] = data;
+                    saveCurrentPost();
+                });
+
                 slot.appendChild(btn);
                 slot.appendChild(valueInput);
+                slot.appendChild(clearBtn);
                 postConditionsSlotsWrapper.appendChild(slot);
             }
 
@@ -4175,17 +4435,116 @@ window.addEventListener("DOMContentLoaded", () => {
     const freezePostBtn = document.getElementById("freezePostBtn");
     const memberFilter = document.getElementById("memberFilter");
 
+    // Custom Select for Member Filter
     if (memberFilter) {
-        memberFilter.addEventListener("change", () => {
+        const trigger = memberFilter.querySelector(".custom-select-trigger");
+        const optionsContainer = memberFilter.querySelector(".custom-select-options");
+
+        // Toggle dropdown
+        trigger.addEventListener("click", (e) => {
+            e.stopPropagation();
+            memberFilter.classList.toggle("open");
+            // Close condition filter if open
+            const conditionFilter = document.getElementById("conditionFilter");
+            if (conditionFilter) {
+                conditionFilter.classList.remove("open");
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", () => {
+            memberFilter.classList.remove("open");
+        });
+
+        // Handle option selection
+        optionsContainer.addEventListener("click", (e) => {
+            const option = e.target.closest(".custom-select-option");
+            if (!option) return;
+
+            // Update selected value
+            const value = option.dataset.value;
+            memberFilter.dataset.value = value;
+
+            // Update selected class
+            optionsContainer.querySelectorAll(".custom-select-option").forEach(opt => {
+                opt.classList.remove("selected");
+            });
+            option.classList.add("selected");
+
+            // Update display
+            updateMemberFilterDisplay();
+
+            // Close dropdown
+            memberFilter.classList.remove("open");
+
+            // Apply filters
             applyFilters();
         });
     }
 
+    // Custom Select for Condition Filter
     const conditionFilter = document.getElementById("conditionFilter");
     if (conditionFilter) {
-        conditionFilter.addEventListener("change", () => {
-            updateConditionFilterIcon();
+        const trigger = conditionFilter.querySelector(".custom-select-trigger");
+        const optionsContainer = conditionFilter.querySelector(".custom-select-options");
+
+        // Toggle dropdown
+        trigger.addEventListener("click", (e) => {
+            e.stopPropagation();
+            conditionFilter.classList.toggle("open");
+            // Close member filter if open
+            const memberFilter = document.getElementById("memberFilter");
+            if (memberFilter) {
+                memberFilter.classList.remove("open");
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", () => {
+            conditionFilter.classList.remove("open");
+        });
+
+        // Handle option selection
+        optionsContainer.addEventListener("click", (e) => {
+            const option = e.target.closest(".custom-select-option");
+            if (!option) return;
+
+            // Update selected value
+            const value = option.dataset.value;
+            conditionFilter.dataset.value = value;
+
+            // Update selected class
+            optionsContainer.querySelectorAll(".custom-select-option").forEach(opt => {
+                opt.classList.remove("selected");
+            });
+            option.classList.add("selected");
+
+            // Update display
+            updateConditionFilterDisplay();
+
+            // Close dropdown
+            conditionFilter.classList.remove("open");
+
+            // Apply filters
             applyFilters();
+        });
+    }
+
+    // Filters Toggle Button
+    const filtersToggleBtn = document.getElementById("filtersToggleBtn");
+    const filtersContent = document.getElementById("filtersContent");
+
+    if (filtersToggleBtn && filtersContent) {
+        filtersToggleBtn.addEventListener("click", () => {
+            const isOpen = filtersContent.classList.contains("open");
+            if (isOpen) {
+                filtersContent.classList.remove("open");
+                filtersToggleBtn.classList.remove("active");
+            } else {
+                filtersContent.classList.add("open");
+                filtersToggleBtn.classList.add("active");
+                updateStats(); // Update stats when opening
+            }
         });
     }
 

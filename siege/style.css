@@ -303,6 +303,52 @@ body.modal-open .map-filters-container {
     gap: 8px;
 }
 
+/* Filters Toggle Button */
+.filters-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(10, 10, 10, 0.95);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #d4af37;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    color: #d4af37;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+}
+
+.filters-toggle-btn:hover {
+    background: rgba(20, 20, 20, 0.95);
+}
+
+.filters-toggle-btn .chevron-icon {
+    transition: transform 0.2s;
+}
+
+.filters-toggle-btn.active .chevron-icon {
+    transform: rotate(180deg);
+}
+
+/* Filters Content */
+.filters-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 0;
+    overflow: visible;
+    transition: max-height 0.3s ease;
+}
+
+.filters-content.open {
+    max-height: 500px;
+    overflow: visible;
+}
+
 .map-filter {
     display: flex;
     align-items: center;
@@ -312,6 +358,36 @@ body.modal-open .map-filters-container {
     border-radius: 8px;
     border: 1px solid #d4af37;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* Stats Display */
+.filters-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(10, 10, 10, 0.95);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #d4af37;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.stat-item span {
+    font-size: 13px;
+    color: #fcf6ff;
+    font-weight: 600;
 }
 
 .map-filter label {
@@ -340,6 +416,154 @@ body.modal-open .map-filters-container {
 }
 
 /* Condition filter with icon */
+/* Custom Select Styles */
+.custom-select-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+.custom-select {
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+}
+
+.custom-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0px 0px 0px 34px;
+    background: #050505;
+    border: 1px solid #333;
+    border-radius: 4px;
+    color: #fcf6ff;
+    font-size: 13px;
+    height: 34px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+}
+
+.custom-select-trigger::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    background-image: var(--icon-url, none);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.custom-select-no-icon .custom-select-trigger {
+    padding-left: 8px;
+}
+
+.custom-select-no-icon .custom-select-trigger::before {
+    display: none;
+}
+
+.custom-select-no-icon .custom-select-option {
+    padding-left: 12px;
+}
+
+.custom-select-no-icon .custom-select-option::before {
+    display: none;
+}
+
+.custom-select-trigger .chevron-icon {
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+
+.custom-select.open .custom-select-trigger .chevron-icon {
+    transform: rotate(180deg);
+}
+
+.custom-select-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: auto;
+    min-width: 100%;
+    width: max-content;
+    background: #050505;
+    border: 1px solid #333;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 10000;
+    display: none;
+}
+
+.custom-select.open .custom-select-options {
+    display: block;
+}
+
+/* Custom Scrollbar for dropdown */
+.custom-select-options::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-select-options::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 0 0 4px 0;
+}
+
+.custom-select-options::-webkit-scrollbar-thumb {
+    background: #d4af37;
+    border-radius: 4px;
+}
+
+.custom-select-options::-webkit-scrollbar-thumb:hover {
+    background: #e5c158;
+}
+
+/* Firefox scrollbar */
+.custom-select-options {
+    scrollbar-width: thin;
+    scrollbar-color: #d4af37 rgba(0, 0, 0, 0.3);
+}
+
+.custom-select-option {
+    padding: 6px 12px 6px 34px;
+    cursor: pointer;
+    color: #fcf6ff;
+    font-size: 13px;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+    position: relative;
+}
+
+.custom-select-option::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    background-image: var(--icon-url, none);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.custom-select-option:hover {
+    background-color: rgba(212, 175, 55, 0.2);
+}
+
+.custom-select-option.selected {
+    background-color: rgba(212, 175, 55, 0.3);
+}
+
+/* Old select styles - kept for member filter */
 .condition-icon-select {
     flex: 1 !important;
     min-width: auto !important;
@@ -1375,6 +1599,7 @@ body.modal-open .map-filters-container {
 }
 
 .post-condition-slot {
+    position: relative;
     transition: transform 0.2s;
 }
 
@@ -1385,6 +1610,42 @@ body.modal-open .map-filters-container {
 .post-condition-slot.drag-over .condition-current-icon {
     border-color: #d4af37;
     box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+}
+
+/* Clear Condition Button */
+.clear-condition-btn {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff6b81;
+    border: 1px solid #fff;
+    color: #fff;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.post-condition-slot:hover .clear-condition-btn {
+    display: flex;
+}
+
+.clear-condition-btn:hover {
+    background: #ff4757;
+    transform: scale(1.1);
+}
+
+.clear-condition-btn svg {
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin: auto;
 }
 
 /* ==================== TEAMS ==================== */
@@ -1440,11 +1701,24 @@ body.modal-open .map-filters-container {
     border: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
     flex-shrink: 0;
+    cursor: grab;
+    transition: all 0.2s;
 }
 
 .team-row:hover {
     background: rgba(255, 255, 255, 0.04);
     border-color: rgba(255, 255, 255, 0.08);
+}
+
+.team-row.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.team-row.drag-over {
+    border-color: #d4af37;
+    background: rgba(212, 175, 55, 0.1);
+    transform: scale(1.02);
 }
 
 .team-row .ghost-btn.small {

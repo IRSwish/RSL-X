@@ -1,5 +1,9 @@
 // fusions-config.js
 window.fusions = {
+    Yukimasa: {
+    name: "Yukimasa Fusion",
+    json: "2025/Yukimasa.json"
+  },
   Kroz: {
     name: "Kroz Wallbreaker Fusion",
     json: "2025/Kroz.json"

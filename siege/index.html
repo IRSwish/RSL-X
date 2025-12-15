@@ -53,18 +53,68 @@
 <main class="layout">
     <section class="map-section">
         <div class="map-filters-container">
-            <div class="map-filter">
-                <label for="memberFilter">Member:</label>
-                <select id="memberFilter">
-                    <option value="">All</option>
-                </select>
-            </div>
+            <!-- Filters Toggle Button -->
+            <button id="filtersToggleBtn" class="filters-toggle-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                </svg>
+                <span>Filters</span>
+                <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
 
-            <div class="map-filter">
-                <label for="conditionFilter">Condition:</label>
-                <select id="conditionFilter" class="condition-icon-select">
-                    <option value="">All</option>
-                </select>
+            <!-- Filters Content (collapsible) -->
+            <div id="filtersContent" class="filters-content">
+                <div class="map-filter">
+                    <label for="memberFilter">Member:</label>
+                    <div class="custom-select-wrapper">
+                        <div id="memberFilter" class="custom-select custom-select-no-icon">
+                            <div class="custom-select-trigger">
+                                <span>All</span>
+                                <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                            <div class="custom-select-options">
+                                <div class="custom-select-option" data-value="">All</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="map-filter">
+                    <label for="conditionFilter">Condition:</label>
+                    <div class="custom-select-wrapper">
+                        <div id="conditionFilter" class="custom-select">
+                            <div class="custom-select-trigger">
+                                <span>All</span>
+                                <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                            <div class="custom-select-options">
+                                <div class="custom-select-option" data-value="">All</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Display -->
+                <div class="filters-stats">
+                    <div class="stat-item">
+                        <img src="/siege/img/flags/defenses.webp" alt="Teams" class="stat-icon">
+                        <span id="statTeams">0/0</span>
+                    </div>
+                    <div class="stat-item">
+                        <img src="/siege/img/flags/bonuses.webp" alt="Bonuses" class="stat-icon">
+                        <span id="statBonuses">0/28</span>
+                    </div>
+                    <div class="stat-item">
+                        <img src="/siege/img/flags/traps.webp" alt="Traps" class="stat-icon">
+                        <span id="statTraps">0/0</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -530,6 +580,6 @@
 <!-- sql.js (SQLite in browser) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
 <!-- Script principal -->
-<script type="module" src="/siege/script.js?v=20250112023"></script>
+<script type="module" src="/siege/script.js?v=20250112027"></script>
 </body>
 </html>
