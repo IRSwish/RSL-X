@@ -2998,11 +2998,12 @@ body.modal-open .map-filters-container {
 }
 
 .preset-conditions-section {
-    width: auto;
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 6px;
     align-items: center;
+    justify-content: center;
 }
 
 .preset-conditions-title {
@@ -3038,9 +3039,11 @@ body.modal-open .map-filters-container {
 }
 
 .preset-actions {
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     gap: 6px;
+    align-items: flex-end;
 }
 
 .delete-preset-btn {

@@ -1651,10 +1651,17 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
     teamRow.draggable = true;
     teamRow.dataset.teamIndex = index;
 
-    // Drag & drop handlers
+    // Drag & drop handlers for team reordering
     teamRow.addEventListener("dragstart", (e) => {
+        // Only start drag if the target is the teamRow itself, not a child element
+        if (e.target !== teamRow) {
+            e.preventDefault();
+            return;
+        }
+
         e.dataTransfer.effectAllowed = "move";
-        e.dataTransfer.setData("text/plain", index.toString());
+        // Use a custom data type to distinguish from champion drag
+        e.dataTransfer.setData("application/x-team-row", index.toString());
         teamRow.classList.add("dragging");
     });
 
@@ -1683,7 +1690,14 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
         e.preventDefault();
         teamRow.classList.remove("drag-over");
 
-        const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
+        // Only handle team row drops, not champion drops
+        const teamRowData = e.dataTransfer.getData("application/x-team-row");
+        if (!teamRowData) {
+            // This is a champion drop, ignore it
+            return;
+        }
+
+        const fromIndex = parseInt(teamRowData);
         const toIndex = index;
 
         if (fromIndex !== toIndex) {
@@ -1947,18 +1961,26 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
     const rightRow = document.createElement("div");
     rightRow.className = "modal-right-row";
 
+    // Variable to track dragging within this modal
+    let draggedModalChampSlot = null;
+
+    // Store slots temporarily to add them in reverse visual order
+    const champSlots = [];
+
     for (let i = 1; i <= 4; i++) {
         const champSlot = document.createElement("div");
         champSlot.className = "champ-slot";
         champSlot.draggable = true;
         champSlot.dataset.champIndex = i;
 
+        console.log("🔧 Creating slot with i=" + i + ", dataset.champIndex=" + champSlot.dataset.champIndex);
+
         const cLabel = document.createElement("label");
-        // Inverser l'ordre: 4, 3, 2, Lead (au lieu de 1, 2, 3, Lead)
+        // Use champIndex directly for label to match drag behavior
         if (i === 4) {
             cLabel.textContent = "Lead";
         } else {
-            cLabel.textContent = "Champion " + (5 - i);
+            cLabel.textContent = "Champion " + i;
         }
         const cInput = document.createElement("input");
         cInput.className = "champ-input";
@@ -2058,16 +2080,32 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
 
         // Drag & Drop events
         champSlot.addEventListener("dragstart", (e) => {
+            // Stop propagation to prevent teamRow dragstart from firing
+            e.stopPropagation();
+
+            console.log("🚀 DRAGSTART - e.currentTarget.dataset.champIndex:", e.currentTarget.dataset.champIndex);
+
+            draggedModalChampSlot = e.currentTarget;
             e.dataTransfer.effectAllowed = "move";
-            e.dataTransfer.setData("text/plain", champSlot.dataset.champIndex);
-            champSlot.classList.add("dragging");
+            // Use custom data type to distinguish from team row drag
+            e.dataTransfer.setData("application/x-champion-slot", e.currentTarget.dataset.champIndex);
+            e.currentTarget.classList.add("dragging");
+
+            console.log("🚀 DRAGSTART - setData value:", e.currentTarget.dataset.champIndex);
         });
 
         champSlot.addEventListener("dragend", () => {
             champSlot.classList.remove("dragging");
+            draggedModalChampSlot = null;
         });
 
         champSlot.addEventListener("dragover", (e) => {
+            // Only allow drop if we're dragging a champion slot from this modal
+            if (!draggedModalChampSlot) {
+                e.dataTransfer.dropEffect = "none";
+                return;
+            }
+
             e.preventDefault();
             e.dataTransfer.dropEffect = "move";
             champSlot.classList.add("drag-over");
@@ -2081,15 +2119,35 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
             e.preventDefault();
             champSlot.classList.remove("drag-over");
 
-            const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
+            // Only allow drop if we're dragging a champion slot from this modal
+            if (!draggedModalChampSlot) {
+                console.log("❌ DROP rejected - drag source is not from this modal");
+                return;
+            }
+
+            // Get data from custom type
+            const champSlotData = e.dataTransfer.getData("application/x-champion-slot");
+            if (!champSlotData) {
+                console.log("❌ DROP rejected - not a champion slot drag");
+                return;
+            }
+
+            const fromIndex = parseInt(champSlotData);
             const toIndex = parseInt(champSlot.dataset.champIndex);
+
+            console.log("🔍 MODAL DROP - fromIndex:", fromIndex, "toIndex:", toIndex);
 
             if (fromIndex === toIndex) return;
 
             // Échanger les champions dans la même team
             const allSlots = rightRow.querySelectorAll(".champ-slot");
+            console.log("🔍 allSlots found:", allSlots.length);
+            allSlots.forEach(s => console.log("  - slot champIndex:", s.dataset.champIndex));
+
             const fromSlot = Array.from(allSlots).find(s => parseInt(s.dataset.champIndex) === fromIndex);
             const toSlot = champSlot;
+
+            console.log("🔍 fromSlot found:", !!fromSlot, "toSlot found:", !!toSlot);
 
             if (!fromSlot || !toSlot) return;
 
@@ -2099,6 +2157,14 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
             const toChampImg = toSlot.querySelector(".champ-img");
             const fromRarityImg = fromSlot.querySelector(".rarity-img");
             const toRarityImg = toSlot.querySelector(".rarity-img");
+
+            // Get visual labels to show what user sees
+            const fromLabel = fromSlot.querySelector("label").textContent;
+            const toLabel = toSlot.querySelector("label").textContent;
+
+            console.log("🔍 BEFORE SWAP:");
+            console.log("  FROM: champIndex=" + fromIndex + " label='" + fromLabel + "' value='" + fromInput.value + "'");
+            console.log("  TO:   champIndex=" + toIndex + " label='" + toLabel + "' value='" + toInput.value + "'");
 
             // Échanger les valeurs
             const tempValue = fromInput.value;
@@ -2119,14 +2185,33 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
             toRarityImg.src = tempRaritySrc;
             toRarityImg.style.display = tempRarityDisplay;
 
+            console.log("🔍 AFTER SWAP:");
+            console.log("  FROM: champIndex=" + fromIndex + " label='" + fromLabel + "' value='" + fromInput.value + "'");
+            console.log("  TO:   champIndex=" + toIndex + " label='" + toLabel + "' value='" + toInput.value + "'");
+
             // Update lead aura if champion 4 was involved in the swap
             if (fromIndex === 4 || toIndex === 4) {
                 setTimeout(() => updateLeadAura(teamRow), 50);
             }
         });
 
-        rightRow.appendChild(champSlot);
+        // Store slot instead of appending directly
+        champSlots.push(champSlot);
     }
+
+    // Append slots in reverse order so visual matches drag behavior
+    // We want: position 0 = champIndex 1, position 1 = champIndex 2, etc.
+    // But visually labeled as: Champion 4, Champion 3, Champion 2, Lead
+    // The issue is the LABEL doesn't match the champIndex!
+    // champIndex 1 is labeled "Champion 4" but user sees it as Champion 4
+    // So when dragging, user drags "what they see" but champIndex is different
+
+    // Solution: keep champIndex order but user must understand:
+    // Visual "Champion 4" = champIndex 1
+    // Visual "Champion 3" = champIndex 2
+    // Visual "Champion 2" = champIndex 3
+    // Visual "Lead" = champIndex 4
+    champSlots.forEach(slot => rightRow.appendChild(slot));
 
     teamRow.appendChild(rightRow);
 
@@ -5068,6 +5153,8 @@ window.addEventListener("DOMContentLoaded", () => {
     function createPresetRow(memberPseudo, presetId, preset) {
         const row = document.createElement("div");
         row.className = "preset-row";
+        row.dataset.presetId = presetId; // Add preset ID to identify the row
+        row.dataset.memberPseudo = memberPseudo; // Add member pseudo too
 
         // Team section (champions + lead aura)
         const teamSection = document.createElement("div");
@@ -5303,10 +5390,20 @@ window.addEventListener("DOMContentLoaded", () => {
         const rarityImg = champSlot.querySelector(".rarity-img");
         let affinityImg = champSlot.querySelector(".affinity-img");
 
+        // Get preset info to update conditions after visual update
+        const presetRow = champSlot.closest('.preset-row');
+        const presetId = presetRow ? presetRow.dataset.presetId : null;
+        const memberPseudo = presetRow ? presetRow.dataset.memberPseudo : null;
+
         if (!championName || !championName.trim()) {
             champImg.style.display = "none";
             rarityImg.style.display = "none";
             if (affinityImg) affinityImg.style.display = "none";
+
+            // Update conditions when clearing a champion
+            if (presetId && memberPseudo) {
+                updatePresetConditions(memberPseudo, presetId);
+            }
             return;
         }
 
@@ -5328,6 +5425,11 @@ window.addEventListener("DOMContentLoaded", () => {
                 affinityImg.style.display = "block";
             } else if (affinityImg) {
                 affinityImg.style.display = "none";
+            }
+
+            // Update conditions immediately when a valid champion is set
+            if (presetId && memberPseudo) {
+                updatePresetConditions(memberPseudo, presetId);
             }
         } else {
             champImg.style.display = "none";
@@ -5363,53 +5465,64 @@ window.addEventListener("DOMContentLoaded", () => {
         update(presetRef, { [slotName]: championName })
             .catch(err => console.error("❌ Firebase error:", err));
 
-        // Update visual
-        const champSlot = document.querySelector(`[data-slot-name="${slotName}"]`);
-        if (champSlot) {
-            updatePresetChampionVisual(champSlot, championName);
-        }
+        // Update visual - find the correct preset row using data attributes
+        const targetPresetRow = document.querySelector(`.preset-row[data-preset-id="${presetId}"][data-member-pseudo="${memberPseudo}"]`);
 
-        // Update lead aura if it's the lead slot
-        if (slotName === "lead") {
-            const leadAura = champSlot ? champSlot.parentElement.querySelector(".lead-aura-display") : null;
-            if (leadAura) {
-                const newLeadAura = createLeadAuraDisplay(championName);
-                leadAura.replaceWith(newLeadAura);
+        if (targetPresetRow) {
+            // Find the specific slot within this preset row
+            const champSlot = targetPresetRow.querySelector(`[data-slot-name="${slotName}"]`);
+            if (champSlot) {
+                // updatePresetChampionVisual will also call updatePresetConditions
+                updatePresetChampionVisual(champSlot, championName);
+            }
+
+            // Update lead aura if it's the lead slot
+            if (slotName === "lead") {
+                const leadAura = targetPresetRow.querySelector(".lead-aura-display");
+                if (leadAura) {
+                    const newLeadAura = createLeadAuraDisplay(championName);
+                    leadAura.replaceWith(newLeadAura);
+                }
             }
         }
-
-        // Update conditions display for this preset only
-        updatePresetConditions(memberPseudo, presetId);
 
         // Update member count in table
         updateMembersList();
     }
 
     function updatePresetConditions(memberPseudo, presetId) {
+        console.log("🔧 updatePresetConditions called:", memberPseudo, presetId);
+
         const member = clanMembers[memberPseudo];
         if (!member || !member.presets || !member.presets[presetId]) {
+            console.log("❌ Member or preset not found");
             return;
         }
 
         const preset = member.presets[presetId];
+        console.log("🔧 Preset data:", preset);
+
         const validatedConditions = getValidatedConditions(preset);
+        console.log("🔧 Validated conditions:", validatedConditions);
 
         // Cache the validated conditions in the preset
         preset.cachedConditions = validatedConditions;
 
         // Save to Firebase
         if (currentRoomId) {
-            const presetPath = `rooms/${currentRoomId}/members/${memberPseudo}/presets/${presetId}/cachedConditions`;
-            update(ref(realtimeDb, presetPath), validatedConditions);
+            const presetPath = `rooms/${currentRoomId}/siege/members/${memberPseudo}/presets/${presetId}/cachedConditions`;
+            set(ref(db, presetPath), validatedConditions).catch(err => console.error("❌ Firebase save conditions error:", err));
         }
 
-        // Find the conditions grid for this preset
-        const presetRows = document.querySelectorAll('.preset-row');
+        // Find the conditions grid for THIS specific preset only
+        const targetPresetRow = document.querySelector(`.preset-row[data-preset-id="${presetId}"][data-member-pseudo="${memberPseudo}"]`);
+        console.log("🔧 targetPresetRow found:", !!targetPresetRow);
 
-        presetRows.forEach(row => {
-            const conditionsGrid = row.querySelector('.preset-conditions-grid');
+        if (targetPresetRow) {
+            const conditionsGrid = targetPresetRow.querySelector('.preset-conditions-grid');
+            console.log("🔧 conditionsGrid found:", !!conditionsGrid);
+
             if (conditionsGrid) {
-                // Simpler: just update all rows (they'll be refreshed correctly)
                 conditionsGrid.innerHTML = "";
                 validatedConditions.forEach(condId => {
                     const condIcon = getConditionIcon(condId);
@@ -5422,29 +5535,71 @@ window.addEventListener("DOMContentLoaded", () => {
                     }
                 });
             }
-        });
+        }
     }
 
     // Drag & Drop handlers for presets
     let draggedPresetSlot = null;
+    let draggedPresetInfo = null; // Store member and preset ID
 
     function handlePresetDragStart(e) {
         draggedPresetSlot = e.currentTarget;
         e.currentTarget.classList.add("dragging");
         e.dataTransfer.effectAllowed = "move";
+
+        // Store the preset info from the closest preset-row
+        const presetRow = e.currentTarget.closest('.preset-row');
+        if (presetRow) {
+            // Extract member and preset ID from the preset row's context
+            const teamSection = presetRow.querySelector('.preset-team-section');
+            if (teamSection) {
+                const firstSlot = teamSection.querySelector('.champ-slot');
+                if (firstSlot) {
+                    // We'll store this info to compare later
+                    draggedPresetInfo = {
+                        presetRow: presetRow
+                    };
+                }
+            }
+        }
     }
 
     function handlePresetDragOver(e) {
         e.preventDefault();
-        e.dataTransfer.dropEffect = "move";
-        e.currentTarget.classList.add("drag-over");
+
+        // Only allow drop if dragging within the same preset row
+        if (draggedPresetSlot) {
+            const targetPresetRow = e.currentTarget.closest('.preset-row');
+            const draggedPresetRow = draggedPresetSlot.closest('.preset-row');
+
+            if (targetPresetRow === draggedPresetRow) {
+                e.dataTransfer.dropEffect = "move";
+                e.currentTarget.classList.add("drag-over");
+            } else {
+                e.dataTransfer.dropEffect = "none";
+            }
+        }
     }
 
     function handlePresetDrop(e, memberPseudo, presetId) {
         e.preventDefault();
+        e.stopPropagation();
         e.currentTarget.classList.remove("drag-over");
 
+        console.log("🔍 DROP - memberPseudo:", memberPseudo, "presetId:", presetId);
+
         if (!draggedPresetSlot || draggedPresetSlot === e.currentTarget) return;
+
+        // Verify we're dropping within the same preset
+        const targetPresetRow = e.currentTarget.closest('.preset-row');
+        const draggedPresetRow = draggedPresetSlot.closest('.preset-row');
+
+        console.log("🔍 targetPresetRow === draggedPresetRow:", targetPresetRow === draggedPresetRow);
+
+        if (targetPresetRow !== draggedPresetRow) {
+            console.log("❌ Cannot drag between different presets");
+            return;
+        }
 
         const draggedInput = draggedPresetSlot.querySelector("input");
         const targetInput = e.currentTarget.querySelector("input");
@@ -5453,13 +5608,62 @@ window.addEventListener("DOMContentLoaded", () => {
         const draggedSlot = draggedPresetSlot.dataset.slotName;
         const targetSlot = e.currentTarget.dataset.slotName;
 
-        // Swap values
+        console.log("🔍 SWAP:", draggedSlot, "(", tempValue, ") <-> ", targetSlot, "(", targetInput.value, ")");
+
+        // Swap values in inputs
         draggedInput.value = targetInput.value;
         targetInput.value = tempValue;
 
-        // Save both
-        savePresetChampion(memberPseudo, presetId, draggedSlot, draggedInput.value);
-        savePresetChampion(memberPseudo, presetId, targetSlot, targetInput.value);
+        // Update visuals immediately for both slots
+        updatePresetChampionVisual(draggedPresetSlot, draggedInput.value);
+        updatePresetChampionVisual(e.currentTarget, targetInput.value);
+
+        // Update local data
+        if (isViewer()) {
+            alert("Cannot edit presets in viewer mode.");
+            return;
+        }
+
+        if (!currentRoomId) {
+            console.error("❌ No currentRoomId");
+            return;
+        }
+
+        const member = clanMembers[memberPseudo];
+        if (!member) {
+            console.error("❌ Member not found:", memberPseudo);
+            return;
+        }
+
+        if (!member.presets) member.presets = {};
+        if (!member.presets[presetId]) member.presets[presetId] = {};
+
+        // Update both slots in local data
+        member.presets[presetId][draggedSlot] = draggedInput.value;
+        member.presets[presetId][targetSlot] = targetInput.value;
+
+        // Save both to Firebase in one update
+        const presetRef = ref(db, `rooms/${currentRoomId}/siege/members/${memberPseudo}/presets/${presetId}`);
+        update(presetRef, {
+            [draggedSlot]: draggedInput.value,
+            [targetSlot]: targetInput.value
+        }).catch(err => console.error("❌ Firebase error:", err));
+
+        // Update lead aura if one of the slots is the lead
+        if (draggedSlot === "lead" || targetSlot === "lead") {
+            const leadAura = targetPresetRow.querySelector(".lead-aura-display");
+            if (leadAura) {
+                const leadValue = targetSlot === "lead" ? targetInput.value : draggedInput.value;
+                const newLeadAura = createLeadAuraDisplay(leadValue);
+                leadAura.replaceWith(newLeadAura);
+            }
+        }
+
+        // Update conditions display for this preset
+        updatePresetConditions(memberPseudo, presetId);
+
+        // Update member count in table
+        updateMembersList();
     }
 
     function handlePresetDragEnd(e) {
@@ -5468,6 +5672,7 @@ window.addEventListener("DOMContentLoaded", () => {
             slot.classList.remove("drag-over");
         });
         draggedPresetSlot = null;
+        draggedPresetInfo = null;
     }
 
     // Add preset button
