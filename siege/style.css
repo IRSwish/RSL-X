@@ -3121,6 +3121,50 @@ body.viewer-mode .filter-stats-only {
     display: none;
 }
 
+/* ==================== SCROLL TO TOP BUTTON ==================== */
+.scroll-to-top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #000;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+
+.scroll-to-top-btn.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+.scroll-to-top-btn:hover {
+    background: linear-gradient(135deg, #f4d03f 0%, #d4af37 100%);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+    transform: scale(1.1);
+}
+
+.scroll-to-top-btn:active {
+    transform: scale(0.95);
+}
+
+.scroll-to-top-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 900px) {
     .modal {

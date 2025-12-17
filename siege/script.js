@@ -896,6 +896,76 @@ function updateMembersList() {
             const memberTd = document.createElement("td");
             memberTd.textContent = member.pseudo;
             memberTd.style.fontWeight = "600";
+            memberTd.style.cursor = "pointer";
+            memberTd.title = "Click to filter map by this member";
+
+            // Click event to filter by this member
+            memberTd.addEventListener("click", () => {
+                const memberFilter = document.getElementById("memberFilter");
+                if (!memberFilter) return;
+
+                // Set the filter value
+                memberFilter.dataset.value = member.pseudo;
+
+                // Update the selected option
+                const optionsContainer = memberFilter.querySelector(".custom-select-options");
+                if (optionsContainer) {
+                    optionsContainer.querySelectorAll(".custom-select-option").forEach(opt => {
+                        opt.classList.remove("selected");
+                        if (opt.dataset.value === member.pseudo) {
+                            opt.classList.add("selected");
+                        }
+                    });
+                }
+
+                // Update display
+                updateMemberFilterDisplay();
+
+                // Apply filters
+                applyFilters();
+
+                // Open filters if they are closed
+                const filtersContent = document.getElementById("filtersContent");
+                const filtersToggleBtn = document.getElementById("filtersToggleBtn");
+                if (filtersContent && !filtersContent.classList.contains("open")) {
+                    filtersContent.classList.add("open");
+                    if (filtersToggleBtn) {
+                        filtersToggleBtn.classList.add("active");
+                    }
+                }
+
+                // Smooth scroll to top with animation
+                let isScrolling = true;
+                let targetPosition = 0;
+
+                const scrollToTop = () => {
+                    if (!isScrolling) return;
+
+                    const currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+                    const distance = currentScroll - targetPosition;
+
+                    if (distance > 1) {
+                        window.scrollTo(0, currentScroll - distance / 8);
+                        window.requestAnimationFrame(scrollToTop);
+                    } else {
+                        window.scrollTo(0, targetPosition);
+                        isScrolling = false;
+                    }
+                };
+
+                // Stop animation if user scrolls manually
+                const stopScroll = () => {
+                    isScrolling = false;
+                    window.removeEventListener('wheel', stopScroll);
+                    window.removeEventListener('touchstart', stopScroll);
+                };
+
+                window.addEventListener('wheel', stopScroll, { once: true });
+                window.addEventListener('touchstart', stopScroll, { once: true });
+
+                scrollToTop();
+            });
+
             tr.appendChild(memberTd);
 
             // HellHades Link
@@ -950,10 +1020,17 @@ function updateMembersList() {
             editBtn.title = "Change Info";
             editBtn.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-                    <path d="m15 5 4 4"/>
+                    <circle cx="18" cy="15" r="3"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M10 15H6a4 4 0 0 0-4 4v2"/>
+                    <path d="m21.7 16.4-.9-.3"/>
+                    <path d="m15.2 13.9-.9-.3"/>
+                    <path d="m16.6 18.7.3-.9"/>
+                    <path d="m19.1 12.2.3-.9"/>
+                    <path d="m19.6 18.7-.4-1"/>
+                    <path d="m16.8 12.3-.4-1"/>
+                    <path d="m14.3 16.6 1-.4"/>
+                    <path d="m20.7 13.8 1-.4"/>
                 </svg>
             `;
             editBtn.addEventListener("click", () => editMember(member.pseudo, member.link));
@@ -964,11 +1041,10 @@ function updateMembersList() {
             deleteBtn.title = "Delete Member";
             deleteBtn.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6l-1.5 14H6.5L5 6"></path>
-                    <path d="M10 11v6"></path>
-                    <path d="M14 11v6"></path>
-                    <path d="M9 6V4h6v2"></path>
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <line x1="17" x2="22" y1="8" y2="13"/>
+                    <line x1="22" x2="17" y1="8" y2="13"/>
                 </svg>
             `;
             deleteBtn.addEventListener("click", () => deleteClanMember(member.pseudo));
@@ -1406,6 +1482,26 @@ function refreshTeamsPresetsDropdown() {
                 const dropdown = document.getElementById("teamsPresetsDropdown");
                 if (dropdown) {
                     dropdown.style.visibility = "visible";
+                }
+            });
+
+            // Click event to open modal if team is assigned to a post
+            teamDiv.addEventListener("click", (e) => {
+                // Don't trigger if clicking during a drag
+                if (teamDiv.style.opacity === "0.5") return;
+
+                const usedInPost = findPresetUsage(pseudo, preset);
+                if (usedInPost) {
+                    // Extract post ID from usage string (e.g., "Post 1" -> "post1")
+                    const postId = usedInPost
+                        .toLowerCase()
+                        .replace("post ", "post")
+                        .replace("magic tower ", "magictower")
+                        .replace("defense tower ", "defensetower")
+                        .replace("mana shrine ", "manashrine")
+                        .replace("stronghold", "stronghold");
+
+                    openPostFromSummary(postId, pseudo);
                 }
             });
 
@@ -5744,4 +5840,66 @@ window.addEventListener("DOMContentLoaded", () => {
         renderPresets(memberPseudo);
         updateMembersList();
     }
+
+    // ==================== SCROLL TO TOP BUTTON ====================
+    const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+    const mapSection = document.querySelector(".map-section");
+
+    // Function to perform smooth scroll to top
+    function smoothScrollToTop() {
+        let isScrolling = true;
+        let targetPosition = 0;
+
+        const scrollToTop = () => {
+            if (!isScrolling) return;
+
+            const currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+            const distance = currentScroll - targetPosition;
+
+            if (distance > 1) {
+                window.scrollTo(0, currentScroll - distance / 8);
+                window.requestAnimationFrame(scrollToTop);
+            } else {
+                window.scrollTo(0, targetPosition);
+                isScrolling = false;
+            }
+        };
+
+        // Stop animation if user scrolls manually
+        const stopScroll = () => {
+            isScrolling = false;
+            window.removeEventListener('wheel', stopScroll);
+            window.removeEventListener('touchstart', stopScroll);
+        };
+
+        window.addEventListener('wheel', stopScroll, { once: true });
+        window.addEventListener('touchstart', stopScroll, { once: true });
+
+        scrollToTop();
+    }
+
+    // Show/hide button based on scroll position
+    function toggleScrollButton() {
+        if (!mapSection || !scrollToTopBtn) return;
+
+        const mapBottom = mapSection.offsetTop + mapSection.offsetHeight;
+        const scrollPosition = window.scrollY || document.documentElement.scrollTop;
+
+        if (scrollPosition > mapBottom) {
+            scrollToTopBtn.classList.add("visible");
+        } else {
+            scrollToTopBtn.classList.remove("visible");
+        }
+    }
+
+    // Add scroll event listener
+    window.addEventListener("scroll", toggleScrollButton);
+
+    // Add click event to button
+    if (scrollToTopBtn) {
+        scrollToTopBtn.addEventListener("click", smoothScrollToTop);
+    }
+
+    // Initial check
+    toggleScrollButton();
 });
