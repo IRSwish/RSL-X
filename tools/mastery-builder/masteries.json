@@ -62,7 +62,7 @@
       { "id": "defense-5-1", "name": "Selfless Defender", "description": "Decreases the damage an ally receives from the first enemy hit in each round by 20%. This Champion will receive that damage instead.", "cost": 200, "icon": "selfless-defender" },
       { "id": "defense-5-2", "name": "Cycle of Revenge", "description": "Has a 50% chance of increasing Turn Meter by 15% when an ally is attacked with a critical hit. Will only increase the Turn Meter once if an ally receives multiple critical hits from a single Skill.", "cost": 200, "icon": "cycle-of-revenge" },
       { "id": "defense-5-3", "name": "Retribution", "description": "Has a 50% chance to counterattack when this Champion loses 25% of their MAX HP or more from a single enemy Skill.", "cost": 200, "icon": "retribution" },
-      { "id": "defense-5-4", "name": "Deterrence", "description": "Has a 20% chance to counterattack an enemy when they apply a when an ally is attacked by an enemy under stun, sleep, fear, true fear, or freeze debuffs.", "cost": 200, "icon": "deterrence" }
+      { "id": "defense-5-4", "name": "Deterrence", "description": "Has a 20% chance to counterattack an enemy when they apply a Stun, Sleep, Fear, True Fear, Freeze, Petrification, or Sheep debuff on an ally.", "cost": 200, "icon": "deterrence" }
     ],
     [
       { "id": "defense-6-1", "name": "Iron Skin", "description": "Defense + 200.", "cost": 350, "icon": "iron-skin" },
