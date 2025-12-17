@@ -935,35 +935,7 @@ function updateMembersList() {
                 }
 
                 // Smooth scroll to top with animation
-                let isScrolling = true;
-                let targetPosition = 0;
-
-                const scrollToTop = () => {
-                    if (!isScrolling) return;
-
-                    const currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
-                    const distance = currentScroll - targetPosition;
-
-                    if (distance > 1) {
-                        window.scrollTo(0, currentScroll - distance / 8);
-                        window.requestAnimationFrame(scrollToTop);
-                    } else {
-                        window.scrollTo(0, targetPosition);
-                        isScrolling = false;
-                    }
-                };
-
-                // Stop animation if user scrolls manually
-                const stopScroll = () => {
-                    isScrolling = false;
-                    window.removeEventListener('wheel', stopScroll);
-                    window.removeEventListener('touchstart', stopScroll);
-                };
-
-                window.addEventListener('wheel', stopScroll, { once: true });
-                window.addEventListener('touchstart', stopScroll, { once: true });
-
-                scrollToTop();
+                smoothScrollToTop();
             });
 
             tr.appendChild(memberTd);
@@ -4788,6 +4760,70 @@ function initializeAppWithRoom(roomId) {
     connectRoom(roomId);
 }
 
+// ==================== SMOOTH SCROLL TO TOP FUNCTION ====================
+function smoothScrollToTop() {
+    let isScrolling = true;
+    let targetPosition = 0;
+    let startTime = Date.now();
+    let animationFrameId = null;
+
+    const scrollToTop = () => {
+        if (!isScrolling) {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            return;
+        }
+
+        const currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+        const distance = currentScroll - targetPosition;
+
+        if (distance > 1) {
+            const newPosition = currentScroll - distance / 8;
+            window.scrollTo(0, newPosition);
+            animationFrameId = window.requestAnimationFrame(scrollToTop);
+        } else {
+            window.scrollTo(0, targetPosition);
+            isScrolling = false;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+        }
+    };
+
+    // Stop animation if user tries to scroll manually
+    const stopScroll = (e) => {
+        // Ignore events in the first 200ms (animation start)
+        if (Date.now() - startTime < 200) {
+            return;
+        }
+
+        // Don't stop on very small wheel movements
+        if (e.type === 'wheel' && Math.abs(e.deltaY) < 4) {
+            return;
+        }
+
+        isScrolling = false;
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+
+        // Remove all listeners
+        window.removeEventListener('wheel', stopScroll);
+        window.removeEventListener('touchstart', stopScroll);
+        window.removeEventListener('keydown', stopScroll);
+        window.removeEventListener('mousedown', stopScroll);
+    };
+
+    // Add listeners immediately
+    window.addEventListener('wheel', stopScroll, { passive: true });
+    window.addEventListener('touchstart', stopScroll, { passive: true });
+    window.addEventListener('keydown', stopScroll);
+    window.addEventListener('mousedown', stopScroll);
+
+    scrollToTop();
+}
+
 // --- init ---
 window.addEventListener("DOMContentLoaded", () => {
     // Initialize auth UI first
@@ -5896,70 +5932,6 @@ window.addEventListener("DOMContentLoaded", () => {
     // ==================== SCROLL TO TOP BUTTON ====================
     const scrollToTopBtn = document.getElementById("scrollToTopBtn");
     const mapSection = document.querySelector(".map-section");
-
-    // Function to perform smooth scroll to top
-    function smoothScrollToTop() {
-        let isScrolling = true;
-        let targetPosition = 0;
-        let startTime = Date.now();
-        let animationFrameId = null;
-
-        const scrollToTop = () => {
-            if (!isScrolling) {
-                if (animationFrameId) {
-                    cancelAnimationFrame(animationFrameId);
-                }
-                return;
-            }
-
-            const currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
-            const distance = currentScroll - targetPosition;
-
-            if (distance > 1) {
-                const newPosition = currentScroll - distance / 8;
-                window.scrollTo(0, newPosition);
-                animationFrameId = window.requestAnimationFrame(scrollToTop);
-            } else {
-                window.scrollTo(0, targetPosition);
-                isScrolling = false;
-                if (animationFrameId) {
-                    cancelAnimationFrame(animationFrameId);
-                }
-            }
-        };
-
-        // Stop animation if user tries to scroll manually
-        const stopScroll = (e) => {
-            // Ignore events in the first 200ms (animation start)
-            if (Date.now() - startTime < 200) {
-                return;
-            }
-
-            // Don't stop on very small wheel movements
-            if (e.type === 'wheel' && Math.abs(e.deltaY) < 4) {
-                return;
-            }
-
-            isScrolling = false;
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-
-            // Remove all listeners
-            window.removeEventListener('wheel', stopScroll);
-            window.removeEventListener('touchstart', stopScroll);
-            window.removeEventListener('keydown', stopScroll);
-            window.removeEventListener('mousedown', stopScroll);
-        };
-
-        // Add listeners immediately
-        window.addEventListener('wheel', stopScroll, { passive: true });
-        window.addEventListener('touchstart', stopScroll, { passive: true });
-        window.addEventListener('keydown', stopScroll);
-        window.addEventListener('mousedown', stopScroll);
-
-        scrollToTop();
-    }
 
     // Show/hide button based on scroll position
     function toggleScrollButton() {
