@@ -2238,6 +2238,285 @@ body.modal-open .map-filters-container {
 .rarity-img { z-index: 2; }
 .champ-img { z-index: 1; }
 
+/* Blessing Stars */
+.blessing-stars {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(calc(-50% - 8px));
+    display: none;
+    flex-direction: row;
+    gap: 0px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.blessing-stars.visible {
+    display: flex;
+}
+
+.blessing-star {
+    width: 13.5px;
+    height: 13.5px;
+    cursor: pointer;
+    transition: transform 0.1s;
+    pointer-events: auto;
+    position: relative;
+}
+
+.blessing-star:nth-child(2) { z-index: 2; margin-left: -7px; }
+.blessing-star:nth-child(3) { z-index: 3; margin-left: -7px; }
+.blessing-star:nth-child(4) { z-index: 4; margin-left: -7px; }
+.blessing-star:nth-child(5) { z-index: 5; margin-left: -7px; }
+.blessing-star:nth-child(6) { z-index: 6; margin-left: -7px; }
+
+.blessing-star:hover {
+    transform: scale(1.15);
+}
+
+.blessing-star img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* Blessing Image Container */
+.blessing-img-container {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 28px;
+    z-index: 4;
+    cursor: pointer;
+    transition: transform 0.15s;
+}
+
+.blessing-img-container:hover {
+    transform: translateX(-50%) scale(1.1);
+}
+
+.blessing-rarity-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+}
+
+.blessing-icon-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 66%;
+    height: 66%;
+    object-fit: contain;
+    z-index: 2;
+}
+
+/* Blessing Selection Modal */
+.blessing-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    background: none;
+    border: none;
+    box-shadow: none;
+}
+
+.blessing-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blessing-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 1;
+}
+
+.blessing-modal-content {
+    position: relative;
+    background: #1a1a1a;
+    border: 2px solid #444;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 2;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.blessing-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #444;
+    position: sticky;
+    top: 0;
+    background: #1a1a1a;
+    z-index: 3;
+}
+
+.blessing-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #fff;
+}
+
+.blessing-modal-body {
+    padding: 0;
+}
+
+/* Blessing Selection UI */
+.blessing-selection-wrapper {
+    display: flex;
+    min-height: 400px;
+    max-height: 60vh;
+}
+
+.blessing-sections-sidebar {
+    width: 120px;
+    background: #141414;
+    border-right: 1px solid #444;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.blessing-section-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #333;
+    transition: background 0.2s;
+}
+
+.blessing-section-tab:hover {
+    background: #1f1f1f;
+}
+
+.blessing-section-tab.active {
+    background: #252525;
+    border-left: 3px solid #ff6b35;
+}
+
+.blessing-section-img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    margin-bottom: 8px;
+}
+
+.blessing-section-name {
+    font-size: 11px;
+    color: #aaa;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+.blessing-content-area {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.blessings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.blessing-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    background: #1f1f1f;
+    border: 2px solid #333;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.blessing-card:hover {
+    border-color: #ff6b35;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.blessing-card.selected {
+    border-color: #4CAF50;
+    background: #1a2e1a;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+}
+
+.blessing-card.selected:hover {
+    border-color: #66BB6A;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+}
+
+.blessing-card-img {
+    width: 45px;
+    height: 60px;
+    object-fit: cover;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    
+}
+
+.blessing-card-name {
+    font-size: 11px;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 6px;
+    line-height: 1.3;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.blessing-rarity-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.blessing-rarity-badge.rarity-rare {
+    background: #4a90e2;
+    color: #fff;
+}
+
+.blessing-rarity-badge.rarity-epic {
+    background: #9b59b6;
+    color: #fff;
+}
+
+.blessing-rarity-badge.rarity-legendary {
+    background: #f39c12;
+    color: #fff;
+}
+
 .suggestions {
     position: relative;
     width: 70px;

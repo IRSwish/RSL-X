@@ -5,7 +5,8 @@
       "Bash(node -e:*)",
       "Bash(python:*)",
       "Bash(dir:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(del temp_check_db.py)"
     ],
     "deny": [],
     "ask": []

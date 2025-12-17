@@ -1618,19 +1618,38 @@ function clearChampVisual(imgEl, rarityEl) {
 
 function updateVisualForInput(inputEl, champImgEl, rarityImgEl) {
     const name = inputEl.value.trim();
+    const slot = inputEl.closest('.champ-slot');
+    const starsContainer = slot ? slot.querySelector('.blessing-stars') : null;
+
     if (!championsDB || !name) {
         clearChampVisual(champImgEl, rarityImgEl);
+        // Hide stars if no champion
+        if (starsContainer) {
+            starsContainer.classList.remove("visible");
+        }
         return;
     }
     const champ = getChampionByNameExact(name);
     if (!champ || !champ.image) {
         clearChampVisual(champImgEl, rarityImgEl);
+        if (starsContainer) {
+            starsContainer.classList.remove("visible");
+        }
         return;
     }
     rarityImgEl.src = `/tools/champions-index/img/rarity/${champ.rarity}.webp`;
     rarityImgEl.style.display = "block";
     champImgEl.src = `/tools/champions-index/img/champions/${champ.image}.webp`;
     champImgEl.style.display = "block";
+
+    // Show/hide stars based on rarity
+    if (starsContainer) {
+        if (champ.rarity === "Common" || champ.rarity === "Uncommon") {
+            starsContainer.classList.remove("visible");
+        } else {
+            starsContainer.classList.add("visible");
+        }
+    }
 }
 
 function updateLeadAura(teamRow) {
@@ -1728,6 +1747,7 @@ function updateMoveButtons() {
 }
 
 function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
+    console.log(`createTeamRow called with teamData:`, teamData);
     const teamsContainer = document.getElementById("teamsContainer");
     const teamRow = document.createElement("div");
     teamRow.className = "team-row";
@@ -2090,8 +2110,68 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
             rarityImg.style.display = "none";
         };
 
+        // Create blessing stars
+        const blessingStars = createBlessingStars(
+            (teamData && teamData["c" + i]) || "",
+            (teamData && teamData[`c${i}_blessing_level`]) || 0
+        );
+
+        // Create blessing image
+        const blessingName = (teamData && teamData[`c${i}_blessing`]) || null;
+        const blessingRarity = (teamData && teamData[`c${i}_blessing_rarity`]) || null;
+
+        console.log(`Creating blessing for champion ${i}:`, blessingName, blessingRarity);
+
+        const blessingImg = createBlessingImage(blessingName, blessingRarity);
+
+        // Add click handlers for stars
+        const stars = blessingStars.querySelectorAll(".blessing-star");
+        stars.forEach((star, starIndex) => {
+            star.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const clickedLevel = starIndex + 1;
+                const currentLevel = parseInt(blessingStars.dataset.currentLevel || "0");
+
+                // If clicking the same level, deactivate (set to 0)
+                // Otherwise, set to clicked level
+                const newLevel = (clickedLevel === currentLevel) ? 0 : clickedLevel;
+
+                // Update stars visual
+                updateBlessingStars(blessingStars, newLevel);
+                blessingStars.dataset.currentLevel = newLevel;
+
+                // Show/hide blessing image
+                updateBlessingImageVisibility(visual, newLevel);
+
+                // Save to team data
+                if (teamData) {
+                    teamData[`c${i}_blessing_level`] = newLevel;
+                }
+
+                // Save to Firebase
+                console.log(`Attempting to save blessing level. currentPostId: ${currentPostId}, currentRoomId: ${currentRoomId}, index: ${index}`);
+                if (currentPostId && currentRoomId) {
+                    const levelRef = ref(db, `rooms/${currentRoomId}/siege/${currentPostId}/teams/${index}/c${i}_blessing_level`);
+                    set(levelRef, newLevel);
+                    console.log(`✅ Saved blessing level ${newLevel} for champion ${i} in team ${index}`);
+                } else {
+                    console.error(`❌ Cannot save: currentPostId=${currentPostId}, currentRoomId=${currentRoomId}`);
+                }
+            });
+        });
+
+        blessingStars.dataset.currentLevel = (teamData && teamData[`c${i}_blessing_level`]) || 0;
+
+        // Show blessing image if blessing level > 0
+        const initialBlessingLevel = (teamData && teamData[`c${i}_blessing_level`]) || 0;
+        if (initialBlessingLevel > 0) {
+            blessingImg.style.display = "block";
+        }
+
         visual.appendChild(champImg);
         visual.appendChild(rarityImg);
+        visual.appendChild(blessingStars);
+        visual.appendChild(blessingImg);
         visual.appendChild(clearChampBtn);
 
         const sugWrapper = document.createElement("div");
@@ -2560,6 +2640,7 @@ function createGroupHeader(groupNumber) {
 
 function fillModalFromData(data) {
     // CONDIS NON UTILISÉES POUR L'INSTANT → CHECK SAFE
+    console.log('fillModalFromData called with data:', data);
 
     const teamsContainer = document.getElementById("teamsContainer");
     teamsContainer.innerHTML = "";
@@ -2570,6 +2651,7 @@ function fillModalFromData(data) {
 
     // Ne plus limiter le nombre de teams - c'est juste visuel
     const teams = Array.isArray(data.teams) && data.teams.length ? data.teams : [{}];
+    console.log('Teams to render:', teams);
 
     // Check if any team is selected (for correct initial state)
     const hasSelectedTeam = teams.some(t => t.selected === true);
@@ -4760,6 +4842,506 @@ function initializeAppWithRoom(roomId) {
     connectRoom(roomId);
 }
 
+// ==================== BLESSINGS DATABASE QUERIES ====================
+function getAllBlessings() {
+    if (!championsDB) return null;
+    try {
+        const stmt = championsDB.prepare(
+            "SELECT DISTINCT name, section, rarity, image FROM blessings ORDER BY section, rarity, name;"
+        );
+        const blessings = [];
+        while (stmt.step()) {
+            blessings.push(stmt.getAsObject());
+        }
+        stmt.free();
+        return blessings;
+    } catch (e) {
+        console.error("Error loading blessings", e);
+        return null;
+    }
+}
+
+function getBlessingsBySection() {
+    const allBlessings = getAllBlessings();
+    if (!allBlessings) return {};
+
+    const bySections = {};
+    allBlessings.forEach(blessing => {
+        if (!bySections[blessing.section]) {
+            bySections[blessing.section] = [];
+        }
+        // Only add if not already in array (deduplicate by name)
+        if (!bySections[blessing.section].find(b => b.name === blessing.name)) {
+            bySections[blessing.section].push(blessing);
+        }
+    });
+    return bySections;
+}
+
+function getBlessingDescription(blessingName, level) {
+    if (!championsDB || !blessingName || !level) return null;
+    try {
+        const stmt = championsDB.prepare(
+            "SELECT description FROM blessings WHERE name = ? AND level = ? LIMIT 1;"
+        );
+        stmt.bind([blessingName, String(level)]);
+        let desc = null;
+        if (stmt.step()) {
+            const result = stmt.getAsObject();
+            desc = result.description;
+        }
+        stmt.free();
+        return desc;
+    } catch (e) {
+        console.error("Error getting blessing description", e);
+        return null;
+    }
+}
+
+function getBlessingData(blessingName) {
+    if (!championsDB || !blessingName) return null;
+    try {
+        const stmt = championsDB.prepare(
+            "SELECT name, section, rarity, image FROM blessings WHERE name = ? LIMIT 1;"
+        );
+        stmt.bind([blessingName]);
+        let data = null;
+        if (stmt.step()) {
+            data = stmt.getAsObject();
+        }
+        stmt.free();
+        return data;
+    } catch (e) {
+        console.error("Error getting blessing data", e);
+        return null;
+    }
+}
+
+// ==================== BLESSING STARS SYSTEM ====================
+function createBlessingStars(championName, blessingLevel = 0) {
+    const starsContainer = document.createElement("div");
+    starsContainer.className = "blessing-stars";
+
+    // Only show stars if champion has a valid rarity (not common/uncommon)
+    if (championName) {
+        try {
+            if (championsDB && Array.isArray(championsDB)) {
+                const champ = championsDB.find(c => c.name && c.name.toLowerCase() === championName.toLowerCase());
+                if (champ && champ.rarity &&
+                    champ.rarity !== "Common" &&
+                    champ.rarity !== "Uncommon") {
+                    starsContainer.classList.add("visible");
+                }
+            }
+        } catch (err) {
+            console.error("Error checking champion rarity for stars:", err);
+        }
+    }
+
+    // Create 6 stars
+    for (let i = 1; i <= 6; i++) {
+        const star = document.createElement("div");
+        star.className = "blessing-star";
+        star.dataset.level = i;
+
+        const starImg = document.createElement("img");
+        // Default to pink star, will be updated based on blessing level
+        starImg.src = i <= blessingLevel ?
+            "/tools/champions-index/img/stars/Star-Awaken.webp" :
+            "/tools/champions-index/img/stars/Star-Ascend.webp";
+        starImg.alt = `Star ${i}`;
+
+        star.appendChild(starImg);
+        starsContainer.appendChild(star);
+    }
+
+    return starsContainer;
+}
+
+function updateBlessingStars(starsContainer, level) {
+    const stars = starsContainer.querySelectorAll(".blessing-star");
+    stars.forEach((star, index) => {
+        const starImg = star.querySelector("img");
+        if (index < level) {
+            starImg.src = "/tools/champions-index/img/stars/Star-Awaken.webp";
+        } else {
+            starImg.src = "/tools/champions-index/img/stars/Star-Ascend.webp";
+        }
+    });
+}
+
+function createBlessingImage(blessingName = null, blessingRarity = null) {
+    // Create container for blessing images
+    const blessingContainer = document.createElement("div");
+    blessingContainer.className = "blessing-img-container";
+    blessingContainer.style.display = "none"; // Hidden by default, shown when blessing level > 0
+    blessingContainer.title = "Select blessing";
+    blessingContainer.style.cursor = "pointer";
+
+    // Background image (rarity)
+    const rarityImg = document.createElement("img");
+    rarityImg.className = "blessing-rarity-bg";
+
+    // Icon image (blessing icon overlay)
+    const iconImg = document.createElement("img");
+    iconImg.className = "blessing-icon-overlay";
+
+    // Determine which images to show
+    if (blessingName && blessingRarity) {
+        // Specific blessing selected
+        rarityImg.src = `/tools/champions-index/img/blessings/${blessingRarity}.webp`;
+
+        // Get blessing data to get the image key
+        const blessingData = getBlessingData(blessingName);
+        if (blessingData && blessingData.image) {
+            iconImg.src = `/tools/champions-index/img/blessings/icons/${blessingData.image}.webp`;
+        }
+
+        blessingContainer.dataset.blessing = blessingName;
+        blessingContainer.dataset.rarity = blessingRarity;
+    } else {
+        // No blessing selected yet - show Unselected.webp
+        rarityImg.src = "/tools/champions-index/img/blessings/Unselected.webp";
+        iconImg.style.display = "none";
+    }
+
+    blessingContainer.appendChild(rarityImg);
+    blessingContainer.appendChild(iconImg);
+
+    // Click handler to open blessing selection modal
+    blessingContainer.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openBlessingModal(blessingContainer);
+    });
+
+    return blessingContainer;
+}
+
+function updateBlessingImageVisibility(visual, blessingLevel) {
+    const blessingContainer = visual.querySelector(".blessing-img-container");
+    if (blessingContainer) {
+        if (blessingLevel > 0) {
+            blessingContainer.style.display = "block";
+        } else {
+            blessingContainer.style.display = "none";
+        }
+    }
+}
+
+function openBlessingModal(blessingImgElement) {
+    // Get champion slot and info
+    const champSlot = blessingImgElement.closest(".champ-slot");
+    if (!champSlot) return;
+
+    const input = champSlot.querySelector("input");
+    const championName = input ? input.value.trim() : "";
+
+    if (!championName) return;
+
+    // Get champion data to check rarity and blessing level
+    const champData = getChampionByNameExact(championName);
+    if (!champData) return;
+
+    const visual = champSlot.querySelector(".champ-visual");
+    const starsContainer = visual ? visual.querySelector(".blessing-stars") : null;
+    const blessingLevel = starsContainer ? parseInt(starsContainer.dataset.currentLevel || "0") : 0;
+
+    // Store reference to blessing image element for later update
+    const modal = document.getElementById("blessingModal");
+    const modalBody = document.getElementById("blessingModalBody");
+    const modalTitle = document.getElementById("blessingModalTitle");
+
+    if (!modal || !modalBody || !modalTitle) return;
+
+    // Update modal title
+    modalTitle.textContent = `Select Blessing for ${championName}`;
+
+    // Store data in modal for later use
+    modal.dataset.championName = championName;
+    modal.dataset.championRarity = champData.rarity;
+    modal.dataset.blessingLevel = blessingLevel;
+    modal.dataset.currentBlessing = blessingImgElement.dataset.blessing || "";
+
+    // Store reference to the blessing image element to update it later
+    modal.blessingImgElement = blessingImgElement;
+
+    // Populate modal body with blessings
+    renderBlessingSelection(modalBody, champData.rarity, blessingLevel);
+
+    // Show modal
+    modal.classList.add("active");
+}
+
+function renderBlessingSelection(container, championRarity, blessingLevel) {
+    const blessingsBySection = getBlessingsBySection();
+    const sections = Object.keys(blessingsBySection);
+
+    if (sections.length === 0) {
+        container.innerHTML = `<p style="color: #aaa; text-align: center;">No blessings available</p>`;
+        return;
+    }
+
+    // Rarity order for filtering
+    const rarityOrder = ["Rare", "Epic", "Legendary", "Mythical"];
+    const maxRarityIndex = rarityOrder.indexOf(championRarity);
+
+    // Create main container with sidebar and content
+    const wrapper = document.createElement("div");
+    wrapper.className = "blessing-selection-wrapper";
+
+    // Sidebar with sections
+    const sidebar = document.createElement("div");
+    sidebar.className = "blessing-sections-sidebar";
+
+    // Content area for blessings
+    const contentArea = document.createElement("div");
+    contentArea.className = "blessing-content-area";
+
+    let firstSection = null;
+
+    sections.forEach((section, index) => {
+        if (index === 0) firstSection = section;
+
+        const sectionTab = document.createElement("div");
+        sectionTab.className = "blessing-section-tab";
+        if (index === 0) sectionTab.classList.add("active");
+        sectionTab.dataset.section = section;
+
+        // Section image
+        const sectionImg = document.createElement("img");
+        sectionImg.src = `/tools/champions-index/img/blessings/sections/${section}.webp`;
+        sectionImg.alt = section;
+        sectionImg.className = "blessing-section-img";
+        sectionImg.onerror = () => {
+            sectionImg.src = "/tools/champions-index/img/blessings/Unselected.webp"; // Fallback
+        };
+
+        // Section name
+        const sectionName = document.createElement("span");
+        sectionName.textContent = section;
+        sectionName.className = "blessing-section-name";
+
+        sectionTab.appendChild(sectionImg);
+        sectionTab.appendChild(sectionName);
+
+        // Click handler
+        sectionTab.addEventListener("click", () => {
+            // Update active tab
+            sidebar.querySelectorAll(".blessing-section-tab").forEach(tab => tab.classList.remove("active"));
+            sectionTab.classList.add("active");
+
+            // Render blessings for this section
+            renderBlessingsGrid(contentArea, blessingsBySection[section], championRarity, maxRarityIndex, blessingLevel);
+        });
+
+        sidebar.appendChild(sectionTab);
+    });
+
+    wrapper.appendChild(sidebar);
+    wrapper.appendChild(contentArea);
+    container.innerHTML = "";
+    container.appendChild(wrapper);
+
+    // Render first section by default
+    if (firstSection) {
+        renderBlessingsGrid(contentArea, blessingsBySection[firstSection], championRarity, maxRarityIndex, blessingLevel);
+    }
+}
+
+function renderBlessingsGrid(container, blessings, championRarity, maxRarityIndex, blessingLevel) {
+    const rarityOrder = ["Rare", "Epic", "Legendary"];
+
+    // Filter blessings by champion rarity
+    const filteredBlessings = blessings.filter(blessing => {
+        const blessingRarityIndex = rarityOrder.indexOf(blessing.rarity);
+        return blessingRarityIndex <= maxRarityIndex;
+    });
+
+    if (filteredBlessings.length === 0) {
+        container.innerHTML = `<p style="color: #aaa; text-align: center; padding: 20px;">No blessings available for ${championRarity} champions</p>`;
+        return;
+    }
+
+    // Sort by rarity (Rare first, then Epic, then Legendary)
+    filteredBlessings.sort((a, b) => {
+        const rarityIndexA = rarityOrder.indexOf(a.rarity);
+        const rarityIndexB = rarityOrder.indexOf(b.rarity);
+        return rarityIndexA - rarityIndexB;
+    });
+
+    const grid = document.createElement("div");
+    grid.className = "blessings-grid";
+
+    // Get current blessing from modal data
+    const modal = document.getElementById("blessingModal");
+    const currentBlessing = modal ? modal.dataset.currentBlessing : null;
+
+    filteredBlessings.forEach(blessing => {
+        const blessingCard = document.createElement("div");
+        blessingCard.className = "blessing-card";
+        blessingCard.dataset.blessingName = blessing.name;
+        blessingCard.dataset.blessingRarity = blessing.rarity;
+
+        // Highlight if this is the currently selected blessing
+        if (currentBlessing === blessing.name) {
+            blessingCard.classList.add("selected");
+        }
+
+        // Blessing image (splash)
+        const blessingImg = document.createElement("img");
+        blessingImg.src = `/tools/champions-index/img/blessings/splash/${blessing.image}.webp`;
+        blessingImg.alt = blessing.name;
+        blessingImg.className = "blessing-card-img";
+        blessingImg.onerror = () => {
+            blessingImg.src = "/tools/champions-index/img/blessings/Unselected.webp"; // Fallback
+        };
+
+        // Blessing name
+        const blessingName = document.createElement("div");
+        blessingName.className = "blessing-card-name";
+        blessingName.textContent = blessing.name;
+
+        // Rarity badge
+        const rarityBadge = document.createElement("div");
+        rarityBadge.className = `blessing-rarity-badge rarity-${blessing.rarity.toLowerCase()}`;
+        rarityBadge.textContent = blessing.rarity;
+
+        blessingCard.appendChild(blessingImg);
+        blessingCard.appendChild(blessingName);
+        blessingCard.appendChild(rarityBadge);
+
+        // Tooltip with description
+        if (blessingLevel > 0) {
+            const description = getBlessingDescription(blessing.name, blessingLevel);
+            if (description) {
+                blessingCard.title = description;
+            }
+        }
+
+        // Click handler with visual feedback
+        blessingCard.addEventListener("click", () => {
+            // Remove selected class from all cards
+            grid.querySelectorAll(".blessing-card").forEach(card => {
+                card.classList.remove("selected");
+            });
+
+            // Add selected class to clicked card
+            blessingCard.classList.add("selected");
+
+            // Wait a moment for visual feedback before closing modal
+            setTimeout(() => {
+                selectBlessing(blessing.name, blessing.rarity);
+            }, 200);
+        });
+
+        grid.appendChild(blessingCard);
+    });
+
+    container.innerHTML = "";
+    container.appendChild(grid);
+}
+
+function selectBlessing(blessingName, blessingRarity) {
+    const modal = document.getElementById("blessingModal");
+    if (!modal) return;
+
+    const blessingContainer = modal.blessingImgElement;
+    if (!blessingContainer) return;
+
+    // Update blessing images (rarity background + icon overlay)
+    const rarityImg = blessingContainer.querySelector(".blessing-rarity-bg");
+    const iconImg = blessingContainer.querySelector(".blessing-icon-overlay");
+
+    if (rarityImg) {
+        rarityImg.src = `/tools/champions-index/img/blessings/${blessingRarity}.webp`;
+    }
+
+    // Get blessing data to get icon image
+    const blessingData = getBlessingData(blessingName);
+    if (iconImg && blessingData && blessingData.image) {
+        iconImg.src = `/tools/champions-index/img/blessings/icons/${blessingData.image}.webp`;
+        iconImg.style.display = "block";
+    }
+
+    blessingContainer.dataset.blessing = blessingName;
+    blessingContainer.dataset.rarity = blessingRarity;
+
+    // Get champion slot to determine if we're in main modal or presets modal
+    const champSlot = blessingContainer.closest(".champ-slot");
+    if (!champSlot) return;
+
+    // Check if we're in presets modal or main modal
+    const presetsModal = champSlot.closest("#presetsModal");
+
+    if (presetsModal) {
+        // We're in presets modal - save to preset
+        const presetRow = champSlot.closest(".preset-row");
+        if (!presetRow) return;
+
+        const memberPseudo = presetRow.dataset.memberPseudo;
+        const presetId = presetRow.dataset.presetId;
+        const slotName = champSlot.dataset.slotName;
+
+        if (!memberPseudo || !presetId || !slotName) return;
+
+        // Update local data
+        const member = clanMembers[memberPseudo];
+        if (member) {
+            if (!member.presets) member.presets = {};
+            if (!member.presets[presetId]) member.presets[presetId] = {};
+
+            member.presets[presetId][`${slotName}_blessing`] = blessingName;
+            member.presets[presetId][`${slotName}_blessing_rarity`] = blessingRarity;
+
+            // Save to Firebase
+            const blessingRef = ref(db, `rooms/${currentRoomId}/siege/members/${memberPseudo}/presets/${presetId}/${slotName}_blessing`);
+            set(blessingRef, blessingName);
+
+            const rarityRef = ref(db, `rooms/${currentRoomId}/siege/members/${memberPseudo}/presets/${presetId}/${slotName}_blessing_rarity`);
+            set(rarityRef, blessingRarity);
+
+            console.log(`Preset ${presetId} ${slotName} blessing set to ${blessingName} (${blessingRarity})`);
+        }
+    } else {
+        // We're in main modal - save to post team
+        const teamRow = champSlot.closest(".modal-team-row");
+        if (!teamRow) return;
+
+        const champIndex = champSlot.dataset.champIndex;
+        const teamIndex = teamRow.dataset.teamIndex;
+        if (!champIndex || teamIndex === undefined) return;
+
+        // Find the team data
+        if (!currentPostId) return;
+
+        const postData = postDataCache[currentPostId];
+        if (postData && postData.teams && postData.teams[teamIndex]) {
+            const teamData = postData.teams[teamIndex];
+            teamData[`c${champIndex}_blessing`] = blessingName;
+            teamData[`c${champIndex}_blessing_rarity`] = blessingRarity;
+
+            // Save to Firebase in teams array
+            const blessingRef = ref(db, `rooms/${currentRoomId}/siege/${currentPostId}/teams/${teamIndex}/c${champIndex}_blessing`);
+            set(blessingRef, blessingName);
+
+            const rarityRef = ref(db, `rooms/${currentRoomId}/siege/${currentPostId}/teams/${teamIndex}/c${champIndex}_blessing_rarity`);
+            set(rarityRef, blessingRarity);
+
+            console.log(`Post ${currentPostId} team ${teamIndex} champion ${champIndex} blessing set to ${blessingName} (${blessingRarity})`);
+        }
+    }
+
+    // Close modal
+    closeBlessingModal();
+}
+
+function closeBlessingModal() {
+    const modal = document.getElementById("blessingModal");
+    if (modal) {
+        modal.classList.remove("active");
+    }
+}
+
 // ==================== SMOOTH SCROLL TO TOP FUNCTION ====================
 function smoothScrollToTop() {
     let isScrolling = true;
@@ -5275,6 +5857,15 @@ window.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // ==================== BLESSING MODAL EVENT LISTENERS ====================
+    document.getElementById("closeBlessingModal").addEventListener("click", closeBlessingModal);
+
+    // Close blessing modal on overlay click
+    const blessingModal = document.getElementById("blessingModal");
+    if (blessingModal) {
+        blessingModal.querySelector(".blessing-modal-overlay").addEventListener("click", closeBlessingModal);
+    }
+
     function renderPresets(memberPseudo) {
         const container = document.getElementById("presetsContainer");
         container.innerHTML = "";
@@ -5441,6 +6032,69 @@ window.addEventListener("DOMContentLoaded", () => {
         const visual = document.createElement("div");
         visual.className = "champ-visual";
 
+        // Get preset data for blessing level (with safe access)
+        let blessingLevel = 0;
+        let blessingName = null;
+        let blessingRarity = null;
+        let member = null;
+        if (clanMembers && clanMembers[memberPseudo]) {
+            member = clanMembers[memberPseudo];
+            const preset = member.presets?.[presetId];
+            blessingLevel = preset?.[`${slotName}_blessing_level`] || 0;
+            blessingName = preset?.[`${slotName}_blessing`] || null;
+            blessingRarity = preset?.[`${slotName}_blessing_rarity`] || null;
+        }
+
+        // Create blessing stars
+        const blessingStars = createBlessingStars(championName, blessingLevel);
+
+        // Create blessing image
+        const blessingImg = createBlessingImage(blessingName, blessingRarity);
+
+        // Add click handlers for stars
+        const stars = blessingStars.querySelectorAll(".blessing-star");
+        stars.forEach((star, starIndex) => {
+            star.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const clickedLevel = starIndex + 1;
+                const currentLevel = parseInt(blessingStars.dataset.currentLevel || "0");
+
+                // If clicking the same level, deactivate (set to 0)
+                // Otherwise, set to clicked level
+                const newLevel = (clickedLevel === currentLevel) ? 0 : clickedLevel;
+
+                // Update stars visual
+                updateBlessingStars(blessingStars, newLevel);
+                blessingStars.dataset.currentLevel = newLevel;
+
+                // Show/hide blessing image
+                updateBlessingImageVisibility(visual, newLevel);
+
+                // Save blessing level to preset
+                const currentMember = clanMembers?.[memberPseudo];
+                if (currentMember) {
+                    if (!currentMember.presets) currentMember.presets = {};
+                    if (!currentMember.presets[presetId]) {
+                        currentMember.presets[presetId] = {};
+                    }
+                    currentMember.presets[presetId][`${slotName}_blessing_level`] = newLevel;
+
+                    // Save to Firebase
+                    const presetRef = ref(db, `rooms/${currentRoomId}/siege/members/${memberPseudo}/presets/${presetId}/${slotName}_blessing_level`);
+                    set(presetRef, newLevel);
+
+                    console.log(`Preset ${presetId} ${slotName} blessing level set to ${newLevel}`);
+                }
+            });
+        });
+
+        blessingStars.dataset.currentLevel = blessingLevel;
+
+        // Show blessing image if blessing level > 0
+        if (blessingLevel > 0) {
+            blessingImg.style.display = "block";
+        }
+
         // Clear button
         const clearBtn = document.createElement("button");
         clearBtn.className = "clear-champ-btn";
@@ -5449,17 +6103,20 @@ window.addEventListener("DOMContentLoaded", () => {
             input.value = "";
             savePresetChampion(memberPseudo, presetId, slotName, "");
         });
-        visual.appendChild(clearBtn);
 
         // Champion image
         const champImg = document.createElement("img");
         champImg.className = "champ-img";
-        visual.appendChild(champImg);
 
         // Rarity border
         const rarityImg = document.createElement("img");
         rarityImg.className = "rarity-img";
+
+        visual.appendChild(champImg);
         visual.appendChild(rarityImg);
+        visual.appendChild(blessingStars);
+        visual.appendChild(blessingImg);
+        visual.appendChild(clearBtn);
 
         champSlot.appendChild(visual);
 
@@ -5573,6 +6230,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const champImg = champSlot.querySelector(".champ-img");
         const rarityImg = champSlot.querySelector(".rarity-img");
         let affinityImg = champSlot.querySelector(".affinity-img");
+        const starsContainer = champSlot.querySelector(".blessing-stars");
 
         // Get preset info to update conditions after visual update
         const presetRow = champSlot.closest('.preset-row');
@@ -5583,6 +6241,11 @@ window.addEventListener("DOMContentLoaded", () => {
             champImg.style.display = "none";
             rarityImg.style.display = "none";
             if (affinityImg) affinityImg.style.display = "none";
+
+            // Hide stars if no champion
+            if (starsContainer) {
+                starsContainer.classList.remove("visible");
+            }
 
             // Update conditions when clearing a champion
             if (presetId && memberPseudo) {
@@ -5611,6 +6274,15 @@ window.addEventListener("DOMContentLoaded", () => {
                 affinityImg.style.display = "none";
             }
 
+            // Show/hide stars based on rarity
+            if (starsContainer) {
+                if (champData.rarity === "Common" || champData.rarity === "Uncommon") {
+                    starsContainer.classList.remove("visible");
+                } else {
+                    starsContainer.classList.add("visible");
+                }
+            }
+
             // Update conditions immediately when a valid champion is set
             if (presetId && memberPseudo) {
                 updatePresetConditions(memberPseudo, presetId);
@@ -5619,6 +6291,11 @@ window.addEventListener("DOMContentLoaded", () => {
             champImg.style.display = "none";
             rarityImg.style.display = "none";
             if (affinityImg) affinityImg.style.display = "none";
+
+            // Hide stars if champion not found
+            if (starsContainer) {
+                starsContainer.classList.remove("visible");
+            }
         }
     }
 
