@@ -1176,8 +1176,14 @@ function deleteClanMember(pseudo) {
     set(refMembers, clanMembers);
 }
 
-// Find if a preset is already used in a post
+// Find if a preset is already used in a post (returns formatted name only)
 function findPresetUsage(memberPseudo, preset) {
+    const result = findPresetUsageDetailed(memberPseudo, preset);
+    return result ? result.formattedName : null;
+}
+
+// Find if a preset is already used in a post (returns detailed info)
+function findPresetUsageDetailed(memberPseudo, preset) {
     // Extract champion names from preset
     const presetChamps = [
         preset.champion4,
@@ -1210,8 +1216,14 @@ function findPresetUsage(memberPseudo, preset) {
             // Compare sorted arrays
             if (teamChamps.length === presetChamps.length &&
                 teamChamps.every((champ, i) => champ === presetChamps[i])) {
-                // Found a match! Return the post ID formatted nicely
-                return formatPostName(postId);
+                // Found a match! Return detailed info
+                const postEl = document.getElementById(postId);
+                const postType = postEl ? postEl.dataset.type : "post";
+                return {
+                    postId: postId,
+                    postType: postType,
+                    formattedName: formatPostName(postId)
+                };
             }
         }
     }
@@ -1412,14 +1424,17 @@ function refreshTeamsPresetsDropdown() {
             infoContainer.className = "preset-dropdown-info";
 
             // Check if this preset is already used in a post
-            const usedInPost = findPresetUsage(pseudo, preset);
-            if (usedInPost) {
+            const usageDetails = findPresetUsageDetailed(pseudo, preset);
+            if (usageDetails) {
+                const { postType, formattedName } = usageDetails;
                 const usageIndicator = document.createElement("div");
                 usageIndicator.className = "preset-usage-indicator";
-                usageIndicator.textContent = usedInPost;
-                usageIndicator.title = `Already used in ${usedInPost}`;
+                usageIndicator.classList.add(`indicator-${postType}`);
+                usageIndicator.textContent = formattedName;
+                usageIndicator.title = `Already used in ${formattedName}`;
                 infoContainer.appendChild(usageIndicator);
                 teamDiv.classList.add("preset-used");
+                teamDiv.classList.add(`preset-used-${postType}`);
             }
 
             // Conditions (validated only, no effects)
@@ -5252,6 +5267,33 @@ window.addEventListener("DOMContentLoaded", () => {
         row.dataset.presetId = presetId; // Add preset ID to identify the row
         row.dataset.memberPseudo = memberPseudo; // Add member pseudo too
 
+        // Check if this preset is already used in a post
+        const usageDetails = findPresetUsageDetailed(memberPseudo, preset);
+        if (usageDetails) {
+            const { postId, postType, formattedName } = usageDetails;
+
+            // Add class based on post type
+            row.classList.add("preset-used");
+            row.classList.add(`preset-used-${postType}`);
+
+            // Make row clickable to open the post modal
+            row.style.cursor = "pointer";
+            row.title = `Click to view in ${formattedName}`;
+
+            row.addEventListener("click", (e) => {
+                // Don't trigger if clicking on input fields or buttons
+                if (e.target.tagName === "INPUT" || e.target.tagName === "BUTTON" || e.target.closest("button")) {
+                    return;
+                }
+
+                // Close presets modal
+                closePresetsModal();
+
+                // Open post modal with highlight
+                openPostFromSummary(postId, memberPseudo);
+            });
+        }
+
         // Team section (champions + lead aura)
         const teamSection = document.createElement("div");
         teamSection.className = "preset-team-section";
@@ -5271,6 +5313,16 @@ window.addEventListener("DOMContentLoaded", () => {
         // Conditions section
         const conditionsSection = document.createElement("div");
         conditionsSection.className = "preset-conditions-section";
+
+        // Add usage indicator above conditions if used
+        if (usageDetails) {
+            const usageIndicator = document.createElement("div");
+            usageIndicator.className = "preset-usage-indicator-modal";
+            usageIndicator.classList.add(`indicator-${usageDetails.postType}`);
+            usageIndicator.textContent = usageDetails.formattedName.toUpperCase();
+            usageIndicator.title = `Already used in ${usageDetails.formattedName}`;
+            conditionsSection.appendChild(usageIndicator);
+        }
 
         const conditionsTitle = document.createElement("div");
         conditionsTitle.className = "preset-conditions-title";
@@ -5849,31 +5901,62 @@ window.addEventListener("DOMContentLoaded", () => {
     function smoothScrollToTop() {
         let isScrolling = true;
         let targetPosition = 0;
+        let startTime = Date.now();
+        let animationFrameId = null;
 
         const scrollToTop = () => {
-            if (!isScrolling) return;
+            if (!isScrolling) {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
+                return;
+            }
 
             const currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
             const distance = currentScroll - targetPosition;
 
             if (distance > 1) {
-                window.scrollTo(0, currentScroll - distance / 8);
-                window.requestAnimationFrame(scrollToTop);
+                const newPosition = currentScroll - distance / 8;
+                window.scrollTo(0, newPosition);
+                animationFrameId = window.requestAnimationFrame(scrollToTop);
             } else {
                 window.scrollTo(0, targetPosition);
                 isScrolling = false;
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
             }
         };
 
-        // Stop animation if user scrolls manually
-        const stopScroll = () => {
+        // Stop animation if user tries to scroll manually
+        const stopScroll = (e) => {
+            // Ignore events in the first 200ms (animation start)
+            if (Date.now() - startTime < 200) {
+                return;
+            }
+
+            // Don't stop on very small wheel movements
+            if (e.type === 'wheel' && Math.abs(e.deltaY) < 4) {
+                return;
+            }
+
             isScrolling = false;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+
+            // Remove all listeners
             window.removeEventListener('wheel', stopScroll);
             window.removeEventListener('touchstart', stopScroll);
+            window.removeEventListener('keydown', stopScroll);
+            window.removeEventListener('mousedown', stopScroll);
         };
 
-        window.addEventListener('wheel', stopScroll, { once: true });
-        window.addEventListener('touchstart', stopScroll, { once: true });
+        // Add listeners immediately
+        window.addEventListener('wheel', stopScroll, { passive: true });
+        window.addEventListener('touchstart', stopScroll, { passive: true });
+        window.addEventListener('keydown', stopScroll);
+        window.addEventListener('mousedown', stopScroll);
 
         scrollToTop();
     }

@@ -891,25 +891,95 @@ body.modal-open .map-filters-container {
 
 .preset-usage-indicator {
     font-size: 9px;
-    color: #4caf50;
-    background: rgba(76, 175, 80, 0.15);
     padding: 2px 6px;
     border-radius: 4px;
-    border: 1px solid rgba(76, 175, 80, 0.4);
+    border: 1px solid;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     white-space: nowrap;
 }
 
-.preset-dropdown-team.preset-used {
-    background: rgba(76, 175, 80, 0.08);
-    border-color: rgba(76, 175, 80, 0.3);
+/* Badge colors by post type in dropdown */
+.preset-usage-indicator.indicator-stronghold {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
 }
 
-.preset-dropdown-team.preset-used:hover {
-    background: rgba(76, 175, 80, 0.15);
-    border-color: rgba(76, 175, 80, 0.5);
+.preset-usage-indicator.indicator-magictower {
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+.preset-usage-indicator.indicator-defensetower {
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.4);
+}
+
+.preset-usage-indicator.indicator-manashrine {
+    color: #eab308;
+    background: rgba(234, 179, 8, 0.15);
+    border-color: rgba(234, 179, 8, 0.4);
+}
+
+.preset-usage-indicator.indicator-post {
+    color: #9ca3af;
+    background: rgba(156, 163, 175, 0.15);
+    border-color: rgba(156, 163, 175, 0.4);
+}
+
+/* Team background colors by post type in dropdown */
+.preset-dropdown-team.preset-used-stronghold {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.preset-dropdown-team.preset-used-stronghold:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+.preset-dropdown-team.preset-used-magictower {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.preset-dropdown-team.preset-used-magictower:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+.preset-dropdown-team.preset-used-defensetower {
+    background: rgba(34, 197, 94, 0.08);
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.preset-dropdown-team.preset-used-defensetower:hover {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.5);
+}
+
+.preset-dropdown-team.preset-used-manashrine {
+    background: rgba(234, 179, 8, 0.08);
+    border-color: rgba(234, 179, 8, 0.3);
+}
+
+.preset-dropdown-team.preset-used-manashrine:hover {
+    background: rgba(234, 179, 8, 0.15);
+    border-color: rgba(234, 179, 8, 0.5);
+}
+
+.preset-dropdown-team.preset-used-post {
+    background: rgba(156, 163, 175, 0.08);
+    border-color: rgba(156, 163, 175, 0.3);
+}
+
+.preset-dropdown-team.preset-used-post:hover {
+    background: rgba(156, 163, 175, 0.15);
+    border-color: rgba(156, 163, 175, 0.5);
 }
 
 .preset-dropdown-no-presets {
@@ -2983,6 +3053,7 @@ body.modal-open .map-filters-container {
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.05);
     align-items: center;
+    transition: all 0.2s ease;
 }
 
 .preset-row:hover {
@@ -2990,11 +3061,107 @@ body.modal-open .map-filters-container {
     border-color: rgba(212, 175, 55, 0.3);
 }
 
+/* Color coding by post type */
+.preset-row.preset-used-stronghold {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.preset-row.preset-used-stronghold:hover {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.5);
+    transform: translateY(-1px);
+}
+
+.preset-row.preset-used-magictower {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.preset-row.preset-used-magictower:hover {
+    background: rgba(59, 130, 246, 0.12);
+    border-color: rgba(59, 130, 246, 0.5);
+    transform: translateY(-1px);
+}
+
+.preset-row.preset-used-defensetower {
+    background: rgba(34, 197, 94, 0.08);
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.preset-row.preset-used-defensetower:hover {
+    background: rgba(34, 197, 94, 0.12);
+    border-color: rgba(34, 197, 94, 0.5);
+    transform: translateY(-1px);
+}
+
+.preset-row.preset-used-manashrine {
+    background: rgba(234, 179, 8, 0.08);
+    border-color: rgba(234, 179, 8, 0.3);
+}
+
+.preset-row.preset-used-manashrine:hover {
+    background: rgba(234, 179, 8, 0.12);
+    border-color: rgba(234, 179, 8, 0.5);
+    transform: translateY(-1px);
+}
+
+.preset-row.preset-used-post {
+    background: rgba(156, 163, 175, 0.08);
+    border-color: rgba(156, 163, 175, 0.3);
+}
+
+.preset-row.preset-used-post:hover {
+    background: rgba(156, 163, 175, 0.12);
+    border-color: rgba(156, 163, 175, 0.5);
+    transform: translateY(-1px);
+}
+
 .preset-team-section {
     flex: 0 0 auto;
     display: flex;
     gap: 10px;
     align-items: center;
+    position: relative;
+}
+
+.preset-usage-indicator-modal {
+    display: block;
+    margin: 0 auto 8px auto;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.5px;
+}
+
+/* Badge colors by post type */
+.preset-usage-indicator-modal.indicator-stronghold {
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+}
+
+.preset-usage-indicator-modal.indicator-magictower {
+    background: rgba(59, 130, 246, 0.9);
+    color: white;
+}
+
+.preset-usage-indicator-modal.indicator-defensetower {
+    background: rgba(34, 197, 94, 0.9);
+    color: white;
+}
+
+.preset-usage-indicator-modal.indicator-manashrine {
+    background: rgba(234, 179, 8, 0.9);
+    color: #000;
+}
+
+.preset-usage-indicator-modal.indicator-post {
+    background: rgba(156, 163, 175, 0.9);
+    color: white;
 }
 
 .preset-conditions-section {
