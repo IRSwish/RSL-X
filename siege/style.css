@@ -201,11 +201,6 @@ body.modal-open .map-filters-container {
     color: #ff6b81;
 }
 
-/* If no delete button, clear button should push right */
-.team-row:first-child .clear-team-btn {
-    margin-left: auto;
-}
-
 .clear-team-btn:hover {
     border-color: #ff6b81;
 }
@@ -3106,6 +3101,21 @@ body.modal-open .map-filters-container {
     background: #333;
     border-color: #d4af37;
     transform: scale(1.05);
+}
+
+/* ==================== VIEWER MODE ==================== */
+body.viewer-mode .summary-section,
+body.viewer-mode .members-section {
+    display: none;
+}
+
+body.viewer-mode .teams-presets-toggle {
+    display: none;
+}
+
+body.viewer-mode .filter-condition-only,
+body.viewer-mode .filter-stats-only {
+    display: none;
 }
 
 /* ==================== RESPONSIVE ==================== */

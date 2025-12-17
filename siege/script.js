@@ -674,6 +674,11 @@ function applyFilters() {
 }
 
 function updateConditionsFilter() {
+    // Don't load conditions filter in viewer mode
+    if (isViewer()) {
+        return;
+    }
+
     const conditionFilter = document.getElementById("conditionFilter");
     if (!conditionFilter) return;
 
@@ -765,6 +770,11 @@ function getBuildingTrapSlots(level) {
 }
 
 function updateStats() {
+    // Don't load stats in viewer mode
+    if (isViewer()) {
+        return;
+    }
+
     let totalTeamsPlaced = 0;
     let totalTeamsMax = 0;
     let bonusesValidated = 0;
@@ -841,6 +851,11 @@ function updateStats() {
 }
 
 function updateMembersList() {
+    // Don't load members list in viewer mode
+    if (isViewer()) {
+        return;
+    }
+
     const tbody = document.getElementById("membersTableBody");
     tbody.innerHTML = "";
 
@@ -1470,6 +1485,11 @@ function setupPostDropZone(postElement) {
 
 // Add a preset to a post as a new team
 function addPresetToPost(postId, memberPseudo, preset) {
+    if (isViewer()) {
+        alert("Cannot add teams in viewer mode.");
+        return;
+    }
+
     const currentData = postDataCache[postId] || {};
     const teams = Array.isArray(currentData.teams) ? [...currentData.teams] : [];
 
@@ -2121,6 +2141,7 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
         deleteBtn.className = "action-btn delete-team-btn";
         deleteBtn.type = "button";
         deleteBtn.title = "Delete team";
+        deleteBtn.style.marginLeft = "auto"; // Push buttons to the right
         deleteBtn.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
@@ -2135,6 +2156,9 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
         });
 
         teamRow.appendChild(deleteBtn);
+    } else {
+        // For the first team (index 0), the clear button should push right
+        clearBtn.style.marginLeft = "auto";
     }
 
     teamRow.appendChild(clearBtn);
@@ -2235,6 +2259,11 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
 
 // Save team as preset
 function saveTeamAsPreset(teamRow) {
+    if (isViewer()) {
+        alert("Cannot save presets in viewer mode.");
+        return;
+    }
+
     // Get member from the team
     const memberSelect = teamRow.querySelector(".member-select");
     if (!memberSelect || !memberSelect.value) {
@@ -4188,6 +4217,11 @@ function updateTooltipOnMap(postId) {
 }
 
 function updateSummaryTable() {
+    // Don't load summary table in viewer mode
+    if (isViewer()) {
+        return;
+    }
+
     const tbody = document.querySelector("#summaryTable tbody");
     tbody.innerHTML = "";
 
@@ -4440,18 +4474,24 @@ function applyViewerRestrictions() {
         '#saveBtn',
         '#addTeamBtn',
         '#addMemberBtn',
+        '#addPresetBtn',
         '#freezePostBtn',
         '.team-delete-btn',
         '.team-freeze-btn',
         '.team-select-btn',
         '.transfer-dropdown-toggle',
+        '.transfer-team-btn',
         '.transfer-menu-item',
         '.delete-team-btn',
         '.move-team-btn',
         '.clear-team-btn',
+        '.save-preset-btn',
+        '.preset-delete-btn',
+        '.view-presets-btn',
         '#conditionsPanelToggle',
         '.post-condition-slot',
         '.member-delete-btn',
+        '.member-edit-btn',
         'input[type="text"]',
         'input[type="number"]',
         'select',
@@ -4511,6 +4551,9 @@ function disableViewerControls() {
             applyViewerRestrictions();
         }
     }, 500);
+
+    // Add viewer mode class to body
+    document.body.classList.add('viewer-mode');
 
     // Add viewer mode indicator with Lucide icon
     const header = document.querySelector('.top-bar');
@@ -5294,6 +5337,11 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function savePresetChampion(memberPseudo, presetId, slotName, championName) {
+        if (isViewer()) {
+            alert("Cannot edit presets in viewer mode.");
+            return;
+        }
+
         if (!currentRoomId) {
             console.error("❌ No currentRoomId");
             return;
@@ -5432,6 +5480,11 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     function addNewPreset(memberPseudo) {
+        if (isViewer()) {
+            alert("Cannot add presets in viewer mode.");
+            return;
+        }
+
         if (!currentRoomId) {
             console.error("No room ID");
             return;
@@ -5465,6 +5518,11 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function deletePreset(memberPseudo, presetId) {
+        if (isViewer()) {
+            alert("Cannot delete presets in viewer mode.");
+            return;
+        }
+
         if (!confirm("Delete this team preset?")) return;
         if (!currentRoomId) return;
 
