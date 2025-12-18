@@ -120,6 +120,28 @@ function getBuildingSlots(buildingType, level) {
     }
 }
 
+function getBuildingTrapsSlots(buildingType, level) {
+    if (!siegeDB) return 0;
+
+    try {
+        const stmt = siegeDB.prepare(
+            "SELECT trapsslots FROM buildings WHERE name = ? AND level = ?;"
+        );
+        stmt.bind([buildingType, level]);
+
+        if (stmt.step()) {
+            const row = stmt.getAsObject();
+            stmt.free();
+            return row.trapsslots || 0;
+        }
+        stmt.free();
+        return 0;
+    } catch (e) {
+        console.error("Erreur getBuildingTrapsSlots", e);
+        return 0;
+    }
+}
+
 function getBuildingTypeFromPostId(postId) {
     if (postId === "stronghold") return "Stronghold";
     if (postId.includes("magictower")) return "Magic Tower";
@@ -764,11 +786,6 @@ function updateConditionFilterDisplay() {
     }
 }
 
-function getBuildingTrapSlots(level) {
-    // Traps are not yet implemented, return 0 for now
-    return 0;
-}
-
 function updateStats() {
     // Don't load stats in viewer mode
     if (isViewer()) {
@@ -837,7 +854,10 @@ function updateStats() {
 
             // Count traps for stronghold
             if (postId === "stronghold") {
-                trapsMax = getBuildingTrapSlots(level);
+                // For stronghold, get the level from buildingLevel (which is the actual level 1-6)
+                const strongholdLevel = data.buildingLevel || 1;
+                const buildingType = "Stronghold";
+                trapsMax = getBuildingTrapsSlots(buildingType, strongholdLevel);
                 // TODO: count actual traps when implemented
                 trapsUsed = 0;
             }
@@ -944,10 +964,15 @@ function updateMembersList() {
             const linkTd = document.createElement("td");
             if (member.link) {
                 const link = document.createElement("a");
-                link.href = member.link;
-                link.target = "_blank";
+                link.href = "#";
                 link.className = "member-hh-link";
                 link.innerHTML = `<img src="/siege/img/HH.ico" alt="HH" /> View Profile`;
+
+                link.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    toggleMemberProfile(tr, member.link, member.pseudo);
+                });
+
                 linkTd.appendChild(link);
             } else {
                 linkTd.textContent = "-";
@@ -1049,6 +1074,49 @@ function updateMembersList() {
     if (dropdown && dropdown.classList.contains("open")) {
         refreshTeamsPresetsDropdown();
     }
+}
+
+function toggleMemberProfile(tr, profileUrl, memberPseudo) {
+    // Check if profile row already exists
+    const existingProfileRow = tr.nextElementSibling;
+    if (existingProfileRow && existingProfileRow.classList.contains("member-profile-row")) {
+        // Remove existing profile row
+        existingProfileRow.remove();
+        tr.classList.remove("profile-open");
+        return;
+    }
+
+    // Close any other open profile
+    document.querySelectorAll(".member-profile-row").forEach(row => row.remove());
+    document.querySelectorAll("tr.profile-open").forEach(row => row.classList.remove("profile-open"));
+
+    // Create new profile row
+    const profileRow = document.createElement("tr");
+    profileRow.className = "member-profile-row";
+
+    const profileCell = document.createElement("td");
+    profileCell.colSpan = 5; // Span across all columns
+
+    const profileContainer = document.createElement("div");
+    profileContainer.className = "member-profile-container";
+
+    const iframe = document.createElement("iframe");
+    iframe.src = profileUrl;
+    iframe.className = "member-profile-iframe";
+    iframe.setAttribute("loading", "lazy");
+
+    profileContainer.appendChild(iframe);
+    profileCell.appendChild(profileContainer);
+    profileRow.appendChild(profileCell);
+
+    // Insert after current row
+    tr.after(profileRow);
+    tr.classList.add("profile-open");
+
+    // Scroll to position the row at the top of the screen
+    setTimeout(() => {
+        tr.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
 }
 
 function editMember(pseudo, currentLink) {
