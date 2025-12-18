@@ -1747,7 +1747,6 @@ function updateMoveButtons() {
 }
 
 function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
-    console.log(`createTeamRow called with teamData:`, teamData);
     const teamsContainer = document.getElementById("teamsContainer");
     const teamRow = document.createElement("div");
     teamRow.className = "team-row";
@@ -2076,8 +2075,6 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
         champSlot.draggable = true;
         champSlot.dataset.champIndex = i;
 
-        console.log("🔧 Creating slot with i=" + i + ", dataset.champIndex=" + champSlot.dataset.champIndex);
-
         const cLabel = document.createElement("label");
         // Use champIndex directly for label to match drag behavior
         if (i === 4) {
@@ -2119,9 +2116,6 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
         // Create blessing image
         const blessingName = (teamData && teamData[`c${i}_blessing`]) || null;
         const blessingRarity = (teamData && teamData[`c${i}_blessing_rarity`]) || null;
-
-        console.log(`Creating blessing for champion ${i}:`, blessingName, blessingRarity);
-
         const blessingImg = createBlessingImage(blessingName, blessingRarity);
 
         // Add click handlers for stars
@@ -2146,16 +2140,27 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
                 // Save to team data
                 if (teamData) {
                     teamData[`c${i}_blessing_level`] = newLevel;
+
+                    // If level is 0, also clear the blessing
+                    if (newLevel === 0) {
+                        teamData[`c${i}_blessing`] = null;
+                        teamData[`c${i}_blessing_rarity`] = null;
+                    }
                 }
 
                 // Save to Firebase
-                console.log(`Attempting to save blessing level. currentPostId: ${currentPostId}, currentRoomId: ${currentRoomId}, index: ${index}`);
                 if (currentPostId && currentRoomId) {
                     const levelRef = ref(db, `rooms/${currentRoomId}/siege/${currentPostId}/teams/${index}/c${i}_blessing_level`);
                     set(levelRef, newLevel);
-                    console.log(`✅ Saved blessing level ${newLevel} for champion ${i} in team ${index}`);
-                } else {
-                    console.error(`❌ Cannot save: currentPostId=${currentPostId}, currentRoomId=${currentRoomId}`);
+
+                    // If level is 0, also clear the blessing from Firebase
+                    if (newLevel === 0) {
+                        const blessingRef = ref(db, `rooms/${currentRoomId}/siege/${currentPostId}/teams/${index}/c${i}_blessing`);
+                        set(blessingRef, null);
+
+                        const rarityRef = ref(db, `rooms/${currentRoomId}/siege/${currentPostId}/teams/${index}/c${i}_blessing_rarity`);
+                        set(rarityRef, null);
+                    }
                 }
             });
         });
@@ -2246,15 +2251,11 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
             // Stop propagation to prevent teamRow dragstart from firing
             e.stopPropagation();
 
-            console.log("🚀 DRAGSTART - e.currentTarget.dataset.champIndex:", e.currentTarget.dataset.champIndex);
-
             draggedModalChampSlot = e.currentTarget;
             e.dataTransfer.effectAllowed = "move";
             // Use custom data type to distinguish from team row drag
             e.dataTransfer.setData("application/x-champion-slot", e.currentTarget.dataset.champIndex);
             e.currentTarget.classList.add("dragging");
-
-            console.log("🚀 DRAGSTART - setData value:", e.currentTarget.dataset.champIndex);
         });
 
         champSlot.addEventListener("dragend", () => {
@@ -2284,33 +2285,25 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
 
             // Only allow drop if we're dragging a champion slot from this modal
             if (!draggedModalChampSlot) {
-                console.log("❌ DROP rejected - drag source is not from this modal");
                 return;
             }
 
             // Get data from custom type
             const champSlotData = e.dataTransfer.getData("application/x-champion-slot");
             if (!champSlotData) {
-                console.log("❌ DROP rejected - not a champion slot drag");
                 return;
             }
 
             const fromIndex = parseInt(champSlotData);
             const toIndex = parseInt(champSlot.dataset.champIndex);
 
-            console.log("🔍 MODAL DROP - fromIndex:", fromIndex, "toIndex:", toIndex);
-
             if (fromIndex === toIndex) return;
 
             // Échanger les champions dans la même team
             const allSlots = rightRow.querySelectorAll(".champ-slot");
-            console.log("🔍 allSlots found:", allSlots.length);
-            allSlots.forEach(s => console.log("  - slot champIndex:", s.dataset.champIndex));
 
             const fromSlot = Array.from(allSlots).find(s => parseInt(s.dataset.champIndex) === fromIndex);
             const toSlot = champSlot;
-
-            console.log("🔍 fromSlot found:", !!fromSlot, "toSlot found:", !!toSlot);
 
             if (!fromSlot || !toSlot) return;
 
@@ -2320,14 +2313,6 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
             const toChampImg = toSlot.querySelector(".champ-img");
             const fromRarityImg = fromSlot.querySelector(".rarity-img");
             const toRarityImg = toSlot.querySelector(".rarity-img");
-
-            // Get visual labels to show what user sees
-            const fromLabel = fromSlot.querySelector("label").textContent;
-            const toLabel = toSlot.querySelector("label").textContent;
-
-            console.log("🔍 BEFORE SWAP:");
-            console.log("  FROM: champIndex=" + fromIndex + " label='" + fromLabel + "' value='" + fromInput.value + "'");
-            console.log("  TO:   champIndex=" + toIndex + " label='" + toLabel + "' value='" + toInput.value + "'");
 
             // Échanger les valeurs
             const tempValue = fromInput.value;
@@ -2347,10 +2332,6 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
             toChampImg.style.display = tempChampDisplay;
             toRarityImg.src = tempRaritySrc;
             toRarityImg.style.display = tempRarityDisplay;
-
-            console.log("🔍 AFTER SWAP:");
-            console.log("  FROM: champIndex=" + fromIndex + " label='" + fromLabel + "' value='" + fromInput.value + "'");
-            console.log("  TO:   champIndex=" + toIndex + " label='" + toLabel + "' value='" + toInput.value + "'");
 
             // Update lead aura if champion 4 was involved in the swap
             if (fromIndex === 4 || toIndex === 4) {
@@ -2640,8 +2621,6 @@ function createGroupHeader(groupNumber) {
 
 function fillModalFromData(data) {
     // CONDIS NON UTILISÉES POUR L'INSTANT → CHECK SAFE
-    console.log('fillModalFromData called with data:', data);
-
     const teamsContainer = document.getElementById("teamsContainer");
     teamsContainer.innerHTML = "";
 
@@ -2651,7 +2630,6 @@ function fillModalFromData(data) {
 
     // Ne plus limiter le nombre de teams - c'est juste visuel
     const teams = Array.isArray(data.teams) && data.teams.length ? data.teams : [{}];
-    console.log('Teams to render:', teams);
 
     // Check if any team is selected (for correct initial state)
     const hasSelectedTeam = teams.some(t => t.selected === true);
@@ -4847,7 +4825,7 @@ function getAllBlessings() {
     if (!championsDB) return null;
     try {
         const stmt = championsDB.prepare(
-            "SELECT DISTINCT name, section, rarity, image FROM blessings ORDER BY section, rarity, name;"
+            "SELECT DISTINCT name, section, rarity, image FROM blessings ORDER BY sectionID, rarity, name;"
         );
         const blessings = [];
         while (stmt.step()) {
@@ -4863,19 +4841,26 @@ function getAllBlessings() {
 
 function getBlessingsBySection() {
     const allBlessings = getAllBlessings();
-    if (!allBlessings) return {};
+    if (!allBlessings) return [];
 
-    const bySections = {};
+    const sectionsArray = [];
+    const sectionsMap = {};
+
     allBlessings.forEach(blessing => {
-        if (!bySections[blessing.section]) {
-            bySections[blessing.section] = [];
+        if (!sectionsMap[blessing.section]) {
+            sectionsMap[blessing.section] = [];
+            // Add section to array to preserve order
+            sectionsArray.push({
+                section: blessing.section,
+                blessings: sectionsMap[blessing.section]
+            });
         }
         // Only add if not already in array (deduplicate by name)
-        if (!bySections[blessing.section].find(b => b.name === blessing.name)) {
-            bySections[blessing.section].push(blessing);
+        if (!sectionsMap[blessing.section].find(b => b.name === blessing.name)) {
+            sectionsMap[blessing.section].push(blessing);
         }
     });
-    return bySections;
+    return sectionsArray;
 }
 
 function getBlessingDescription(blessingName, level) {
@@ -5064,6 +5049,8 @@ function openBlessingModal(blessingImgElement) {
 
     // Store reference to the blessing image element to update it later
     modal.blessingImgElement = blessingImgElement;
+    // Store reference to the champion slot to access team row later
+    modal.championSlot = champSlot;
 
     // Populate modal body with blessings
     renderBlessingSelection(modalBody, champData.rarity, blessingLevel);
@@ -5073,10 +5060,9 @@ function openBlessingModal(blessingImgElement) {
 }
 
 function renderBlessingSelection(container, championRarity, blessingLevel) {
-    const blessingsBySection = getBlessingsBySection();
-    const sections = Object.keys(blessingsBySection);
+    const sectionsArray = getBlessingsBySection();
 
-    if (sections.length === 0) {
+    if (sectionsArray.length === 0) {
         container.innerHTML = `<p style="color: #aaa; text-align: center;">No blessings available</p>`;
         return;
     }
@@ -5097,10 +5083,13 @@ function renderBlessingSelection(container, championRarity, blessingLevel) {
     const contentArea = document.createElement("div");
     contentArea.className = "blessing-content-area";
 
-    let firstSection = null;
+    let firstSectionBlessings = null;
 
-    sections.forEach((section, index) => {
-        if (index === 0) firstSection = section;
+    sectionsArray.forEach((sectionObj, index) => {
+        const section = sectionObj.section;
+        const blessings = sectionObj.blessings;
+
+        if (index === 0) firstSectionBlessings = blessings;
 
         const sectionTab = document.createElement("div");
         sectionTab.className = "blessing-section-tab";
@@ -5131,7 +5120,7 @@ function renderBlessingSelection(container, championRarity, blessingLevel) {
             sectionTab.classList.add("active");
 
             // Render blessings for this section
-            renderBlessingsGrid(contentArea, blessingsBySection[section], championRarity, maxRarityIndex, blessingLevel);
+            renderBlessingsGrid(contentArea, blessings, championRarity, maxRarityIndex, blessingLevel);
         });
 
         sidebar.appendChild(sectionTab);
@@ -5143,8 +5132,8 @@ function renderBlessingSelection(container, championRarity, blessingLevel) {
     container.appendChild(wrapper);
 
     // Render first section by default
-    if (firstSection) {
-        renderBlessingsGrid(contentArea, blessingsBySection[firstSection], championRarity, maxRarityIndex, blessingLevel);
+    if (firstSectionBlessings) {
+        renderBlessingsGrid(contentArea, firstSectionBlessings, championRarity, maxRarityIndex, blessingLevel);
     }
 }
 
@@ -5266,8 +5255,8 @@ function selectBlessing(blessingName, blessingRarity) {
     blessingContainer.dataset.blessing = blessingName;
     blessingContainer.dataset.rarity = blessingRarity;
 
-    // Get champion slot to determine if we're in main modal or presets modal
-    const champSlot = blessingContainer.closest(".champ-slot");
+    // Get champion slot from modal (stored when modal was opened)
+    const champSlot = modal.championSlot;
     if (!champSlot) return;
 
     // Check if we're in presets modal or main modal
@@ -5299,12 +5288,10 @@ function selectBlessing(blessingName, blessingRarity) {
 
             const rarityRef = ref(db, `rooms/${currentRoomId}/siege/members/${memberPseudo}/presets/${presetId}/${slotName}_blessing_rarity`);
             set(rarityRef, blessingRarity);
-
-            console.log(`Preset ${presetId} ${slotName} blessing set to ${blessingName} (${blessingRarity})`);
         }
     } else {
         // We're in main modal - save to post team
-        const teamRow = champSlot.closest(".modal-team-row");
+        const teamRow = champSlot.closest(".team-row");
         if (!teamRow) return;
 
         const champIndex = champSlot.dataset.champIndex;
@@ -5326,8 +5313,6 @@ function selectBlessing(blessingName, blessingRarity) {
 
             const rarityRef = ref(db, `rooms/${currentRoomId}/siege/${currentPostId}/teams/${teamIndex}/c${champIndex}_blessing_rarity`);
             set(rarityRef, blessingRarity);
-
-            console.log(`Post ${currentPostId} team ${teamIndex} champion ${champIndex} blessing set to ${blessingName} (${blessingRarity})`);
         }
     }
 
@@ -6082,8 +6067,6 @@ window.addEventListener("DOMContentLoaded", () => {
                     // Save to Firebase
                     const presetRef = ref(db, `rooms/${currentRoomId}/siege/members/${memberPseudo}/presets/${presetId}/${slotName}_blessing_level`);
                     set(presetRef, newLevel);
-
-                    console.log(`Preset ${presetId} ${slotName} blessing level set to ${newLevel}`);
                 }
             });
         });
@@ -6352,19 +6335,13 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function updatePresetConditions(memberPseudo, presetId) {
-        console.log("🔧 updatePresetConditions called:", memberPseudo, presetId);
-
         const member = clanMembers[memberPseudo];
         if (!member || !member.presets || !member.presets[presetId]) {
-            console.log("❌ Member or preset not found");
             return;
         }
 
         const preset = member.presets[presetId];
-        console.log("🔧 Preset data:", preset);
-
         const validatedConditions = getValidatedConditions(preset);
-        console.log("🔧 Validated conditions:", validatedConditions);
 
         // Cache the validated conditions in the preset
         preset.cachedConditions = validatedConditions;
@@ -6377,11 +6354,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
         // Find the conditions grid for THIS specific preset only
         const targetPresetRow = document.querySelector(`.preset-row[data-preset-id="${presetId}"][data-member-pseudo="${memberPseudo}"]`);
-        console.log("🔧 targetPresetRow found:", !!targetPresetRow);
 
         if (targetPresetRow) {
             const conditionsGrid = targetPresetRow.querySelector('.preset-conditions-grid');
-            console.log("🔧 conditionsGrid found:", !!conditionsGrid);
 
             if (conditionsGrid) {
                 conditionsGrid.innerHTML = "";
@@ -6447,18 +6422,13 @@ window.addEventListener("DOMContentLoaded", () => {
         e.stopPropagation();
         e.currentTarget.classList.remove("drag-over");
 
-        console.log("🔍 DROP - memberPseudo:", memberPseudo, "presetId:", presetId);
-
         if (!draggedPresetSlot || draggedPresetSlot === e.currentTarget) return;
 
         // Verify we're dropping within the same preset
         const targetPresetRow = e.currentTarget.closest('.preset-row');
         const draggedPresetRow = draggedPresetSlot.closest('.preset-row');
 
-        console.log("🔍 targetPresetRow === draggedPresetRow:", targetPresetRow === draggedPresetRow);
-
         if (targetPresetRow !== draggedPresetRow) {
-            console.log("❌ Cannot drag between different presets");
             return;
         }
 
@@ -6468,8 +6438,6 @@ window.addEventListener("DOMContentLoaded", () => {
         const tempValue = draggedInput.value;
         const draggedSlot = draggedPresetSlot.dataset.slotName;
         const targetSlot = e.currentTarget.dataset.slotName;
-
-        console.log("🔍 SWAP:", draggedSlot, "(", tempValue, ") <-> ", targetSlot, "(", targetInput.value, ")");
 
         // Swap values in inputs
         draggedInput.value = targetInput.value;
