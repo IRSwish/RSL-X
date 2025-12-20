@@ -59,6 +59,13 @@
                     <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
                 </svg>
                 <span>Filters</span>
+                <div id="clearFiltersBtn" class="clear-filters-icon-btn" title="Clear all filters">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <polyline points="1 20 1 14 7 14"></polyline>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                </div>
                 <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
@@ -522,24 +529,56 @@
         <div class="password-change-content">
             <div class="login-field">
                 <label>New Admin Password</label>
-                <input type="password" id="newAdminPassword" placeholder="Enter new admin password">
+                <div class="password-input-wrapper">
+                    <input type="password" id="newAdminPassword" placeholder="Enter new admin password">
+                    <button type="button" class="password-toggle-btn" data-target="newAdminPassword">
+                        <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div class="login-field">
                 <label>Confirm Admin Password</label>
-                <input type="password" id="confirmAdminPassword" placeholder="Confirm admin password">
+                <div class="password-input-wrapper">
+                    <input type="password" id="confirmAdminPassword" placeholder="Confirm admin password">
+                    <button type="button" class="password-toggle-btn" data-target="confirmAdminPassword">
+                        <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div class="password-divider"></div>
 
             <div class="login-field">
                 <label>New Viewer Password</label>
-                <input type="password" id="newViewerPassword" placeholder="Enter new viewer password">
+                <div class="password-input-wrapper">
+                    <input type="password" id="newViewerPassword" placeholder="Enter new viewer password">
+                    <button type="button" class="password-toggle-btn" data-target="newViewerPassword">
+                        <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div class="login-field">
                 <label>Confirm Viewer Password</label>
-                <input type="password" id="confirmViewerPassword" placeholder="Confirm viewer password">
+                <div class="password-input-wrapper">
+                    <input type="password" id="confirmViewerPassword" placeholder="Confirm viewer password">
+                    <button type="button" class="password-toggle-btn" data-target="confirmViewerPassword">
+                        <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <button id="savePasswordsBtn" class="login-submit-btn">Save Passwords</button>

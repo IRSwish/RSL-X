@@ -670,9 +670,22 @@ function applyFilters() {
                     showPost = false;
                 }
             } else {
-                const hasMember = teams.some(team => team.member === selectedMember);
-                if (!hasMember) {
-                    showPost = false;
+                // For buildings, just check if member is present
+                // For regular posts, check if member has at least one ACCEPTED team (selected === true)
+                if (postType !== "post") {
+                    // Building: just check if member exists
+                    const hasMember = teams.some(team => team.member === selectedMember);
+                    if (!hasMember) {
+                        showPost = false;
+                    }
+                } else {
+                    // Regular post: check if member has at least one ACCEPTED team (selected === true)
+                    const hasAcceptedTeam = teams.some(team => {
+                        return team.member === selectedMember && team.selected === true;
+                    });
+                    if (!hasAcceptedTeam) {
+                        showPost = false;
+                    }
                 }
             }
         }
@@ -692,7 +705,145 @@ function applyFilters() {
         }
 
         postEl.style.display = showPost ? "" : "none";
+
+        // Show/hide persistent tooltips based on member filter
+        if (showPost && selectedMember !== "" && selectedMember !== "__EMPTY__") {
+            // Show persistent tooltip for this post
+            showPersistentTooltip(postEl, postId);
+        } else {
+            // Hide persistent tooltip
+            hidePersistentTooltip(postEl, postId);
+        }
     });
+}
+
+function showPersistentTooltip(postEl, postId) {
+    // Get filtered member
+    const memberFilter = document.getElementById("memberFilter");
+    const selectedMember = memberFilter ? (memberFilter.dataset.value || "") : "";
+
+    // Create a persistent tooltip element for this post
+    let tooltip = postEl.querySelector('.persistent-tooltip');
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.className = 'persistent-tooltip post-tooltip';
+        postEl.appendChild(tooltip);
+    }
+
+    // Create tooltip content showing ONLY the filtered member's team
+    const content = createFilteredTooltipContent(postId, selectedMember);
+    if (content) {
+        tooltip.innerHTML = '';
+        tooltip.appendChild(content);
+        tooltip.style.opacity = '1';
+    }
+
+    // Update hover behavior to toggle between filtered and all teams
+    postEl.removeEventListener("mouseenter", postEl._tooltipMouseEnter);
+    postEl.removeEventListener("mouseleave", postEl._tooltipMouseLeave);
+
+    postEl._tooltipMouseEnter = () => {
+        // Hide ALL persistent tooltips
+        document.querySelectorAll('.persistent-tooltip').forEach(t => {
+            t.style.opacity = '0';
+        });
+        // Show global tooltip with all teams
+        showTooltip(postEl, postId);
+    };
+
+    postEl._tooltipMouseLeave = () => {
+        // Hide global tooltip
+        hideTooltip();
+        // Show ALL persistent tooltips again
+        document.querySelectorAll('.persistent-tooltip').forEach(t => {
+            t.style.opacity = '1';
+        });
+    };
+
+    postEl.addEventListener("mouseenter", postEl._tooltipMouseEnter);
+    postEl.addEventListener("mouseleave", postEl._tooltipMouseLeave);
+}
+
+function createFilteredTooltipContent(postId, selectedMember) {
+    const data = postDataCache[postId] || {};
+    const teams = Array.isArray(data.teams) ? data.teams : [];
+
+    // Filter teams to show ONLY the selected member's team
+    const memberTeams = teams.filter(team => team.member === selectedMember);
+
+    if (memberTeams.length === 0) return null;
+
+    const content = document.createElement("div");
+
+    // Title
+    const title = document.createElement("div");
+    title.className = "post-tooltip-title";
+    title.textContent = getPostLabel(postId);
+    content.appendChild(title);
+
+    // Show only the member's teams
+    memberTeams.forEach((team) => {
+        const teamDiv = document.createElement("div");
+        teamDiv.className = "post-tooltip-team";
+        teamDiv.style.background = "rgba(212, 175, 55, 0.15)";
+        teamDiv.style.borderRadius = "6px";
+
+        // Pseudo
+        const memberSpan = document.createElement("span");
+        memberSpan.className = "post-tooltip-member";
+        memberSpan.textContent = team.member;
+        teamDiv.appendChild(memberSpan);
+
+        // Condition icon (only for regular posts)
+        const postEl = document.getElementById(postId);
+        const postType = postEl ? postEl.dataset.type : "post";
+
+        if (postType === "post" && team.condition) {
+            const condIcon = getConditionIcon(team.condition);
+            if (condIcon) {
+                const img = document.createElement("img");
+                img.src = condIcon;
+                img.className = "post-tooltip-cond-icon";
+                img.title = getConditionName(team.condition);
+                teamDiv.appendChild(img);
+            }
+        }
+
+        // Champions (images)
+        const champsDiv = document.createElement("div");
+        champsDiv.className = "post-tooltip-champs";
+
+        for (let i = 1; i <= 4; i++) {
+            const champName = team["c" + i];
+
+            if (champName && championsDB) {
+                const champ = getChampionByNameExact(champName);
+
+                if (champ && champ.image) {
+                    const champImg = document.createElement("img");
+                    champImg.className = "post-tooltip-champ-img";
+                    champImg.src = `/tools/champions-index/img/champions/${champ.image}.webp`;
+                    champImg.title = champName;
+                    champsDiv.appendChild(champImg);
+                }
+            }
+        }
+
+        teamDiv.appendChild(champsDiv);
+        content.appendChild(teamDiv);
+    });
+
+    return content;
+}
+
+function hidePersistentTooltip(postEl, postId) {
+    const tooltip = postEl.querySelector('.persistent-tooltip');
+    if (tooltip) {
+        tooltip.remove();
+    }
+
+    // Restore normal hover tooltip behavior
+    updateTooltipOnMap(postId);
 }
 
 function updateConditionsFilter() {
@@ -1339,6 +1490,111 @@ function refreshTeamsPresetsDropdown() {
         });
     });
 
+    // Add member filter
+    const memberFilterDiv = document.createElement("div");
+    memberFilterDiv.className = "preset-member-filter";
+
+    const memberFilterLabel = document.createElement("label");
+    memberFilterLabel.textContent = "Member:";
+    memberFilterLabel.style.fontSize = "12px";
+    memberFilterLabel.style.color = "#d4af37";
+    memberFilterLabel.style.fontWeight = "600";
+    memberFilterLabel.style.textTransform = "uppercase";
+    memberFilterLabel.style.letterSpacing = "0.05em";
+    memberFilterDiv.appendChild(memberFilterLabel);
+
+    const memberSelectWrapper = document.createElement("div");
+    memberSelectWrapper.className = "custom-select-wrapper";
+
+    const memberSelect = document.createElement("div");
+    memberSelect.id = "presetMemberFilter";
+    memberSelect.className = "custom-select custom-select-no-icon";
+    memberSelect.dataset.value = "";
+
+    const memberTrigger = document.createElement("div");
+    memberTrigger.className = "custom-select-trigger";
+
+    const memberTriggerSpan = document.createElement("span");
+    memberTriggerSpan.textContent = "All";
+    memberTrigger.appendChild(memberTriggerSpan);
+
+    const memberChevron = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    memberChevron.classList.add("chevron-icon");
+    memberChevron.setAttribute("width", "14");
+    memberChevron.setAttribute("height", "14");
+    memberChevron.setAttribute("viewBox", "0 0 24 24");
+    memberChevron.setAttribute("fill", "none");
+    memberChevron.setAttribute("stroke", "currentColor");
+    memberChevron.setAttribute("stroke-width", "2");
+    memberChevron.setAttribute("stroke-linecap", "round");
+    memberChevron.setAttribute("stroke-linejoin", "round");
+    const memberPolyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    memberPolyline.setAttribute("points", "6 9 12 15 18 9");
+    memberChevron.appendChild(memberPolyline);
+    memberTrigger.appendChild(memberChevron);
+
+    memberSelect.appendChild(memberTrigger);
+
+    const memberOptions = document.createElement("div");
+    memberOptions.className = "custom-select-options";
+
+    // Add "All" option
+    const allOption = document.createElement("div");
+    allOption.className = "custom-select-option selected";
+    allOption.dataset.value = "";
+    allOption.textContent = "All";
+    memberOptions.appendChild(allOption);
+
+    // Add member options
+    membersWithPresets.forEach(pseudo => {
+        const option = document.createElement("div");
+        option.className = "custom-select-option";
+        option.dataset.value = pseudo;
+        option.textContent = pseudo;
+        memberOptions.appendChild(option);
+    });
+
+    memberSelect.appendChild(memberOptions);
+    memberSelectWrapper.appendChild(memberSelect);
+    memberFilterDiv.appendChild(memberSelectWrapper);
+    dropdown.appendChild(memberFilterDiv);
+
+    // Add event listeners for member filter
+    memberTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        memberSelect.classList.toggle("open");
+    });
+
+    memberOptions.addEventListener("click", (e) => {
+        const option = e.target.closest(".custom-select-option");
+        if (!option) return;
+
+        const value = option.dataset.value;
+        memberSelect.dataset.value = value;
+
+        // Update display
+        memberTriggerSpan.textContent = value === "" ? "All" : value;
+
+        // Update selected class
+        memberOptions.querySelectorAll(".custom-select-option").forEach(opt => {
+            opt.classList.remove("selected");
+        });
+        option.classList.add("selected");
+
+        // Close dropdown
+        memberSelect.classList.remove("open");
+
+        // Filter presets by member
+        filterPresetsByMember(value);
+    });
+
+    // Close member filter when clicking outside
+    document.addEventListener("click", (e) => {
+        if (!memberSelect.contains(e.target)) {
+            memberSelect.classList.remove("open");
+        }
+    });
+
     // Add condition filter if there are conditions
     if (allConditionsSet.size > 0) {
         const filterDiv = document.createElement("div");
@@ -1604,6 +1860,28 @@ function filterPresetsByCondition(conditionId) {
     }
 }
 
+function filterPresetsByMember(memberPseudo) {
+    const dropdown = document.getElementById("teamsPresetsDropdown");
+    if (!dropdown) return;
+
+    const allMembers = dropdown.querySelectorAll(".preset-dropdown-member");
+
+    if (memberPseudo === "") {
+        // Show all members
+        allMembers.forEach(member => member.classList.remove("member-filtered-out"));
+    } else {
+        // Filter by member
+        allMembers.forEach(member => {
+            const memberName = member.querySelector(".preset-dropdown-member-name");
+            if (memberName && memberName.textContent === memberPseudo) {
+                member.classList.remove("member-filtered-out");
+            } else {
+                member.classList.add("member-filtered-out");
+            }
+        });
+    }
+}
+
 // Setup drag & drop zone on a post/building
 function setupPostDropZone(postElement) {
     postElement.addEventListener("dragover", (e) => {
@@ -1647,10 +1925,22 @@ function addPresetToPost(postId, memberPseudo, preset) {
     // Create new team from preset
     const newTeam = {
         member: memberPseudo,
-        c1: preset.lead || "",
-        c2: preset.champion2 || "",
-        c3: preset.champion3 || "",
-        c4: preset.champion4 || "",
+        c1: preset.champion4 || "",
+        c2: preset.champion3 || "",
+        c3: preset.champion2 || "",
+        c4: preset.lead || "",
+        c1_blessing: preset.champion4_blessing || null,
+        c1_blessing_rarity: preset.champion4_blessing_rarity || null,
+        c1_blessing_level: preset.champion4_blessing_level || 0,
+        c2_blessing: preset.champion3_blessing || null,
+        c2_blessing_rarity: preset.champion3_blessing_rarity || null,
+        c2_blessing_level: preset.champion3_blessing_level || 0,
+        c3_blessing: preset.champion2_blessing || null,
+        c3_blessing_rarity: preset.champion2_blessing_rarity || null,
+        c3_blessing_level: preset.champion2_blessing_level || 0,
+        c4_blessing: preset.lead_blessing || null,
+        c4_blessing_rarity: preset.lead_blessing_rarity || null,
+        c4_blessing_level: preset.lead_blessing_level || 0,
         condition: preset.condition || "",
         selected: false
     };
@@ -1781,29 +2071,36 @@ function updateLeadAura(teamRow) {
         <div class="lead-aura-value">${value}</div>
     `;
     auraDisplay.style.display = "flex";
-}
 
-function moveTeamUp(teamRow) {
-    const prevRow = teamRow.previousElementSibling;
-    if (prevRow && prevRow.classList.contains("team-row")) {
-        teamRow.parentNode.insertBefore(teamRow, prevRow);
-        updateMoveButtons();
-        autoSaveCurrentPost();
+    // Add pulsing red effect if not "All Battles"
+    if (zone && zone.toLowerCase() !== 'all battles') {
+        auraDisplay.classList.add('lead-aura-restricted');
+    } else {
+        auraDisplay.classList.remove('lead-aura-restricted');
     }
 }
 
-function moveTeamDown(teamRow) {
-    const nextRow = teamRow.nextElementSibling;
-    if (nextRow && nextRow.classList.contains("team-row")) {
-        teamRow.parentNode.insertBefore(nextRow, teamRow);
-        updateMoveButtons();
-        autoSaveCurrentPost();
+// Generic functions for row reordering (works for both team-row and preset-row)
+function moveRowUp(row, rowClass, updateCallback, saveCallback) {
+    const prevRow = row.previousElementSibling;
+    if (prevRow && prevRow.classList.contains(rowClass)) {
+        row.parentNode.insertBefore(row, prevRow);
+        if (updateCallback) updateCallback();
+        if (saveCallback) saveCallback();
     }
 }
 
-function updateMoveButtons() {
-    const teamsContainer = document.getElementById("teamsContainer");
-    const rows = Array.from(teamsContainer.querySelectorAll(".team-row"));
+function moveRowDown(row, rowClass, updateCallback, saveCallback) {
+    const nextRow = row.nextElementSibling;
+    if (nextRow && nextRow.classList.contains(rowClass)) {
+        row.parentNode.insertBefore(nextRow, row);
+        if (updateCallback) updateCallback();
+        if (saveCallback) saveCallback();
+    }
+}
+
+function updateRowMoveButtons(container, rowClass) {
+    const rows = Array.from(container.querySelectorAll(`.${rowClass}`));
 
     rows.forEach((row, index) => {
         const upBtn = row.querySelector(".move-up");
@@ -1812,6 +2109,66 @@ function updateMoveButtons() {
         if (upBtn) upBtn.disabled = (index === 0);
         if (downBtn) downBtn.disabled = (index === rows.length - 1);
     });
+}
+
+// Team-specific wrappers
+function moveTeamUp(teamRow) {
+    moveRowUp(teamRow, "team-row", updateMoveButtons, autoSaveCurrentPost);
+}
+
+function moveTeamDown(teamRow) {
+    moveRowDown(teamRow, "team-row", updateMoveButtons, autoSaveCurrentPost);
+}
+
+function updateMoveButtons() {
+    const teamsContainer = document.getElementById("teamsContainer");
+    updateRowMoveButtons(teamsContainer, "team-row");
+}
+
+// Preset-specific wrappers
+function movePresetUp(presetRow) {
+    moveRowUp(presetRow, "preset-row", updatePresetMoveButtons, savePresetsOrder);
+}
+
+function movePresetDown(presetRow) {
+    moveRowDown(presetRow, "preset-row", updatePresetMoveButtons, savePresetsOrder);
+}
+
+function updatePresetMoveButtons() {
+    const presetsContainer = document.getElementById("presetsContainer");
+    updateRowMoveButtons(presetsContainer, "preset-row");
+}
+
+function savePresetsOrder() {
+    const presetsContainer = document.getElementById("presetsContainer");
+    const presetRows = Array.from(presetsContainer.querySelectorAll(".preset-row"));
+
+    if (presetRows.length === 0) return;
+
+    // Get member pseudo from first row
+    const memberPseudo = presetRows[0].dataset.memberPseudo;
+    if (!memberPseudo || !clanMembers[memberPseudo]) return;
+
+    // Get current order of preset IDs
+    const orderedPresetIds = presetRows.map(row => row.dataset.presetId);
+
+    // Rebuild presets object in new order
+    const member = clanMembers[memberPseudo];
+    const oldPresets = member.presets || {};
+    const newPresets = {};
+
+    orderedPresetIds.forEach(presetId => {
+        if (oldPresets[presetId]) {
+            newPresets[presetId] = oldPresets[presetId];
+        }
+    });
+
+    // Update in memory
+    member.presets = newPresets;
+
+    // Save to Firebase
+    const memberRef = ref(db, `rooms/${currentRoomId}/members/${memberPseudo}/presets`);
+    set(memberRef, newPresets);
 }
 
 function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
@@ -2382,6 +2739,12 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
             const fromRarityImg = fromSlot.querySelector(".rarity-img");
             const toRarityImg = toSlot.querySelector(".rarity-img");
 
+            // Get blessing containers
+            const fromVisual = fromSlot.querySelector(".champ-visual");
+            const toVisual = toSlot.querySelector(".champ-visual");
+            const fromBlessingContainer = fromVisual ? fromVisual.querySelector(".blessing-img-container") : null;
+            const toBlessingContainer = toVisual ? toVisual.querySelector(".blessing-img-container") : null;
+
             // Échanger les valeurs
             const tempValue = fromInput.value;
             const tempChampSrc = fromChampImg.src;
@@ -2401,9 +2764,72 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
             toRarityImg.src = tempRaritySrc;
             toRarityImg.style.display = tempRarityDisplay;
 
+            // Swap blessings - swap the entire containers
+            if (fromBlessingContainer && toBlessingContainer) {
+                // Clone both containers
+                const fromClone = fromBlessingContainer.cloneNode(true);
+                const toClone = toBlessingContainer.cloneNode(true);
+
+                // Replace them
+                fromBlessingContainer.parentNode.replaceChild(toClone, fromBlessingContainer);
+                toBlessingContainer.parentNode.replaceChild(fromClone, toBlessingContainer);
+            }
+
+            // Swap blessing stars
+            const fromStarsContainer = fromVisual ? fromVisual.querySelector(".blessing-stars") : null;
+            const toStarsContainer = toVisual ? toVisual.querySelector(".blessing-stars") : null;
+
+            if (fromStarsContainer && toStarsContainer) {
+                // Clone both star containers
+                const fromStarsClone = fromStarsContainer.cloneNode(true);
+                const toStarsClone = toStarsContainer.cloneNode(true);
+
+                // Replace them
+                fromStarsContainer.parentNode.replaceChild(toStarsClone, fromStarsContainer);
+                toStarsContainer.parentNode.replaceChild(fromStarsClone, toStarsContainer);
+            }
+
             // Update lead aura if champion 4 was involved in the swap
             if (fromIndex === 4 || toIndex === 4) {
                 setTimeout(() => updateLeadAura(teamRow), 50);
+            }
+
+            // Save swapped blessing data to Firebase
+            const teamIndex = teamRow.dataset.teamIndex;
+            if (currentPostId && currentRoomId && teamIndex !== undefined) {
+                const postData = postDataCache[currentPostId];
+                if (postData && postData.teams && postData.teams[teamIndex]) {
+                    const teamData = postData.teams[teamIndex];
+
+                    // Update team data in cache
+                    const tempChamp = teamData[`c${fromIndex}`];
+                    const tempBlessing = teamData[`c${fromIndex}_blessing`];
+                    const tempBlessingRarity = teamData[`c${fromIndex}_blessing_rarity`];
+                    const tempBlessingLevel = teamData[`c${fromIndex}_blessing_level`];
+
+                    teamData[`c${fromIndex}`] = teamData[`c${toIndex}`];
+                    teamData[`c${fromIndex}_blessing`] = teamData[`c${toIndex}_blessing`];
+                    teamData[`c${fromIndex}_blessing_rarity`] = teamData[`c${toIndex}_blessing_rarity`];
+                    teamData[`c${fromIndex}_blessing_level`] = teamData[`c${toIndex}_blessing_level`];
+
+                    teamData[`c${toIndex}`] = tempChamp;
+                    teamData[`c${toIndex}_blessing`] = tempBlessing;
+                    teamData[`c${toIndex}_blessing_rarity`] = tempBlessingRarity;
+                    teamData[`c${toIndex}_blessing_level`] = tempBlessingLevel;
+
+                    // Save to Firebase
+                    const teamRef = ref(db, `rooms/${currentRoomId}/siege/${currentPostId}/teams/${teamIndex}`);
+                    update(teamRef, {
+                        [`c${fromIndex}`]: teamData[`c${fromIndex}`],
+                        [`c${fromIndex}_blessing`]: teamData[`c${fromIndex}_blessing`],
+                        [`c${fromIndex}_blessing_rarity`]: teamData[`c${fromIndex}_blessing_rarity`],
+                        [`c${fromIndex}_blessing_level`]: teamData[`c${fromIndex}_blessing_level`],
+                        [`c${toIndex}`]: teamData[`c${toIndex}`],
+                        [`c${toIndex}_blessing`]: teamData[`c${toIndex}_blessing`],
+                        [`c${toIndex}_blessing_rarity`]: teamData[`c${toIndex}_blessing_rarity`],
+                        [`c${toIndex}_blessing_level`]: teamData[`c${toIndex}_blessing_level`]
+                    });
+                }
             }
         });
 
@@ -5277,18 +5703,29 @@ function renderBlessingsGrid(container, blessings, championRarity, maxRarityInde
 
         // Click handler with visual feedback
         blessingCard.addEventListener("click", () => {
-            // Remove selected class from all cards
-            grid.querySelectorAll(".blessing-card").forEach(card => {
-                card.classList.remove("selected");
-            });
+            // Check if clicking on already selected blessing
+            const wasSelected = blessingCard.classList.contains("selected");
 
-            // Add selected class to clicked card
-            blessingCard.classList.add("selected");
+            if (wasSelected) {
+                // Deselect the blessing
+                blessingCard.classList.remove("selected");
+                setTimeout(() => {
+                    clearBlessing();
+                }, 200);
+            } else {
+                // Remove selected class from all cards
+                grid.querySelectorAll(".blessing-card").forEach(card => {
+                    card.classList.remove("selected");
+                });
 
-            // Wait a moment for visual feedback before closing modal
-            setTimeout(() => {
-                selectBlessing(blessing.name, blessing.rarity);
-            }, 200);
+                // Add selected class to clicked card
+                blessingCard.classList.add("selected");
+
+                // Wait a moment for visual feedback before closing modal
+                setTimeout(() => {
+                    selectBlessing(blessing.name, blessing.rarity);
+                }, 200);
+            }
         });
 
         grid.appendChild(blessingCard);
@@ -5393,6 +5830,92 @@ function closeBlessingModal() {
     if (modal) {
         modal.classList.remove("active");
     }
+}
+
+function clearBlessing() {
+    const modal = document.getElementById("blessingModal");
+    if (!modal) return;
+
+    const blessingContainer = modal.blessingImgElement;
+    if (!blessingContainer) return;
+
+    // Clear blessing images - show Unselected.webp
+    const rarityImg = blessingContainer.querySelector(".blessing-rarity-bg");
+    const iconImg = blessingContainer.querySelector(".blessing-icon-overlay");
+
+    if (rarityImg) {
+        rarityImg.src = "/tools/champions-index/img/blessings/Unselected.webp";
+        rarityImg.style.display = "";
+    }
+
+    if (iconImg) {
+        iconImg.src = "";
+        iconImg.style.display = "none";
+    }
+
+    blessingContainer.dataset.blessing = "";
+    blessingContainer.dataset.rarity = "";
+
+    // Get champion slot from modal (stored when modal was opened)
+    const champSlot = modal.championSlot;
+    if (!champSlot) return;
+
+    // Check if we're in presets modal or main modal
+    const presetsModal = champSlot.closest("#presetsModal");
+
+    if (presetsModal) {
+        // We're in presets modal - clear preset blessing
+        const presetRow = champSlot.closest(".preset-row");
+        if (!presetRow) return;
+
+        const memberPseudo = presetRow.dataset.memberPseudo;
+        const presetId = presetRow.dataset.presetId;
+        const slotName = champSlot.dataset.slotName;
+
+        if (!memberPseudo || !presetId || !slotName) return;
+
+        // Update local data
+        const member = clanMembers[memberPseudo];
+        if (member && member.presets && member.presets[presetId]) {
+            member.presets[presetId][`${slotName}_blessing`] = null;
+            member.presets[presetId][`${slotName}_blessing_rarity`] = null;
+
+            // Save to Firebase
+            const blessingRef = ref(db, `rooms/${currentRoomId}/siege/members/${memberPseudo}/presets/${presetId}/${slotName}_blessing`);
+            set(blessingRef, null);
+
+            const rarityRef = ref(db, `rooms/${currentRoomId}/siege/members/${memberPseudo}/presets/${presetId}/${slotName}_blessing_rarity`);
+            set(rarityRef, null);
+        }
+    } else {
+        // We're in main modal - clear post team blessing
+        const teamRow = champSlot.closest(".team-row");
+        if (!teamRow) return;
+
+        const champIndex = champSlot.dataset.champIndex;
+        const teamIndex = teamRow.dataset.teamIndex;
+        if (!champIndex || teamIndex === undefined) return;
+
+        // Find the team data
+        if (!currentPostId) return;
+
+        const postData = postDataCache[currentPostId];
+        if (postData && postData.teams && postData.teams[teamIndex]) {
+            const teamData = postData.teams[teamIndex];
+            teamData[`c${champIndex}_blessing`] = null;
+            teamData[`c${champIndex}_blessing_rarity`] = null;
+
+            // Save to Firebase in teams array
+            const blessingRef = ref(db, `rooms/${currentRoomId}/siege/${currentPostId}/teams/${teamIndex}/c${champIndex}_blessing`);
+            set(blessingRef, null);
+
+            const rarityRef = ref(db, `rooms/${currentRoomId}/siege/${currentPostId}/teams/${teamIndex}/c${champIndex}_blessing_rarity`);
+            set(rarityRef, null);
+        }
+    }
+
+    // Close modal
+    closeBlessingModal();
 }
 
 // ==================== SMOOTH SCROLL TO TOP FUNCTION ====================
@@ -5648,6 +6171,63 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Clear Filters Button
+    const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener("click", (e) => {
+            // Prevent the parent button (filtersToggleBtn) from toggling
+            e.stopPropagation();
+
+            // Reset member filter
+            const memberFilter = document.getElementById("memberFilter");
+            if (memberFilter) {
+                memberFilter.dataset.value = "";
+                const selectedEl = memberFilter.querySelector(".custom-select-trigger span");
+                if (selectedEl) {
+                    selectedEl.textContent = "All";
+                }
+                // Update selected class on options
+                const optionsContainer = memberFilter.querySelector(".custom-select-options");
+                if (optionsContainer) {
+                    optionsContainer.querySelectorAll(".custom-select-option").forEach(opt => {
+                        opt.classList.remove("selected");
+                    });
+                    const allOption = optionsContainer.querySelector('.custom-select-option[data-value=""]');
+                    if (allOption) {
+                        allOption.classList.add("selected");
+                    }
+                }
+            }
+
+            // Reset condition filter
+            const conditionFilter = document.getElementById("conditionFilter");
+            if (conditionFilter) {
+                conditionFilter.dataset.value = "";
+                // Update selected class on options
+                const optionsContainer = conditionFilter.querySelector(".custom-select-options");
+                if (optionsContainer) {
+                    optionsContainer.querySelectorAll(".custom-select-option").forEach(opt => {
+                        opt.classList.remove("selected");
+                    });
+                    const allOption = optionsContainer.querySelector('.custom-select-option[data-value=""]');
+                    if (allOption) {
+                        allOption.classList.add("selected");
+                    }
+                }
+                // Update the condition filter display to remove icon
+                updateConditionFilterDisplay();
+            }
+
+            // Hide all persistent tooltips
+            document.querySelectorAll('.persistent-tooltip').forEach(t => {
+                t.remove();
+            });
+
+            // Apply filters to refresh the view
+            applyFilters();
+        });
+    }
+
     // Teams Presets Toggle Button
     const teamsPresetsBtn = document.getElementById("teamsPresetsBtn");
     const teamsPresetsDropdown = document.getElementById("teamsPresetsDropdown");
@@ -5748,6 +6328,23 @@ window.addEventListener("DOMContentLoaded", () => {
             showChangePasswordModal();
         });
     }
+
+    // Initialize password toggle buttons
+    document.querySelectorAll('.password-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.dataset.target;
+            const input = document.getElementById(targetId);
+            if (!input) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.classList.add('visible');
+            } else {
+                input.type = 'password';
+                btn.classList.remove('visible');
+            }
+        });
+    });
 
     if (exportBtn) {
         exportBtn.addEventListener('click', () => {
@@ -5939,13 +6536,91 @@ window.addEventListener("DOMContentLoaded", () => {
             const presetRow = createPresetRow(memberPseudo, presetId, preset);
             container.appendChild(presetRow);
         });
+
+        // Update move buttons after rendering all presets
+        updatePresetMoveButtons();
     }
 
     function createPresetRow(memberPseudo, presetId, preset) {
         const row = document.createElement("div");
         row.className = "preset-row";
+        row.draggable = true;
         row.dataset.presetId = presetId; // Add preset ID to identify the row
         row.dataset.memberPseudo = memberPseudo; // Add member pseudo too
+
+        // Drag & drop handlers for preset reordering
+        row.addEventListener("dragstart", (e) => {
+            // Only start drag if the target is the row itself, not a child element
+            if (e.target !== row) {
+                e.preventDefault();
+                return;
+            }
+
+            e.dataTransfer.effectAllowed = "move";
+            // Use a custom data type to distinguish from champion drag
+            e.dataTransfer.setData("application/x-preset-row", presetId);
+            row.classList.add("dragging");
+        });
+
+        row.addEventListener("dragend", () => {
+            row.classList.remove("dragging");
+            // Remove all drag-over classes
+            document.querySelectorAll(".preset-row.drag-over").forEach(r => {
+                r.classList.remove("drag-over");
+            });
+        });
+
+        row.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+            const draggingElement = document.querySelector(".preset-row.dragging");
+            if (draggingElement && draggingElement !== row) {
+                row.classList.add("drag-over");
+            }
+        });
+
+        row.addEventListener("dragleave", () => {
+            row.classList.remove("drag-over");
+        });
+
+        row.addEventListener("drop", (e) => {
+            e.preventDefault();
+            row.classList.remove("drag-over");
+
+            // Only handle preset row drops, not champion drops
+            const presetRowData = e.dataTransfer.getData("application/x-preset-row");
+            if (!presetRowData) {
+                // This is a champion drop, ignore it
+                return;
+            }
+
+            const fromPresetId = presetRowData;
+            const toPresetId = presetId;
+
+            if (fromPresetId !== toPresetId) {
+                // Swap presets in the modal
+                const presetsContainer = document.getElementById("presetsContainer");
+                const allPresetRows = Array.from(presetsContainer.querySelectorAll(".preset-row"));
+                const fromRow = allPresetRows.find(r => r.dataset.presetId === fromPresetId);
+                const toRow = allPresetRows.find(r => r.dataset.presetId === toPresetId);
+
+                if (fromRow && toRow) {
+                    const fromIndex = allPresetRows.indexOf(fromRow);
+                    const toIndex = allPresetRows.indexOf(toRow);
+
+                    // Swap positions in DOM
+                    if (fromIndex < toIndex) {
+                        toRow.parentNode.insertBefore(fromRow, toRow.nextSibling);
+                    } else {
+                        toRow.parentNode.insertBefore(fromRow, toRow);
+                    }
+
+                    // Update buttons and save
+                    updatePresetMoveButtons();
+                    savePresetsOrder();
+                }
+            }
+        });
 
         // Check if this preset is already used in a post
         const usageDetails = findPresetUsageDetailed(memberPseudo, preset);
@@ -5973,6 +6648,29 @@ window.addEventListener("DOMContentLoaded", () => {
                 openPostFromSummary(postId, memberPseudo);
             });
         }
+
+        // --- Move buttons ---
+        const moveButtons = document.createElement("div");
+        moveButtons.className = "move-team-btns";
+
+        const moveUpBtn = document.createElement("button");
+        moveUpBtn.className = "move-team-btn move-up";
+        moveUpBtn.type = "button";
+        moveUpBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>`;
+        moveUpBtn.title = "Move preset up";
+
+        const moveDownBtn = document.createElement("button");
+        moveDownBtn.className = "move-team-btn move-down";
+        moveDownBtn.type = "button";
+        moveDownBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>`;
+        moveDownBtn.title = "Move preset down";
+
+        moveUpBtn.onclick = () => movePresetUp(row);
+        moveDownBtn.onclick = () => movePresetDown(row);
+
+        moveButtons.appendChild(moveUpBtn);
+        moveButtons.appendChild(moveDownBtn);
+        row.appendChild(moveButtons);
 
         // Team section (champions + lead aura)
         const teamSection = document.createElement("div");
@@ -6012,9 +6710,15 @@ window.addEventListener("DOMContentLoaded", () => {
         const conditionsGrid = document.createElement("div");
         conditionsGrid.className = "preset-conditions-grid";
 
-        // Get validated conditions
+        // Get validated conditions (exclude Effects)
         const validatedConditions = getValidatedConditions(preset);
         validatedConditions.forEach(condId => {
+            // Skip effects conditions
+            const condType = getConditionType(condId);
+            if (condType === 'effects' || condType === 'Effects') {
+                return;
+            }
+
             const condIcon = getConditionIcon(condId);
             if (condIcon) {
                 const img = document.createElement("img");
@@ -6250,6 +6954,11 @@ window.addEventListener("DOMContentLoaded", () => {
         valueText.textContent = value;
         display.appendChild(valueText);
 
+        // Add pulsing red effect if not "All Battles"
+        if (zone && zone.toLowerCase() !== 'all battles') {
+            display.classList.add('lead-aura-restricted');
+        }
+
         return display;
     }
 
@@ -6429,6 +7138,12 @@ window.addEventListener("DOMContentLoaded", () => {
             if (conditionsGrid) {
                 conditionsGrid.innerHTML = "";
                 validatedConditions.forEach(condId => {
+                    // Skip effects conditions
+                    const condType = getConditionType(condId);
+                    if (condType === 'effects' || condType === 'Effects') {
+                        return;
+                    }
+
                     const condIcon = getConditionIcon(condId);
                     if (condIcon) {
                         const img = document.createElement("img");
@@ -6515,6 +7230,50 @@ window.addEventListener("DOMContentLoaded", () => {
         updatePresetChampionVisual(draggedPresetSlot, draggedInput.value);
         updatePresetChampionVisual(e.currentTarget, targetInput.value);
 
+        // Swap blessings - swap the entire containers
+        const draggedVisual = draggedPresetSlot.querySelector(".champ-visual");
+        const targetVisual = e.currentTarget.querySelector(".champ-visual");
+
+        if (draggedVisual && targetVisual) {
+            const draggedBlessingContainer = draggedVisual.querySelector(".blessing-img-container");
+            const targetBlessingContainer = targetVisual.querySelector(".blessing-img-container");
+
+            if (draggedBlessingContainer && targetBlessingContainer) {
+                // Clone both containers
+                const draggedClone = draggedBlessingContainer.cloneNode(true);
+                const targetClone = targetBlessingContainer.cloneNode(true);
+
+                // Replace them
+                draggedBlessingContainer.parentNode.replaceChild(targetClone, draggedBlessingContainer);
+                targetBlessingContainer.parentNode.replaceChild(draggedClone, targetBlessingContainer);
+            }
+
+            // Swap blessing stars
+            const draggedStarsContainer = draggedVisual.querySelector(".blessing-stars");
+            const targetStarsContainer = targetVisual.querySelector(".blessing-stars");
+
+            if (draggedStarsContainer && targetStarsContainer) {
+                // Clone both star containers
+                const draggedStarsClone = draggedStarsContainer.cloneNode(true);
+                const targetStarsClone = targetStarsContainer.cloneNode(true);
+
+                // Replace them
+                draggedStarsContainer.parentNode.replaceChild(targetStarsClone, draggedStarsContainer);
+                targetStarsContainer.parentNode.replaceChild(draggedStarsClone, targetStarsContainer);
+            }
+        }
+
+        // Update lead aura immediately if one of the slots is the lead
+        if (draggedSlot === "lead" || targetSlot === "lead") {
+            const presetRow = e.currentTarget.closest('.preset-row');
+            const leadAura = presetRow ? presetRow.querySelector(".lead-aura-display") : null;
+            if (leadAura) {
+                const leadValue = targetSlot === "lead" ? targetInput.value : draggedInput.value;
+                const newLeadAura = createLeadAuraDisplay(leadValue);
+                leadAura.replaceWith(newLeadAura);
+            }
+        }
+
         // Update local data
         if (isViewer()) {
             alert("Cannot edit presets in viewer mode.");
@@ -6535,16 +7294,50 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!member.presets) member.presets = {};
         if (!member.presets[presetId]) member.presets[presetId] = {};
 
+        // Prepare update object for champions
+        const updateData = {
+            [draggedSlot]: draggedInput.value,
+            [targetSlot]: targetInput.value
+        };
+
         // Update both slots in local data
         member.presets[presetId][draggedSlot] = draggedInput.value;
         member.presets[presetId][targetSlot] = targetInput.value;
 
-        // Save both to Firebase in one update
+        // Swap blessing data in local storage and prepare for Firebase
+        const draggedBlessingData = {
+            blessing: member.presets[presetId][`${draggedSlot}_blessing`],
+            blessing_rarity: member.presets[presetId][`${draggedSlot}_blessing_rarity`],
+            blessing_level: member.presets[presetId][`${draggedSlot}_blessing_level`]
+        };
+
+        const targetBlessingData = {
+            blessing: member.presets[presetId][`${targetSlot}_blessing`],
+            blessing_rarity: member.presets[presetId][`${targetSlot}_blessing_rarity`],
+            blessing_level: member.presets[presetId][`${targetSlot}_blessing_level`]
+        };
+
+        // Swap in local data
+        member.presets[presetId][`${draggedSlot}_blessing`] = targetBlessingData.blessing;
+        member.presets[presetId][`${draggedSlot}_blessing_rarity`] = targetBlessingData.blessing_rarity;
+        member.presets[presetId][`${draggedSlot}_blessing_level`] = targetBlessingData.blessing_level;
+
+        member.presets[presetId][`${targetSlot}_blessing`] = draggedBlessingData.blessing;
+        member.presets[presetId][`${targetSlot}_blessing_rarity`] = draggedBlessingData.blessing_rarity;
+        member.presets[presetId][`${targetSlot}_blessing_level`] = draggedBlessingData.blessing_level;
+
+        // Add blessing data to Firebase update
+        updateData[`${draggedSlot}_blessing`] = targetBlessingData.blessing;
+        updateData[`${draggedSlot}_blessing_rarity`] = targetBlessingData.blessing_rarity;
+        updateData[`${draggedSlot}_blessing_level`] = targetBlessingData.blessing_level;
+
+        updateData[`${targetSlot}_blessing`] = draggedBlessingData.blessing;
+        updateData[`${targetSlot}_blessing_rarity`] = draggedBlessingData.blessing_rarity;
+        updateData[`${targetSlot}_blessing_level`] = draggedBlessingData.blessing_level;
+
+        // Save all to Firebase in one update
         const presetRef = ref(db, `rooms/${currentRoomId}/siege/members/${memberPseudo}/presets/${presetId}`);
-        update(presetRef, {
-            [draggedSlot]: draggedInput.value,
-            [targetSlot]: targetInput.value
-        }).catch(err => console.error("❌ Firebase error:", err));
+        update(presetRef, updateData).catch(err => console.error("❌ Firebase error:", err));
 
         // Update lead aura if one of the slots is the lead
         if (draggedSlot === "lead" || targetSlot === "lead") {

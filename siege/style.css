@@ -329,6 +329,32 @@ body.modal-open .map-filters-container {
     transform: rotate(180deg);
 }
 
+.clear-filters-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    border-left: 1px solid rgba(212, 175, 55, 0.3);
+    padding: 4px 8px;
+    margin-left: auto;
+    padding-left: 8px;
+    color: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 0;
+}
+
+.clear-filters-icon-btn:hover {
+    background: rgba(212, 175, 55, 0.15);
+    color: #ffbf3b;
+}
+
+.clear-filters-icon-btn svg {
+    flex-shrink: 0;
+}
+
 /* Filters Content */
 .filters-content {
     display: flex;
@@ -694,6 +720,25 @@ body.modal-open .map-filters-container {
     margin-bottom: 4px;
 }
 
+.preset-member-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    background: rgba(10, 10, 10, 0.95);
+    border-radius: 8px;
+    border: 1px solid #d4af37;
+    margin-bottom: 8px;
+}
+
+.preset-member-filter label {
+    min-width: 60px;
+}
+
+.preset-member-filter .custom-select-wrapper {
+    flex: 1;
+}
+
 .preset-condition-filter {
     display: flex;
     flex-direction: column;
@@ -773,6 +818,10 @@ body.modal-open .map-filters-container {
 }
 
 .preset-dropdown-member.filtered-out {
+    display: none;
+}
+
+.preset-dropdown-member.member-filtered-out {
     display: none;
 }
 
@@ -1185,6 +1234,16 @@ body.modal-open .map-filters-container {
     opacity: 0;
     transition: opacity 0.2s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.persistent-tooltip {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 8px;
+    z-index: 100;
+    opacity: 1;
 }
 
 .post-tooltip-title {
@@ -2141,6 +2200,31 @@ body.modal-open .map-filters-container {
     text-align: center;
     font-weight: 600;
     letter-spacing: 0.05em;
+}
+
+/* Lead Aura Restricted Animation */
+@keyframes pulse-red-text {
+    0%, 100% {
+        color: #ff0000;
+        text-shadow:
+            0 0 10px rgba(255, 0, 0, 1),
+            0 0 20px rgba(255, 0, 0, 0.8),
+            0 0 30px rgba(255, 0, 0, 0.6);
+        transform: scale(1);
+    }
+    50% {
+        color: #ff6666;
+        text-shadow:
+            0 0 15px rgba(255, 0, 0, 1),
+            0 0 30px rgba(255, 0, 0, 1),
+            0 0 45px rgba(255, 0, 0, 0.8);
+        transform: scale(1.1);
+    }
+}
+
+.lead-aura-display.lead-aura-restricted .lead-aura-zone {
+    animation: pulse-red-text 1.5s ease-in-out infinite;
+    font-weight: 700;
 }
 
 .modal-right-row {
@@ -3105,6 +3189,39 @@ tr.profile-open {
     background: rgba(255, 255, 255, 0.08);
 }
 
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper input {
+    flex: 1;
+    padding-right: 40px;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.password-toggle-btn:hover {
+    color: #d4af37;
+}
+
+.password-toggle-btn.visible {
+    color: #d4af37;
+}
+
 .room-id-input-group {
     display: flex;
     gap: 8px;
@@ -3398,6 +3515,18 @@ tr.profile-open {
     background: rgba(34, 197, 94, 0.12);
     border-color: rgba(34, 197, 94, 0.5);
     transform: translateY(-1px);
+}
+
+/* Preset row drag & drop states */
+.preset-row.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.preset-row.drag-over {
+    border-color: #d4af37;
+    background: rgba(212, 175, 55, 0.1);
+    transform: scale(1.02);
 }
 
 .preset-row.preset-used-manashrine {
