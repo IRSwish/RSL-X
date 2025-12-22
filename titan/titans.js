@@ -27,7 +27,7 @@
     const jsonPath = `/titan/${fusionConfig.json}`;
     timelineContainer.dataset.json = jsonPath;
 
-    fetch(jsonPath)
+    fetch(`${jsonPath}?v=${Date.now()}`)
       .then(res => {
         if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
         return res.json();

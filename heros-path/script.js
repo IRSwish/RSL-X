@@ -265,7 +265,7 @@ async function init() {
   if (titleEl) titleEl.textContent = displayName.toUpperCase();
 
   try {
-    const res = await fetch(jsonFile);
+    const res = await fetch(`${jsonFile}?v=${Date.now()}`);
     rewards = await res.json();
   } catch {
     document.body.innerHTML = `<h2 style='text-align:center;color:red'>Failed to load ${jsonFile}</h2>`;

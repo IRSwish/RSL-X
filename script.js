@@ -1,4 +1,4 @@
-fetch('/menu.html')
+fetch(`/menu.html?v=${Date.now()}`)
   .then(r => r.text())
   .then(html => {
     const host = document.getElementById('menu-container');

@@ -40,7 +40,7 @@ async function loadSiegeDB() {
         const SQL = await window.initSqlJs({
             locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
         });
-        const res = await fetch("/siege/siege.db");
+        const res = await fetch(`/siege/siege.db?v=${Date.now()}`);
         const buf = await res.arrayBuffer();
         siegeDB = new SQL.Database(new Uint8Array(buf));
     } catch (e) {
@@ -54,7 +54,7 @@ async function loadChampionDB() {
         const SQL = await window.initSqlJs({
             locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
         });
-        const res = await fetch("/tools/champions-index/champions.db");
+        const res = await fetch(`/tools/champions-index/champions.db?v=${Date.now()}`);
         const buf = await res.arrayBuffer();
         championsDB = new SQL.Database(new Uint8Array(buf));
     } catch (e) {

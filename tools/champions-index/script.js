@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
   }).then(SQL => {
 
-    fetch("/tools/champions-index/champions.db")
+    fetch(`/tools/champions-index/champions.db?v=${Date.now()}`)
       .then(res => res.arrayBuffer())
       .then(buffer => {
         const db = new SQL.Database(new Uint8Array(buffer));
