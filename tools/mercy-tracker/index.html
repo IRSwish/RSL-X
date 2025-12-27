@@ -378,7 +378,7 @@
 
     async function loadBoostedRates() {
       try {
-        const response = await fetch("boosted_rates.json");
+        const response = await fetch(`boosted_rates.json?v=${Date.now()}`);
         const data = await response.json();
         boostedRates = data.boostedRates.map(b => ({
           ...b,
