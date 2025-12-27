@@ -31,7 +31,7 @@
 
     .shard-card {
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: space-between;
       background: var(--event-bg);
       border: 2px solid var(--event-border);
@@ -39,6 +39,7 @@
       padding: 20px;
       box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
       width: 360px;
+      height: 240px;
       transition: box-shadow 0.3s ease, border-color 0.3s ease;
     }
 
@@ -48,6 +49,7 @@
       object-fit: contain;
       flex-shrink: 0;
       margin-left: 20px;
+      align-self: center;
     }
 
     .right-side {
@@ -59,11 +61,43 @@
       transform: scale(0.9);
     }
 
+    .dual-circles {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      transform: scale(0.85);
+    }
+
     .circle-container {
       position: relative;
       width: 100px;
       height: 100px;
       margin: 5px auto;
+    }
+
+    .circle-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .circle-label {
+      font-size: 11px;
+      color: var(--text-color);
+      opacity: 0.8;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .circle-wrapper .reset-btn {
+      width: 32px;
+      height: 32px;
+      border-width: 2px;
+    }
+
+    .circle-wrapper .reset-btn svg {
+      width: 18px;
+      height: 18px;
     }
 
     .progress-ring {
@@ -138,6 +172,11 @@
       justify-content: center;
       gap: 6px;
       margin-top: 6px;
+      min-height: 28px;
+    }
+
+    .shard-card[data-type="Primal"] .buttons {
+      margin-top: 12px;
     }
 
     .btn {
@@ -173,17 +212,27 @@
       background: transparent;
       border: 1px solid var(--line-color);
       color: var(--line-color);
-      border-radius: 8px;
+      border-radius: 6px;
       font-weight: 600;
-      font-size: 12px;
-      padding: 3px 8px;
+      font-size: 14px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       transition: all 0.2s ease;
+      padding: 0;
     }
 
     .reset-btn:hover {
       background: var(--line-color);
       color: #0e0e0e;
+    }
+
+    .reset-btn svg {
+      width: 16px;
+      height: 16px;
     }
 
     .chance {
@@ -355,27 +404,58 @@
           ? "Mythical chance"
           : "Legendary chance";
 
-        container.innerHTML += `
-          <div class="shard-card" data-type="${shard.type}" data-max="${shard.max}" data-base="${shard.base}" data-start="${shard.start}" data-inc="${shard.inc}">
-            <img class="shard-img" src="/style/img/Misc/${shard.type}.webp" alt="${shard.type} Shard">
-            <div class="right-side">
+        // Pour Primal, on ajoute un deuxième cercle pour Legendary
+        const circleHTML = shard.type === "Primal" ? `
+          <div class="dual-circles">
+            <div class="circle-wrapper">
               <div class="circle-container">
                 <svg class="progress-ring" width="100" height="100">
                   <circle class="background" r="45" cx="50" cy="50"></circle>
                   <circle class="progress" r="45" cx="50" cy="50"></circle>
                 </svg>
-                <input type="number" class="circle-input" value="0" min="0">
+                <input type="number" class="circle-input mythical-input" value="0" min="0">
               </div>
+              <div class="circle-label">Mythical</div>
+              <button class="reset-btn reset-mythical" style="margin-top: 4px;"><i data-lucide="rotate-cw"></i></button>
+            </div>
+            <div class="circle-wrapper">
+              <div class="circle-container">
+                <svg class="progress-ring" width="100" height="100">
+                  <circle class="background" r="45" cx="50" cy="50"></circle>
+                  <circle class="progress legendary-circle" r="45" cx="50" cy="50"></circle>
+                </svg>
+                <input type="number" class="circle-input legendary-input" value="0" min="0">
+              </div>
+              <div class="circle-label">Legendary</div>
+              <button class="reset-btn reset-legendary" style="margin-top: 4px;"><i data-lucide="rotate-cw"></i></button>
+            </div>
+          </div>
+        ` : `
+          <div class="circle-container">
+            <svg class="progress-ring" width="100" height="100">
+              <circle class="background" r="45" cx="50" cy="50"></circle>
+              <circle class="progress" r="45" cx="50" cy="50"></circle>
+            </svg>
+            <input type="number" class="circle-input" value="0" min="0">
+          </div>
+        `;
+
+        container.innerHTML += `
+          <div class="shard-card" data-type="${shard.type}" data-max="${shard.max}" data-base="${shard.base}" data-start="${shard.start}" data-inc="${shard.inc}">
+            <img class="shard-img" src="/style/img/Misc/${shard.type}.webp" alt="${shard.type} Shard">
+            <div class="right-side">
+              ${circleHTML}
               <div class="buttons">
                 <button class="btn minus">−</button>
                 <button class="btn plus">+</button>
                 ${(shard.type === "Ancient" || shard.type === "Void" || shard.type === "Primal" || shard.type === "Prism") ? '<button class="btn plus10">+10</button>' : ''}
-                <button class="reset-btn">Reset</button>
+                ${shard.type !== "Primal" ? '<button class="reset-btn"><i data-lucide="rotate-cw"></i></button>' : ''}
               </div>
               <div class="progress-info">
                 <input type="number" class="count" value="0" min="0"> / <span class="max">${shard.max}</span>
               </div>
               <div class="chance">${chanceLabel}: <span class="percent">${shard.base}%</span></div>
+              ${shard.type === "Primal" ? '<div class="chance legendary-chance">Legendary chance: <span class="legendary-percent">1%</span></div>' : ''}
             </div>
           </div>`;
       });
@@ -399,12 +479,15 @@
           card.querySelector('.max').textContent = max;
         }
 
-        const inputCircle = card.querySelector('.circle-input');
+        const isPrimal = type === "Primal";
+        const inputCircle = isPrimal ? card.querySelector('.mythical-input') : card.querySelector('.circle-input');
         const inputCount = card.querySelector('.count');
         const plus = card.querySelector('.plus');
         const minus = card.querySelector('.minus');
         const plus10 = card.querySelector('.plus10');
-        const reset = card.querySelector('.reset-btn');
+        const reset = isPrimal ? null : card.querySelector('.reset-btn');
+        const resetMythical = isPrimal ? card.querySelector('.reset-mythical') : null;
+        const resetLegendary = isPrimal ? card.querySelector('.reset-legendary') : null;
         const percent = card.querySelector('.percent');
         const circle = card.querySelector('.progress');
         const radius = 45;
@@ -412,6 +495,17 @@
         circle.style.strokeDasharray = circumference;
 
         let value = parseInt(localStorage.getItem("pity_" + type)) || 0;
+
+        // Legendary pour Primal
+        let legendaryCircle, legendaryInput, legendaryPercent, legendaryValue;
+        const legendaryMax = 174; // 75 + 99 (pour atteindre 100%)
+        if (isPrimal) {
+          legendaryCircle = card.querySelector('.legendary-circle');
+          legendaryInput = card.querySelector('.legendary-input');
+          legendaryPercent = card.querySelector('.legendary-percent');
+          legendaryCircle.style.strokeDasharray = circumference;
+          legendaryValue = parseInt(localStorage.getItem("pity_legendary_" + type)) || 0;
+        }
 
         // --- Boost visuel et badge ---
         if (boost) {
@@ -434,12 +528,22 @@
           return rate;
         }
 
-        function updateButtons(v) {
-          minus.disabled = v <= 0;
-          plus.disabled = v >= max;
+        function calcLegendaryChance(v) {
+          if (v < 75) return 1;
+          return Math.min(1 + (v - 75 + 1) * 1, 100);
         }
 
-        function setProgress(v) {
+        function updateButtons(v, legV) {
+          if (isPrimal) {
+            minus.disabled = v <= 0 && legV <= 0;
+            plus.disabled = v >= max && legV >= legendaryMax;
+          } else {
+            minus.disabled = v <= 0;
+            plus.disabled = v >= max;
+          }
+        }
+
+        function setProgress(v, legV = null) {
           v = Math.max(0, Math.min(max, v));
           const offset = circumference - (v / max) * circumference;
           circle.style.strokeDashoffset = offset;
@@ -447,7 +551,29 @@
           inputCount.value = v;
           percent.textContent = calcChance(v).toFixed(2) + "%";
           localStorage.setItem("pity_" + type, v);
-          updateButtons(v);
+
+          if (isPrimal && legV !== null) {
+            legV = Math.max(0, Math.min(legendaryMax, legV));
+            const legOffset = circumference - (legV / legendaryMax) * circumference;
+            legendaryCircle.style.strokeDashoffset = legOffset;
+            legendaryInput.value = legV;
+            legendaryPercent.textContent = calcLegendaryChance(legV).toFixed(2) + "%";
+            localStorage.setItem("pity_legendary_" + type, legV);
+            updateButtons(v, legV);
+          } else {
+            updateButtons(v, legendaryValue);
+          }
+        }
+
+        function setLegendaryProgress(legV) {
+          legV = Math.max(0, Math.min(legendaryMax, legV));
+          const legOffset = circumference - (legV / legendaryMax) * circumference;
+          legendaryCircle.style.strokeDashoffset = legOffset;
+          legendaryInput.value = legV;
+          legendaryPercent.textContent = calcLegendaryChance(legV).toFixed(2) + "%";
+          localStorage.setItem("pity_legendary_" + type, legV);
+          legendaryValue = legV;
+          updateButtons(value, legV);
         }
 
         function holdButton(btn, action) {
@@ -465,20 +591,68 @@
           btn.addEventListener('touchcancel', stopHold);
         }
 
-        holdButton(plus, () => { if (value < max) setProgress(++value); });
-        holdButton(minus, () => { if (value > 0) setProgress(--value); });
-        if (plus10) {
-          plus10.onclick = () => {
-            value = Math.min(value + 10, max);
-            setProgress(value);
-          };
-        }
-        reset.onclick = () => setProgress(value = 0);
-        inputCircle.oninput = () => setProgress(value = parseInt(inputCircle.value) || 0);
-        inputCount.oninput = () => setProgress(value = parseInt(inputCount.value) || 0);
+        if (isPrimal) {
+          // Le bouton + incrémente les DEUX cercles en même temps
+          holdButton(plus, () => {
+            if (value < max || legendaryValue < legendaryMax) {
+              if (value < max) value++;
+              if (legendaryValue < legendaryMax) legendaryValue++;
+              setProgress(value, legendaryValue);
+            }
+          });
 
-        setProgress(value);
+          // Le bouton - décrémente les DEUX cercles en même temps
+          holdButton(minus, () => {
+            if (value > 0 || legendaryValue > 0) {
+              if (value > 0) value--;
+              if (legendaryValue > 0) legendaryValue--;
+              setProgress(value, legendaryValue);
+            }
+          });
+
+          if (plus10) {
+            plus10.onclick = () => {
+              value = Math.min(value + 10, max);
+              legendaryValue = Math.min(legendaryValue + 10, legendaryMax);
+              setProgress(value, legendaryValue);
+            };
+          }
+
+          // Reset séparés
+          resetMythical.onclick = () => {
+            value = 0;
+            setProgress(0, legendaryValue);
+          };
+
+          resetLegendary.onclick = () => {
+            legendaryValue = 0;
+            setLegendaryProgress(0);
+          };
+
+          inputCircle.oninput = () => setProgress(value = parseInt(inputCircle.value) || 0, legendaryValue);
+          legendaryInput.oninput = () => setLegendaryProgress(parseInt(legendaryInput.value) || 0);
+          inputCount.oninput = () => setProgress(value = parseInt(inputCount.value) || 0, legendaryValue);
+
+          setProgress(value, legendaryValue);
+        } else {
+          holdButton(plus, () => { if (value < max) setProgress(++value); });
+          holdButton(minus, () => { if (value > 0) setProgress(--value); });
+          if (plus10) {
+            plus10.onclick = () => {
+              value = Math.min(value + 10, max);
+              setProgress(value);
+            };
+          }
+          reset.onclick = () => setProgress(value = 0);
+          inputCircle.oninput = () => setProgress(value = parseInt(inputCircle.value) || 0);
+          inputCount.oninput = () => setProgress(value = parseInt(inputCount.value) || 0);
+
+          setProgress(value);
+        }
       });
+
+      // Initialiser les icônes Lucide
+      lucide.createIcons();
     })();
   </script>
 
