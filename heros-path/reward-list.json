@@ -49,13 +49,13 @@
   { "name": "Chaos Dust", "image": "chaos-dust" },
   { "name": "Chaos Powder", "image": "chaos-powder" },
   { "name": "Corehammer", "image": "corehammer" },
-  { "name": "Eternal Soul Coin", "image": "eternal-soul-coin" },
 
   { "name": "Immortal Essence", "image": "immortal-soul-essence" },
   { "name": "Eternal Essence", "image": "eternal-soul-essence" },
 
   { "name": "Immortal Soul Coin", "image": "immortal-soul-coin" },
   { "name": "Mortal Soul Coin", "image": "mortal-soul-coin" },
+  { "name": "Eternal Soul Coin", "image": "eternal-soul-coin" },
 
   { "name": "Immortal Soulstone", "image": "immortal-soulstone" },
   { "name": "Mortal Soulstone", "image": "mortal-soulstone" },

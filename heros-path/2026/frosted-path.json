@@ -345,7 +345,7 @@
     "id": "t11-1",
     "name": "Mythical Skill Tome x1",
     "image": "skill-tome-mythical",
-    "cost": 2000,
+    "cost": 20000,
     "requires": [
       "t10-1",
       "t10-2"
@@ -356,7 +356,7 @@
     "id": "t11-2",
     "name": "Mythical Skill Tome x1",
     "image": "skill-tome-mythical",
-    "cost": 2000,
+    "cost": 20000,
     "requires": [
       "t10-1",
       "t10-2"
