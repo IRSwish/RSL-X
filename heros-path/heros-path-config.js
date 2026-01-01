@@ -1,5 +1,15 @@
 // heros-path-config.js
 window.fusions = {
+    "frosted-path": {
+    name: "Frosted Path",
+    json: "/heros-path/2026/frosted-path.json",
+    shardCosts: {
+      ancient: 300,
+      void: 750,
+      primal: 1800,
+      sacred: 4500
+    }
+  },
   "predators-path": {
     name: "Predator's Path",
     json: "/heros-path/2025/predators-path.json",

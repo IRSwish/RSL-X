@@ -1,0 +1,359 @@
+[
+  {
+    "id": "t1-1",
+    "name": "Arcane Greater Potion x3",
+    "image": "arcane-greater",
+    "cost": 250,
+    "x": 0
+  },
+  {
+    "id": "t1-2",
+    "name": "Substat Charm x5",
+    "image": "substat-charm",
+    "cost": 250,
+    "x": 1.5
+  },
+  {
+    "id": "t1-3",
+    "name": "Type Charm x5",
+    "image": "type-charm",
+    "cost": 250,
+    "x": 3.5
+  },
+  {
+    "id": "t1-4",
+    "name": "Silver x50000",
+    "image": "silver",
+    "cost": 250,
+    "x": 5
+  },
+  {
+    "id": "t2-1",
+    "name": "Corehammer x5",
+    "image": "corehammer",
+    "cost": 500,
+    "requires": [
+      "t1-1",
+      "t1-2"
+    ],
+    "x": 0
+  },
+  {
+    "id": "t2-2",
+    "name": "Mortal Soul Coin x500",
+    "image": "mortal-soul-coin",
+    "cost": 500,
+    "requires": [
+      "t1-1",
+      "t1-2"
+    ],
+    "x": 1
+  },
+  {
+    "id": "t2-3",
+    "name": "Rank 1 Basalt x1",
+    "image": "rank-1-basalt",
+    "cost": 500,
+    "requires": [
+      "t1-3",
+      "t1-4"
+    ],
+    "x": 4
+  },
+  {
+    "id": "t2-4",
+    "name": "XP Boost (1 Day) x1",
+    "image": "xp-boost-1d",
+    "cost": 500,
+    "requires": [
+      "t1-3",
+      "t1-4"
+    ],
+    "x": 5
+  },
+  {
+    "id": "t3-1",
+    "name": "Rank Charm x10",
+    "image": "rank-charm",
+    "cost": 1000,
+    "requires": [
+      "t2-1",
+      "t2-2"
+    ],
+    "x": 0.5
+  },
+  {
+    "id": "t3-2",
+    "name": "Rarity Charm x10",
+    "image": "rarity-charm",
+    "cost": 1000,
+    "requires": [
+      "t2-3",
+      "t2-4"
+    ],
+    "x": 4.5
+  },
+  {
+    "id": "t4-1",
+    "name": "Greater Extract x80",
+    "image": "extract-greater",
+    "cost": 2500,
+    "requires": [
+      "t3-1"
+    ],
+    "x": 0
+  },
+  {
+    "id": "t4-2",
+    "name": "Gems x125",
+    "image": "Gems",
+    "cost": 2500,
+    "requires": [
+      "t3-1"
+    ],
+    "x": 1
+  },
+  {
+    "id": "t4-3",
+    "name": "Energy x400",
+    "image": "Energy",
+    "cost": 2500,
+    "requires": [
+      "t3-2"
+    ],
+    "x": 4
+  },
+  {
+    "id": "t4-4",
+    "name": "Greater Oil x80",
+    "image": "oil-greater",
+    "cost": 2500,
+    "requires": [
+      "t3-2"
+    ],
+    "x": 5
+  },
+  {
+    "id": "t5-1",
+    "name": "6* Precision Glyph x1",
+    "image": "glyph-precision",
+    "cost": 4000,
+    "requires": [
+      "t4-1",
+      "t4-2"
+    ],
+    "x": 1
+  },
+  {
+    "id": "t5-2",
+    "name": "Epic Chaos Ore x1",
+    "image": "epic-chaos-ore",
+    "cost": 4000,
+    "requires": [
+      "t4-1",
+      "t4-2"
+    ],
+    "x": 2
+  },
+  {
+    "id": "t5-3",
+    "name": "Epic Skill Tome x1",
+    "image": "skill-tome-epic",
+    "cost": 4000,
+    "requires": [
+      "t4-3",
+      "t4-4"
+    ],
+    "x": 3
+  },
+  {
+    "id": "t5-4",
+    "name": "6* Resistance Glyph x1",
+    "image": "glyph-resistance",
+    "cost": 4000,
+    "requires": [
+      "t4-3",
+      "t4-4"
+    ],
+    "x": 4
+  },
+  {
+    "id": "t6-1",
+    "name": "Immortal Essence x20",
+    "image": "immortal-soul-essence",
+    "cost": 7000,
+    "requires": [
+      "t5-1",
+      "t5-2"
+    ],
+    "x": 1.5
+  },
+  {
+    "id": "t6-2",
+    "name": "Immortal Soulstone x1",
+    "image": "immortal-soulstone",
+    "cost": 7000,
+    "requires": [
+      "t5-3",
+      "t5-4"
+    ],
+    "x": 3.5
+  },
+  {
+    "id": "t7-1",
+    "name": "Legendary Skill Tome x1",
+    "image": "skill-tome-legendary",
+    "cost": 10000,
+    "requires": [
+      "t6-1",
+      "t6-2"
+    ],
+    "x": 0
+  },
+  {
+    "id": "t7-2",
+    "name": "Chaos Powder x5",
+    "image": "chaos-dust",
+    "cost": 6000,
+    "requires": [
+      "t6-1",
+      "t6-2"
+    ],
+    "x": 1.5
+  },
+  {
+    "id": "t7-3",
+    "name": "Legendary Chaos Ore x1",
+    "image": "legendary-chaos-ore",
+    "cost": 6000,
+    "requires": [
+      "t6-1",
+      "t6-2"
+    ],
+    "x": 2.5
+  },
+  {
+    "id": "t7-4",
+    "name": "Chaos Dust x5",
+    "image": "chaos-dust",
+    "cost": 6000,
+    "requires": [
+      "t6-1",
+      "t6-2"
+    ],
+    "x": 3.5
+  },
+  {
+    "id": "t7-5",
+    "name": "Legendary Skill Tome x1",
+    "image": "skill-tome-legendary",
+    "cost": 10000,
+    "requires": [
+      "t6-1",
+      "t6-2"
+    ],
+    "x": 5
+  },
+  {
+    "id": "t8-1",
+    "name": "Lock x1",
+    "image": "lock",
+    "cost": 1,
+    "requires": [
+      "t7-1"
+    ],
+    "x": 1
+  },
+  {
+    "id": "t8-2",
+    "name": "Key x1",
+    "image": "path-key",
+    "cost": 1000,
+    "requires": [
+      "t7-3"
+    ],
+    "x": 2.5
+  },
+  {
+    "id": "t8-3",
+    "name": "Lock x1",
+    "image": "lock",
+    "cost": 1,
+    "requires": [
+      "t7-5"
+    ],
+    "x": 4
+  },
+  {
+    "id": "t9-1",
+    "name": "Yukimasa 5* Perfect Soul x1",
+    "image": "yukimasa-5",
+    "cost": 50000,
+    "requires": [
+      "t8-1"
+    ],
+    "x": 1
+  },
+  {
+    "id": "t9-2",
+    "name": "Mythical Chaos Ore x1",
+    "image": "mythical-chaos-ore",
+    "cost": 12500,
+    "requires": [
+      "t8-2"
+    ],
+    "x": 2.5
+  },
+  {
+    "id": "t9-3",
+    "name": "Hilvi 5* Perfect Soul x1",
+    "image": "hilvi-5",
+    "cost": 50000,
+    "requires": [
+      "t8-3"
+    ],
+    "x": 4
+  },
+  {
+    "id": "t10-1",
+    "name": "Eternal Soul Coin x250",
+    "image": "immortal-soul-coin",
+    "cost": 7000,
+    "requires": [
+      "t9-1"
+    ],
+    "x": 1.5
+  },
+  {
+    "id": "t10-2",
+    "name": "Eternal Essence x5",
+    "image": "eternal-soul-essence",
+    "cost": 7000,
+    "requires": [
+      "t9-3"
+    ],
+    "x": 3.5
+  },
+  {
+    "id": "t11-1",
+    "name": "Mythical Skill Tome x1",
+    "image": "skill-tome-mythical",
+    "cost": 2000,
+    "requires": [
+      "t10-1",
+      "t10-2"
+    ],
+    "x": 2
+  },
+  {
+    "id": "t11-2",
+    "name": "Mythical Skill Tome x1",
+    "image": "skill-tome-mythical",
+    "cost": 2000,
+    "requires": [
+      "t10-1",
+      "t10-2"
+    ],
+    "x": 3
+  }
+]
