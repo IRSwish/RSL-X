@@ -8,7 +8,8 @@ window.fusions = {
       void: 750,
       primal: 1800,
       sacred: 4500
-    }
+    },
+    initialUnlocked: ["t0-1"]
   },
   "predators-path": {
     name: "Predator's Path",

@@ -292,7 +292,14 @@ async function init() {
   sortedTiers.forEach(tier => {
     const row = document.createElement("div");
     row.className = "reward-row";
+    let hasVisibleItems = false;
+
     tiers[tier].forEach((r, __idx) => {
+      // Skip hidden items
+      if (r.hidden === true) return;
+
+      hasVisibleItems = true;
+
       const box = document.createElement("div");
       box.className = "reward-box locked";
       box.dataset.id = r.id;
@@ -321,10 +328,22 @@ async function init() {
       row.appendChild(box);
       box.addEventListener("click", () => handleClick(r, box));
     });
-    container.appendChild(row);
+
+    // Only append the row if it has visible items
+    if (hasVisibleItems) {
+      container.appendChild(row);
+    }
   });
 
   loadState();
+
+  // Débloque automatiquement les items initiaux si définis dans la config
+  if (fusion.initialUnlocked && Array.isArray(fusion.initialUnlocked)) {
+    fusion.initialUnlocked.forEach(id => {
+      unlocked.add(id);
+    });
+  }
+
   recalcKeysAndPoints();
   enforceKeyLimit();
   updateAvailability();

@@ -1,5 +1,12 @@
 [
   {
+    "id": "t0-1",
+    "name": "Key x1",
+    "image": "path-key",
+    "cost": 0,
+    "hidden": true
+  },
+  {
     "id": "t1-1",
     "name": "Arcane Greater Potion x3",
     "image": "arcane-greater",
@@ -317,7 +324,7 @@
   {
     "id": "t10-1",
     "name": "Eternal Soul Coin x250",
-    "image": "immortal-soul-coin",
+    "image": "eternal-soul-coin",
     "cost": 7000,
     "requires": [
       "t9-1"
