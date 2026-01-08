@@ -1,0 +1,145 @@
+{
+  "title": "KASSANDRA",
+  "type": "HYBRID",
+  "datespan": "08/01/2026 - 24/01/2026",
+  "Epic": "Galapo",
+  "EpicAff": "Magic",
+  "events": [
+    {
+      "name": "Champion Training Tournament",
+	  "type": "Tournament",
+      "start_date": "2026-01-17",
+      "end_date": "2026-01-21",
+      "reward": "Fragments",
+      "points": [25]
+    },
+    {
+      "name": "Dragon Tournament",
+	  "type": "Tournament",
+      "start_date": "2026-01-08",
+      "end_date": "2026-01-11",
+      "reward": "Fragments",
+      "points": [25]
+    },
+        {
+      "name": "Classic Arena",
+	  "type": "Tournament",
+      "start_date": "2026-01-10",
+      "end_date": "2026-01-13",
+      "reward": "Fragments",
+      "points": [25]
+    },
+        {
+      "name": "Golem Tournament",
+	  "type": "Tournament",
+      "start_date": "2026-01-11",
+      "end_date": "2026-01-14",
+      "reward": "Fragments",
+      "points": [25]
+    },
+    {
+      "name": "Gear Hunters",
+	  "type": "Event",
+      "start_date": "2026-01-13",
+      "end_date": "2026-01-16",
+      "reward": "Fragments",
+      "points": [25]
+    },
+        {
+      "name": "Spider Tournament",
+	  "type": "Tournament",
+      "start_date": "2026-01-15",
+      "end_date": "2026-01-18",
+      "reward": "Fragments",
+      "points": [25]
+    },
+        {
+      "name": "Champion Chase Tournament",
+	  "type": "Tournament",
+      "start_date": "2026-01-09",
+      "end_date": "2026-01-12",
+      "reward": "Fragments",
+      "points": [25]
+    },
+        {
+      "name": "Classic Arena",
+	  "type": "Tournament",
+      "start_date": "2026-01-16",
+      "end_date": "2026-01-19",
+      "reward": "Fragments",
+      "points": [25]
+    },
+        {
+      "name": "Fire Knight Tournament",
+	  "type": "Tournament",
+      "start_date": "2026-01-19",
+      "end_date": "2026-01-22",
+      "reward": "Fragments",
+      "points": [25]
+    },
+    {
+      "name": "Gear Hunters",
+	  "type": "Event",
+      "start_date": "2026-01-08",
+      "end_date": "2026-01-11",
+      "reward": "Fragments",
+      "points": [25]
+    },
+    {
+      "name": "Summon Rush",
+	  "type": "Event",
+      "start_date": "2026-01-16",
+      "end_date": "2026-01-19",
+      "reward": "Fragments",
+      "points": [25]
+    },
+    {
+      "name": "Gear Enhancement",
+	  "type": "Event",
+      "start_date": "2026-01-10",
+      "end_date": "2026-01-13",
+      "reward": "Fragments",
+      "points": [25]
+    },
+    {
+      "name": "Summon Rush",
+	  "type": "Event",
+      "start_date": "2026-01-20",
+      "end_date": "2026-01-22",
+      "reward": "Fragments",
+      "points": [50]
+    },
+    {
+      "name": "Gear Enhancement",
+	  "type": "Event",
+      "start_date": "2026-01-14",
+      "end_date": "2026-01-17",
+      "reward": "Fragments",
+      "points": [25]
+    },
+    {
+      "name": "Champion Training Event",
+	  "type": "Event",
+      "start_date": "2026-01-09",
+      "end_date": "2026-01-13",
+      "reward": "Fragments",
+      "points": [25]
+    },
+    {
+      "name": "Gear Hunters",
+	  "type": "Event",
+      "start_date": "2026-01-18",
+      "end_date": "2026-01-21",
+      "reward": "Fragments",
+      "points": [25]
+    },
+    {
+      "name": "Gear Enhancement",
+	  "type": "Event",
+      "start_date": "2026-01-19",
+      "end_date": "2026-01-22",
+      "reward": "Fragments",
+      "points": [25]
+    }
+  ]
+}

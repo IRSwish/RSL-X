@@ -1,6 +1,10 @@
 // fusions-config.js
 window.fusions = {
-    Yukimasa: {
+  Kassandra: {
+    name: "Kassandra Fusion",
+    json: "2026/Kassandra.json"
+  },
+  Yukimasa: {
     name: "Yukimasa Fusion",
     json: "2025/Yukimasa.json"
   },
