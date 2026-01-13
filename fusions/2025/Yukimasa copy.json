@@ -1,0 +1,131 @@
+{
+  "title": "YUKIMASA, DEMON OF ICE",
+  "type": "CLASSIC",
+  "datespan": "15/12/2025 - 31/12/2025",
+  "Rare": "Silvain",
+  "Epic": "Maddak",
+  "RareAff":"Void",
+  "EpicAff":"Magic",
+  "events": [
+    {
+      "name": "Dragon Tournament",
+	  "type": "Tournament",
+      "start_date": "2025-12-15",
+      "end_date": "2025-12-18",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Champion Training Tournament",
+	  "type": "Tournament",
+      "start_date": "2025-12-18",
+      "end_date": "2025-12-22",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Classic Arena",
+	  "type": "Tournament",
+      "start_date": "2025-12-20",
+      "end_date": "2025-12-23",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Ice Golem Tournament",
+	  "type": "Tournament",
+      "start_date": "2025-12-18",
+      "end_date": "2025-12-21",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Fire Knight Tournament",
+	  "type": "Tournament",
+      "start_date": "2025-12-22",
+      "end_date": "2025-12-25",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Summon Rush",
+	  "type": "Tournament",
+      "start_date": "2025-12-19",
+      "end_date": "2025-12-22",
+      "reward": "Rare, Epic",
+      "points": [1, 1]
+    },
+	{
+      "name": "Classic Arena",
+	  "type": "Tournament",
+      "start_date": "2025-12-25",
+      "end_date": "2025-12-28",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Spider Tournament",
+	  "type": "Tournament",
+      "start_date": "2025-12-26",
+      "end_date": "2025-12-29",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Gear Hunters",
+	  "type": "Event",
+      "start_date": "2025-12-17",
+      "end_date": "2025-12-20",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Champion Chase Tournament",
+	  "type": "Event",
+      "start_date": "2025-12-26",
+      "end_date": "2025-12-29",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Gear Enhancement",
+	  "type": "Event",
+      "start_date": "2025-12-15",
+      "end_date": "2025-12-18",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Gear Hunters",
+	  "type": "Event",
+      "start_date": "2025-12-26",
+      "end_date": "2025-12-29",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Gear Enhancement",
+	  "type": "Event",
+      "start_date": "2025-12-21",
+      "end_date": "2025-12-24",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Champion Training Event",
+	  "type": "Event",
+      "start_date": "2025-12-24",
+      "end_date": "2025-12-28",
+      "reward": "Rare, Rare",
+      "points": [1, 1]
+    },
+	{
+      "name": "Gear Enhancement",
+	  "type": "Event",
+      "start_date": "2025-12-27",
+      "end_date": "2025-12-30",
+      "reward": "Rare",
+      "points": [1]
+    }
+  ]
+}

@@ -1,0 +1,408 @@
+/* ============================================================================
+   FUSION TIMELINE - Styles
+   ============================================================================ */
+
+/* Timeline Container */
+.timeline-container {
+  overflow-x: hidden;
+  overflow-y: visible;
+  padding: 0 50px 20px 50px;
+}
+
+.timeline {
+  position: relative;
+  display: flex;
+  width: max-content;
+  height: auto;
+  margin-left: 60px; /* marge à gauche pour les labels */
+}
+
+/* Overlay pour les événements - ne participe pas au flex */
+.events-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* permet de cliquer à travers pour sélectionner les dates */
+}
+
+.events-overlay > * {
+  pointer-events: auto; /* réactive les clics sur les blocs d'événements */
+}
+
+/* Date Columns */
+.date-column {
+  flex: none;
+  text-align: center;
+  position: relative;
+  padding: 0 2px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  overflow: hidden; /* nécessaire pour que le ::after ne déborde pas */
+}
+
+.date-column::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    #00ffdd00 0%,
+    rgba(0,201,255,0.15) 20%,
+    rgba(0,201,255,0.15) 80%,
+    rgba(0,201,255,0) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.date-column.date-selected::after {
+  opacity: 1;
+}
+
+.date-column .day,
+.date-column .date {
+  position: relative;
+  z-index: 1;
+}
+
+.date-column .day {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.date-column .date {
+  font-size: 13px;
+}
+
+/* Grid Lines */
+.date-column .grid-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--grid-line-color);
+}
+
+.timeline-line {
+  position: absolute;
+  top: 55px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--line-color);
+}
+
+/* Event Blocks */
+.event-block {
+  position: absolute;
+  background: var(--event-bg);
+  border: 2px solid var(--event-border);
+  padding: 4px;
+  min-width: 50px;
+  border-radius: 14px;
+  text-align: center;
+  box-sizing: border-box;
+  height: 85px; /* Hauteur fixe pour les blocs */
+  transition: background 0.5s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  box-shadow: 0 0 0 rgba(0,201,255,0);
+}
+
+/* Tournaments - fond bleu foncé */
+.event-block.event-tournament {
+  background: #022838;
+}
+
+/* Events - fond vert foncé */
+.event-block.event-event {
+  background: #002520;
+}
+
+/* Event highlighted */
+.event-block.event-highlight {
+  background: linear-gradient(
+    90deg,
+    rgba(0,201,255,0.15) 0%,
+    rgba(0,201,255,0.05) 100%
+  );
+  box-shadow: 0 0 10px rgba(0,201,255,0.4);
+  border-color: #00c9ff;
+}
+
+/* Category Labels (Tournaments / Events) */
+.category-label {
+  position: absolute;
+  left: -65px;
+  width: 55px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  padding: 8px 2px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  z-index: 5;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.label-tournament {
+  color: #5ab3e6;
+  background: rgba(3, 59, 86, 0.3);
+  border: 2px solid #033b56;
+}
+
+.label-event {
+  color: #5ee6c9;
+  background: rgba(0, 54, 49, 0.3);
+  border: 2px solid #003631;
+}
+
+/* Event Name */
+.event-name {
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Points Container */
+.points-container {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Point Boxes */
+.point-box {
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease, filter 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--point-bg);
+  border: 2px solid var(--event-border);
+  border-radius: 8px;
+  flex: 1 1 40px;
+  max-width: 40px;
+  min-width: 18px;
+  padding: 2px;
+  width: 40px;
+  box-shadow: inset 0 0 6px rgba(255, 215, 0, 0.25);
+}
+
+.point-box:hover {
+  transform: scale(1.05);
+}
+
+.point-box:active {
+  transform: scale(0.85);
+}
+
+.point-box img {
+  width: 28px;
+  height: 28px;
+  flex: 1 1 28px;
+  max-width: 28px;
+  min-width: 18px;
+  max-height: 28px;
+  min-height: 18px;
+  object-fit: contain;
+}
+
+.point-box span {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--line-color);
+}
+
+/* Point States */
+.point-box.state-upcoming {
+  border: 2px solid #e0e0e0;
+  box-shadow: inset 0 0 6px rgba(212,175,55,0.25);
+}
+
+.point-box.state-upcoming img {
+  filter: grayscale(100%);
+}
+
+.point-box.state-upcoming span {
+  color: #e0e0e0;
+}
+
+.point-box.state-ongoing {
+  border: 2px solid orange;
+  box-shadow: inset 0 0 6px rgba(255,165,0,0.25);
+}
+
+.point-box.state-validated {
+  border: 2px solid #4caf50;
+  box-shadow: inset 0 0 6px rgba(76,175,80,0.25);
+}
+
+.point-box.state-validated span {
+  color: #4caf50;
+}
+
+.point-box.state-passed {
+  border: 2px solid red;
+  box-shadow: inset 0 0 6px rgba(100,100,100,0.25);
+}
+
+.point-box.state-passed span {
+  color: red;
+}
+
+.point-box.state-passed img {
+  filter: grayscale(100%) sepia(100%) hue-rotate(-50deg) saturate(500%) brightness(80%);
+}
+
+/* Today Column */
+.date-column.today {
+  background: linear-gradient(
+    to bottom,
+    rgba(212,175,55,0) 0%,
+    rgba(212,175,55,0.15) 20%,
+    rgba(212,175,55,0.15) 80%,
+    rgba(212,175,55,0) 100%
+  );
+}
+
+/* Event Ended States */
+.event-block.event-ended {
+  position: relative;
+  filter: grayscale(0);
+  opacity: 1;
+  border: 2px solid rgba(255, 9, 9, 0.25);
+  box-shadow: none;
+}
+
+/* Pattern de hachures pour les events terminés */
+.event-block.event-ended::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(245, 37, 37, 0.1) 0px,
+    rgba(245, 37, 37, 0.1) 4px,
+    rgba(75, 75, 75, 0.1) 4px,
+    rgba(75, 75, 75, 0.1) 8px
+  );
+  border-radius: 12px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.event-block.event-ended .event-name {
+  color: rgb(163, 1, 1);
+  position: relative;
+  z-index: 2;
+}
+
+.event-block.event-ended .point-box {
+  position: relative;
+  z-index: 2;
+}
+
+.event-block.event-ended .point-box img {
+  filter: none;
+  opacity: 1;
+}
+
+/* Event Validated */
+.event-block.event-ended.validated {
+  border: 2px solid rgba(0, 201, 27, 0.4);
+  box-shadow: 0 0 10px rgba(0, 201, 27, 0.2);
+  filter: none;
+  opacity: 1;
+}
+
+.event-block.event-ended.validated::before {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(37, 245, 37, 0.1) 0px,
+    rgba(37, 245, 37, 0.1) 4px,
+    rgba(75, 75, 75, 0.1) 4px,
+    rgba(75, 75, 75, 0.1) 8px
+  );
+}
+
+.event-block.event-ended.validated .event-name {
+  color: rgba(5, 136, 1, 0.85);
+  text-shadow: 0 0 8px rgba(0, 255, 150, 0.4);
+}
+
+/* Event Partial */
+.event-block.event-ended.partial {
+  border: 2px solid rgba(255, 165, 0, 0.5);
+  box-shadow: 0 0 8px rgba(255, 165, 0, 0.25);
+  opacity: 1;
+}
+
+.event-block.event-ended.partial::before {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 165, 0, 0.08) 0px,
+    rgba(255, 165, 0, 0.08) 4px,
+    rgba(75, 75, 75, 0.08) 4px,
+    rgba(75, 75, 75, 0.08) 8px
+  );
+}
+
+.event-block.event-ended.partial .event-name {
+  color: rgba(255, 180, 0, 0.8);
+  text-shadow: 0 0 6px rgba(255, 180, 0, 0.3);
+}
+
+/* Reset Buttons */
+.event-reset {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  background: transparent;
+  color: #d4af37;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 10;
+}
+
+.event-reset:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.global-reset {
+  position: absolute;
+  bottom: 6px;
+  right: 10px;
+  background: #1a1a1a;
+  border: 1px solid #d4af37;
+  color: #fcf6ff;
+  font-size: 13px;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.global-reset:hover {
+  background: #d4af37;
+  color: #1a1a1a;
+}
