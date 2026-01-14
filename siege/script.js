@@ -2679,12 +2679,12 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
                 e.preventDefault();
                 selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, 0);
                 updateSuggestionHighlight(items, selectedSuggestionIndex);
-            } else if (e.key === "Enter") {
-                e.preventDefault();
+            } else if (e.key === "Enter" || e.key === "Tab") {
                 if (selectedSuggestionIndex >= 0 && items[selectedSuggestionIndex]) {
+                    e.preventDefault();
                     items[selectedSuggestionIndex].click();
                 } else if (items.length > 0) {
-                    // If no selection, select the first one
+                    e.preventDefault();
                     items[0].click();
                 }
             } else if (e.key === "Escape") {
@@ -6851,11 +6851,12 @@ window.addEventListener("DOMContentLoaded", () => {
                 e.preventDefault();
                 presetSelectedIndex = Math.max(presetSelectedIndex - 1, 0);
                 updateSuggestionHighlight(items, presetSelectedIndex);
-            } else if (e.key === "Enter") {
-                e.preventDefault();
+            } else if (e.key === "Enter" || e.key === "Tab") {
                 if (presetSelectedIndex >= 0 && items[presetSelectedIndex]) {
+                    e.preventDefault();
                     items[presetSelectedIndex].click();
                 } else if (items.length > 0) {
+                    e.preventDefault();
                     items[0].click();
                 }
             } else if (e.key === "Escape") {

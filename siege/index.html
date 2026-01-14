@@ -5,7 +5,12 @@
     <title>Siege Planner – PoC</title>
     <script src="/config/site-config.js"></script>
     <script src="/config/ad-banner.js" defer></script>
-    <link rel="stylesheet" href="/siege/style.css">
+    <link rel="stylesheet" id="mainStylesheet" href="/siege/style.css">
+    <script>
+        // Auto cache-busting based on daily timestamp
+        const cacheBuster = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        document.getElementById('mainStylesheet').href = '/siege/style.css?v=' + cacheBuster;
+    </script>
 </head>
 <body>
 <header class="top-bar">
@@ -636,6 +641,8 @@
 <!-- sql.js (SQLite in browser) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
 <!-- Script principal -->
-<script type="module" src="/siege/script.js?v=20250112027"></script>
+<script>
+    document.write('<script type="module" src="/siege/script.js?v=' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '"><\/script>');
+</script>
 </body>
 </html>
