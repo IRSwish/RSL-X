@@ -2628,6 +2628,11 @@ body.modal-open .map-filters-container {
     background: #222;
 }
 
+.suggestions-list div.selected {
+    background: #333;
+    outline: 1px solid #666;
+}
+
 .status {
     font-size: 11px;
     margin-top: 4px;

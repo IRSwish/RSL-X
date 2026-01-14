@@ -155,6 +155,18 @@ function isBuildingPost(postId) {
 }
 
 
+function updateSuggestionHighlight(items, selectedIndex) {
+    items.forEach((item, idx) => {
+        if (idx === selectedIndex) {
+            item.classList.add("selected");
+            item.scrollIntoView({ block: "nearest" });
+        } else {
+            item.classList.remove("selected");
+        }
+    });
+}
+
+
 function searchChampions(query) {
     if (!championsDB || !query) return [];
     try {
@@ -2625,20 +2637,25 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
 
 
         // suggestions logic
+        let selectedSuggestionIndex = -1;
+
         cInput.addEventListener("input", () => {
             const q = cInput.value.trim();
             sugList.innerHTML = "";
+            selectedSuggestionIndex = -1;
             if (!q || !championsDB) return;
 
             const results = searchChampions(q);
 
-            results.forEach(ch => {
+            results.forEach((ch, idx) => {
                 const div = document.createElement("div");
                 div.textContent = ch.name;
+                div.dataset.index = idx;
 
                 div.addEventListener("click", () => {
                     cInput.value = ch.name;
                     sugList.innerHTML = "";
+                    selectedSuggestionIndex = -1;
                     // Get the images from the DOM at click time, not from closure
                     const slot = cInput.closest('.champ-slot');
                     const img = slot.querySelector('.champ-img');
@@ -2650,8 +2667,37 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
             });
         });
 
+        cInput.addEventListener("keydown", (e) => {
+            const items = sugList.querySelectorAll("div");
+            if (items.length === 0) return;
+
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                selectedSuggestionIndex = Math.min(selectedSuggestionIndex + 1, items.length - 1);
+                updateSuggestionHighlight(items, selectedSuggestionIndex);
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                selectedSuggestionIndex = Math.max(selectedSuggestionIndex - 1, 0);
+                updateSuggestionHighlight(items, selectedSuggestionIndex);
+            } else if (e.key === "Enter") {
+                e.preventDefault();
+                if (selectedSuggestionIndex >= 0 && items[selectedSuggestionIndex]) {
+                    items[selectedSuggestionIndex].click();
+                } else if (items.length > 0) {
+                    // If no selection, select the first one
+                    items[0].click();
+                }
+            } else if (e.key === "Escape") {
+                sugList.innerHTML = "";
+                selectedSuggestionIndex = -1;
+            }
+        });
+
         cInput.addEventListener("blur", () => {
-            setTimeout(() => { sugList.innerHTML = ""; }, 200);
+            setTimeout(() => {
+                sugList.innerHTML = "";
+                selectedSuggestionIndex = -1;
+            }, 200);
         });
 
         // initial visual if data present
@@ -6770,10 +6816,17 @@ window.addEventListener("DOMContentLoaded", () => {
         input.value = championName;
         input.placeholder = "Champion";
         input.autocomplete = "off";
-        input.addEventListener("input", () => handlePresetChampionInput(input, memberPseudo, presetId, slotName));
+        let presetSelectedIndex = -1;
+        input.addEventListener("input", () => {
+            presetSelectedIndex = -1;
+            handlePresetChampionInput(input, memberPseudo, presetId, slotName);
+        });
         input.addEventListener("change", () => savePresetChampion(memberPseudo, presetId, slotName, input.value.trim()));
         input.addEventListener("blur", () => {
-            setTimeout(() => savePresetChampion(memberPseudo, presetId, slotName, input.value.trim()), 200);
+            setTimeout(() => {
+                savePresetChampion(memberPseudo, presetId, slotName, input.value.trim());
+                presetSelectedIndex = -1;
+            }, 200);
         });
         champSlot.appendChild(input);
 
@@ -6784,6 +6837,32 @@ window.addEventListener("DOMContentLoaded", () => {
         suggestionsList.className = "suggestions-list";
         suggestionsDiv.appendChild(suggestionsList);
         champSlot.appendChild(suggestionsDiv);
+
+        // Keyboard navigation for preset suggestions
+        input.addEventListener("keydown", (e) => {
+            const items = suggestionsList.querySelectorAll("div");
+            if (items.length === 0) return;
+
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                presetSelectedIndex = Math.min(presetSelectedIndex + 1, items.length - 1);
+                updateSuggestionHighlight(items, presetSelectedIndex);
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                presetSelectedIndex = Math.max(presetSelectedIndex - 1, 0);
+                updateSuggestionHighlight(items, presetSelectedIndex);
+            } else if (e.key === "Enter") {
+                e.preventDefault();
+                if (presetSelectedIndex >= 0 && items[presetSelectedIndex]) {
+                    items[presetSelectedIndex].click();
+                } else if (items.length > 0) {
+                    items[0].click();
+                }
+            } else if (e.key === "Escape") {
+                suggestionsList.innerHTML = "";
+                presetSelectedIndex = -1;
+            }
+        });
 
         // Visual container
         const visual = document.createElement("div");
