@@ -3776,12 +3776,45 @@ body.viewer-mode .filter-stats-only {
     .modal {
         width: 95vw;
     }
-    
+
     .team-row {
         flex-direction: column;
     }
-    
+
     .modal-right-row {
         flex-wrap: wrap;
+    }
+}
+
+/* ==================== AD BANNER ==================== */
+.ad-banner-footer {
+    width: 100%;
+    height: 90px;
+    background: #0e0e0e;
+    border-top: 1px solid #d4af37;
+    box-shadow: 0 -2px 10px rgba(212, 175, 55, 0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0;
+    margin-top: auto;
+}
+
+.ad-banner-footer a {
+    display: block;
+    height: 100%;
+    max-width: 100%;
+}
+
+.ad-banner-footer img {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+@media (max-width: 768px) {
+    .ad-banner-footer {
+        display: none;
     }
 }
