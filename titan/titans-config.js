@@ -1,5 +1,9 @@
 // fusions-config.js
 window.fusions = {
+  "Odyssey": {
+    name: "Odyssey Titan Event",
+    json: "2026/Odyssey.json"
+  },
   "Ace-Reporter": {
     name: "Ace Reporter Titan Event",
     json: "2025/Ace-Reporter.json"

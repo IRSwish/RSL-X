@@ -1,0 +1,62 @@
+{
+  "title": "ODYSSEY TITAN EVENT",
+  "points":"eagle",
+  "events": [
+    {
+      "name": "Dragon Turn Attack",
+      "type": "Tournament",
+      "start_date": "2026-01-22",
+      "end_date": "2026-01-24",
+      "points": [40]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2026-01-22",
+      "end_date": "2026-01-25",
+      "points": [20]
+    },
+    {
+      "name": "Champion Chase",
+      "type": "Tournament",
+      "start_date": "2026-01-23",
+      "end_date": "2026-01-26",
+      "points": [100,200]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Tournament",
+      "start_date": "2026-01-23",
+      "end_date": "2026-01-26",
+      "points": [10,20,50]
+    },
+    {
+      "name": "Champion Training Event",
+      "type": "Tournament",
+      "start_date": "2026-01-24",
+      "end_date": "2026-01-28",
+      "points": [30,70]
+    },
+    {
+      "name": "Event Dungeon",
+      "type": "Tournament",
+      "start_date": "2026-01-24",
+      "end_date": "2026-01-27",
+      "points": [50]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Tournament",
+      "start_date": "2026-01-25",
+      "end_date": "2026-01-28",
+      "points": [10,50]
+    },
+    {
+      "name": "Ice Golem",
+      "type": "Tournament",
+      "start_date": "2026-01-25",
+      "end_date": "2026-01-27",
+      "points": [40]
+    }
+  ]
+}
