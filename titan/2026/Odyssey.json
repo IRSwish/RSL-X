@@ -28,7 +28,7 @@
       "type": "Tournament",
       "start_date": "2026-01-23",
       "end_date": "2026-01-26",
-      "points": [70]
+      "points": [20,50]
     },
     {
       "name": "Champion Training Event",
