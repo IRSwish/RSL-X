@@ -568,8 +568,8 @@
   </div>
 
   <div class="import-bar">
-    <input type="file" id="importFileInput" accept=".ini">
-    <button class="import-btn" id="importRSLHelperBtn">
+    <input type="file" id="importFileInput" accept="text/plain,.ini,.txt">
+    <button type="button" class="import-btn" id="importRSLHelperBtn">
       <i data-lucide="upload"></i>
       Import Data from RSL Helper
     </button>
@@ -664,11 +664,11 @@
         Ancient: { value: 'AncientValueLeg', needFor: 'AncientNeedForLeg', lastHero: 'AncientValueLegLastHero' },
         Void: { value: 'VoidValueLeg', needFor: 'VoidNeedForLeg', lastHero: 'VoidValueLegLastHero' },
         Sacred: { value: 'SacredValueLeg', needFor: 'SacredNeedForLeg', lastHero: 'SacredValueLegLastHero' },
-        Prism: { value: 'PrismValueLeg', needFor: null, lastHero: null },
+        Prism: { value: 'PrismValueLeg', needFor: 'PrismNeedForLeg', lastHero: 'PrismValueLegLastHero' },
         Primal: {
           value: 'PrimeValueMyth',
-          needFor: null,
-          lastHero: null,
+          needFor: 'PrimeNeedForMyth',
+          lastHero: 'PrimeValueMythLastHero',
           legendaryValue: 'PrimeValueLeg'
         },
         Remnant: { value: 'RemnantValuetMyth', needFor: 'RemnantNeedForMyth', lastHero: 'RemnantMythLastHero' }
