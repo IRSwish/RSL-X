@@ -1,355 +1,563 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HNK5S7EBCJ"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-HNK5S7EBCJ');
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
   <script src="https://unpkg.com/lucide@latest" defer></script>
   <script src="/config/site-config.js"></script>
-    <script src="/config/ad-banner.js" defer></script>
+  <script src="/config/ad-banner.js" defer></script>
   <script>document.title = "Mercy Tracker | " + window.siteConfig.title;</script>
   <link rel="stylesheet" href="../../style/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="preload" href="/menu.html" as="fetch" crossorigin>
   <style>
-    .pity-container {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 50px;
-      width: fit-content;
-      margin: 50px auto;
-      justify-content: center;
-      justify-items: center;
-    }
-
-    .shard-card {
-      display: flex;
-      align-items: stretch;
-      justify-content: space-between;
-      background: var(--event-bg);
-      border: 2px solid var(--event-border);
-      border-radius: 14px;
-      padding: 20px;
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
-      width: 360px;
-      height: 240px;
-      transition: box-shadow 0.3s ease, border-color 0.3s ease;
-    }
-
-    .shard-img {
-      width: 120px;
-      height: 160px;
-      object-fit: contain;
-      flex-shrink: 0;
-      margin-left: 20px;
-      align-self: center;
-    }
-
-    .right-side {
+    /* Import Section */
+    .import-bar {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      flex-grow: 1;
-      transform: scale(0.9);
-    }
-
-    .dual-circles {
-      display: flex;
+      padding: 15px 20px 10px;
       gap: 8px;
-      align-items: center;
-      transform: scale(0.85);
     }
 
-    .circle-container {
-      position: relative;
-      width: 100px;
-      height: 100px;
-      margin: 5px auto;
-    }
-
-    .circle-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .circle-label {
-      font-size: 11px;
+    .import-hint {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
       color: var(--text-color);
-      opacity: 0.8;
-      margin-top: 4px;
+      opacity: 0.5;
+      text-align: center;
+    }
+
+    .import-hint code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+    }
+
+    .import-btn {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(145deg, #1a1a1a, #2b2b2b);
+      border: 2px solid var(--event-border);
+      color: var(--text-color);
+      padding: 10px 20px;
+      font-size: 0.85rem;
       font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .circle-wrapper .reset-btn {
-      width: 32px;
-      height: 32px;
-      border-width: 2px;
+    .import-btn:hover {
+      background: var(--line-color);
+      color: #0e0e0e;
     }
 
-    .circle-wrapper .reset-btn svg {
+    .import-btn svg {
       width: 18px;
       height: 18px;
     }
 
-    .progress-ring {
+    #importFileInput {
+      display: none;
+    }
+
+    /* Cards Container */
+    .shards-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      width: fit-content;
+      margin: 30px auto 50px;
+      padding: 0 40px;
+    }
+
+    /* Shard Card */
+    .shard-card {
+      background: var(--event-bg);
+      border: 2px solid var(--event-border);
+      border-radius: 14px;
+      padding: 25px;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+      width: 340px;
+      transition: all 0.3s ease;
+    }
+
+    .shard-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.35);
+    }
+
+    /* Card Header */
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .shard-icon {
+      width: 55px;
+      height: 70px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+    }
+
+    .card-title-block {
+      flex: 1;
+    }
+
+    .shard-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 2px;
+    }
+
+    .shard-type {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      color: var(--line-color);
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Progress Section */
+    .progress-section {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .ring-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ring-container {
+      position: relative;
+      width: 100px;
+      height: 100px;
+    }
+
+    .progress-ring-svg {
       transform: rotate(-90deg);
       width: 100px;
       height: 100px;
     }
 
-    .progress-ring circle {
+    .ring-bg {
       fill: none;
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 8;
+    }
+
+    .ring-progress {
+      fill: none;
+      stroke: var(--line-color);
       stroke-width: 8;
       stroke-linecap: round;
-    }
-
-    .progress-ring .background {
-      stroke: rgba(255, 255, 255, 0.1);
-    }
-
-    .progress-ring .progress {
-      stroke: var(--line-color);
       transition: stroke-dashoffset 0.3s ease;
     }
 
-    .circle-input {
+    .ring-value {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 50px;
       text-align: center;
-      font-size: 16px;
-      font-weight: 600;
-      border: none;
-      background: transparent;
-      color: var(--text-color);
     }
 
-    .progress-info {
-      margin-top: 6px;
-      text-align: center;
-      font-size: 14px;
-      color: var(--text-color);
+    .ring-input {
       font-family: 'Inter', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-color);
+      background: transparent;
+      border: none;
+      width: 55px;
+      text-align: center;
+      outline: none;
+    }
+
+    .ring-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      color: var(--text-color);
+      opacity: 0.6;
       font-weight: 600;
     }
 
-    .progress-info input.count {
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid rgba(255,255,255,0.2);
-      color: var(--text-color);
-      font-family: inherit;
-      font-size: inherit;
-      font-weight: inherit;
-      text-align: right;
-      width: 35px;
-      outline: none;
-      transition: border-color 0.2s ease;
-    }
-
-    .progress-info input.count:focus {
-      border-color: var(--line-color);
-    }
-
-    .progress-info .max {
-      opacity: 0.8;
-      margin-left: 2px;
-    }
-
-    .buttons {
+    /* Controls */
+    .controls {
       display: flex;
       justify-content: center;
       gap: 6px;
-      margin-top: 6px;
-      min-height: 28px;
+      margin-bottom: 12px;
     }
 
-    .shard-card[data-type="Primal"] .buttons {
-      margin-top: 12px;
-    }
-
-    .btn {
+    .ctrl-btn {
+      font-family: 'Inter', sans-serif;
       background: linear-gradient(145deg, #1a1a1a, #2b2b2b);
       border: 2px solid var(--event-border);
       color: var(--text-color);
+      width: 36px;
+      height: 36px;
+      font-size: 1.1rem;
+      font-weight: 700;
       border-radius: 6px;
-      width: 28px;
-      height: 28px;
-      font-size: 16px;
-      font-weight: bold;
       cursor: pointer;
       transition: all 0.2s ease;
-    }
-
-    .btn.plus10 {
-      width: 45px;
-      font-size: 14px;
-    }
-
-    .btn:hover:not(:disabled) {
-      background: var(--line-color);
-      color: #0e0e0e;
-    }
-
-    .btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      border-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .reset-btn {
-      background: transparent;
-      border: 1px solid var(--line-color);
-      color: var(--line-color);
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 14px;
-      width: 28px;
-      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      padding: 0;
     }
 
-    .reset-btn:hover {
+    .ctrl-btn:hover:not(:disabled) {
       background: var(--line-color);
       color: #0e0e0e;
     }
 
-    .reset-btn svg {
+    .ctrl-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .ctrl-btn.wide {
+      width: 48px;
+      font-size: 0.9rem;
+    }
+
+    .ctrl-btn.reset {
+      border-color: var(--line-color);
+      color: var(--line-color);
+      background: transparent;
+    }
+
+    .ctrl-btn.reset:hover {
+      background: var(--line-color);
+      color: #0e0e0e;
+    }
+
+    .ctrl-btn svg {
       width: 16px;
       height: 16px;
     }
 
-    .chance {
-      margin-top: 2px;
+    /* Stats Row */
+    .stats-row {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 12px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .stat-item {
       text-align: center;
-      font-size: 15px;
+    }
+
+    .stat-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      color: var(--text-color);
+      opacity: 0.5;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+
+    .stat-value {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
       color: var(--line-color);
+    }
+
+    .stat-value.chance {
+      font-size: 1.1rem;
+    }
+
+    /* Last Hero Section */
+    .last-hero-section {
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .last-hero-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .last-hero-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      color: var(--text-color);
+      opacity: 0.5;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       font-weight: 600;
     }
 
-    .cache-info {
+    .last-hero-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .hero-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
       color: var(--text-color);
-      font-style: italic;
-      text-align: center;
-      margin-top: -5px;
-      margin-bottom: 25px;
-      opacity: 0.8;
-      font-size: 14px;
-      font-family: 'Inter', sans-serif;
+      opacity: 0.6;
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
     }
 
-    /* === Boost styles === */
-    .boosted-box {
-      margin-top: 8px;
-      padding: 4px 10px;
+    .hero-btn:hover {
+      opacity: 1;
+      background: var(--line-color);
+      border-color: var(--line-color);
+      color: #0e0e0e;
+    }
+
+    .hero-btn.delete:hover {
+      background: #ff4757;
+      border-color: #ff4757;
+    }
+
+    .hero-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .last-hero-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .last-hero-display {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .last-hero-img {
+      width: 40px;
+      height: 40px;
       border-radius: 8px;
-      font-weight: 700;
-      font-size: 13px;
-      color: #fcf6ff;
+      object-fit: cover;
+      border: 2px solid var(--event-border);
+    }
+
+    .last-hero-info {
+      flex: 1;
+    }
+
+    .last-hero-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 2px;
+    }
+
+    .last-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--line-color);
+    }
+
+    .last-hero-input-wrapper {
+      position: relative;
+    }
+
+    .hero-search-input {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-color);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .hero-search-input:focus {
+      border-color: var(--line-color);
+    }
+
+    .hero-search-input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .hero-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--event-bg);
+      border: 1px solid var(--event-border);
+      border-radius: 6px;
+      max-height: 150px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+      margin-top: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-suggestions.active {
+      display: block;
+    }
+
+    .hero-suggestion {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .hero-suggestion:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .hero-suggestion img {
+      width: 30px;
+      height: 30px;
+      border-radius: 5px;
+    }
+
+    .hero-suggestion span {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-color);
+    }
+
+    .pull-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pull-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      color: var(--text-color);
+      opacity: 0.5;
+    }
+
+    .pull-input {
+      width: 55px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      padding: 5px 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--line-color);
       text-align: center;
-      text-shadow: none;
+      outline: none;
     }
 
-    .boosted-ancient {
+    .pull-input:focus {
+      border-color: var(--line-color);
+    }
+
+    /* Boosted State */
+    .shard-card.boosted-ancient {
       border-color: #00c9ff !important;
-      box-shadow: 0 0 25px #00c9ff;
+      box-shadow: 0 0 20px rgba(0, 201, 255, 0.3);
     }
-    .boosted-ancient .boosted-box {
-      background: rgba(0, 201, 255, 0.2);
-      border: 1px solid #00c9ff;
-    }
-
-    .boosted-void {
+    .shard-card.boosted-void {
       border-color: #b000ff !important;
-      box-shadow: 0 0 25px #b000ff;
+      box-shadow: 0 0 20px rgba(176, 0, 255, 0.3);
     }
-    .boosted-void .boosted-box {
-      background: rgba(176, 0, 255, 0.2);
-      border: 1px solid #b000ff;
-    }
-
-    .boosted-primal {
+    .shard-card.boosted-primal {
       border-color: #ff0040 !important;
-      box-shadow: 0 0 25px #ff0040;
+      box-shadow: 0 0 20px rgba(255, 0, 64, 0.3);
     }
-    .boosted-primal .boosted-box {
-      background: rgba(255, 0, 64, 0.2);
-      border: 1px solid #ff0040;
-    }
-
-    .boosted-sacred {
+    .shard-card.boosted-sacred {
       border-color: #ffae00 !important;
-      box-shadow: 0 0 25px #ffae00;
-    }
-    .boosted-sacred .boosted-box {
-      background: rgba(255, 174, 0, 0.2);
-      border: 1px solid #ffae00;
+      box-shadow: 0 0 20px rgba(255, 174, 0, 0.3);
     }
 
-    @media (max-width: 1000px) {
-      .pity-container { grid-template-columns: repeat(2, 1fr); }
+    .boost-badge {
+      background: rgba(212, 175, 55, 0.2);
+      border: 1px solid var(--line-color);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--line-color);
+      text-align: center;
+      margin-top: 10px;
     }
-    @media (max-width: 700px) {
-      .pity-container { grid-template-columns: 1fr; }
+
+    /* Responsive */
+    @media (max-width: 1150px) {
+      .shards-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+      }
     }
 
-    @keyframes pulseGlowBlue {
-  0% { box-shadow: 0 0 10px #00c9ff; }
-  100% { box-shadow: 0 0 25px #00c9ff; }
-}
-
-@keyframes pulseGlowViolet {
-  0% { box-shadow: 0 0 10px #b000ff; }
-  100% { box-shadow: 0 0 25px #b000ff; }
-}
-
-@keyframes pulseGlowRed {
-  0% { box-shadow: 0 0 10px #ff0040; }
-  100% { box-shadow: 0 0 25px #ff0040; }
-}
-
-@keyframes pulseGlowGold {
-  0% { box-shadow: 0 0 10px #ffae00; }
-  100% { box-shadow: 0 0 25px #ffae00; }
-}
-
-/* Ajout animation par type */
-.boosted-ancient {
-  border-color: #00c9ff !important;
-  animation: pulseGlowBlue 2s infinite alternate;
-}
-
-.boosted-void {
-  border-color: #b000ff !important;
-  animation: pulseGlowViolet 2s infinite alternate;
-}
-
-.boosted-primal {
-  border-color: #ff0040 !important;
-  animation: pulseGlowRed 2s infinite alternate;
-}
-
-.boosted-sacred {
-  border-color: #ffae00 !important;
-  animation: pulseGlowGold 2s infinite alternate;
-}
+    @media (max-width: 750px) {
+      .shards-container {
+        grid-template-columns: 1fr;
+        padding: 0 20px;
+      }
+      .shard-card {
+        width: 100%;
+        max-width: 360px;
+      }
+      .mercy-title {
+        font-size: 1.8rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -357,25 +565,206 @@
 
   <div class="header-wrapper">
     <header id="page-title">Mercy Tracker</header>
-    <p class="cache-info">
-      Data is stored in your browser cache. Clearing your cache will reset all pity counters.
-    </p>
   </div>
 
-  <div class="pity-container"></div>
+  <div class="import-bar">
+    <input type="file" id="importFileInput" accept=".ini">
+    <button class="import-btn" id="importRSLHelperBtn">
+      <i data-lucide="upload"></i>
+      Import Data from RSL Helper
+    </button>
+    <span class="import-hint">File location: <code>%appdata%/RslHelper/Config</code></span>
+  </div>
 
+  <div class="shards-container"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
   <script src="../../script.js"></script>
   <script>
     const shards = [
-      { type: "Ancient", max: 219, base: 0.5, start: 200, inc: 5 },
-      { type: "Void", max: 219, base: 0.5, start: 200, inc: 5 },
-      { type: "Primal", max: 209, base: 0.5, start: 200, inc: 10 },
-      { type: "Sacred", max: 58, base: 6, start: 12, inc: 2 },
-      { type: "Prism", max: 51, base: 6, start: 20, inc: 3 },
-      { type: "Remnant", max: 121, base: 2.5, start: 24, inc: 1 }
+      { type: "Ancient", max: 219, base: 0.5, start: 200, inc: 5, rslKey: "Ancient", rarity: "Leg" },
+      { type: "Void", max: 219, base: 0.5, start: 200, inc: 5, rslKey: "Void", rarity: "Leg" },
+      { type: "Primal", max: 209, base: 0.5, start: 200, inc: 10, rslKey: "Prime", rarity: "Myth" },
+      { type: "Sacred", max: 58, base: 6, start: 12, inc: 2, rslKey: "Sacred", rarity: "Leg" },
+      { type: "Prism", max: 51, base: 6, start: 20, inc: 3, rslKey: "Prism", rarity: "Leg" },
+      { type: "Remnant", max: 121, base: 2.5, start: 24, inc: 1, rslKey: "Remnant", rarity: "Myth" }
     ];
 
     let boostedRates = [];
+    let championsDB = [];
+    let cardSetProgressFunctions = {};
+
+    async function loadChampionsDB() {
+      try {
+        const SQL = await initSqlJs({
+          locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+        });
+        const response = await fetch(`/tools/champions-index/champions.db?v=${Date.now()}`);
+        const buffer = await response.arrayBuffer();
+        const db = new SQL.Database(new Uint8Array(buffer));
+        const result = db.exec("SELECT id, name, image, rarity, IGid FROM champions;");
+
+        if (result.length) {
+          championsDB = result[0].values.map(r => ({
+            id: r[0],
+            name: r[1],
+            image: r[2],
+            rarity: r[3],
+            IGid: r[4]
+          }));
+        }
+      } catch (err) {
+        console.error("Error loading champions.db:", err);
+      }
+    }
+
+    function findChampionByIGid(igId) {
+      if (!igId) return null;
+      const idStr = String(igId);
+      return championsDB.find(c => c.IGid === idStr || c.IGid === idStr + "_f1" || String(c.IGid).startsWith(idStr));
+    }
+
+    function searchChampionsByName(query) {
+      if (!query || query.length < 2) return [];
+      const q = query.toLowerCase();
+      return championsDB.filter(c => c.name.toLowerCase().includes(q)).slice(0, 8);
+    }
+
+    function parseINI(content) {
+      const result = {};
+      let currentSection = null;
+
+      content.split(/\r?\n/).forEach(line => {
+        line = line.trim();
+        if (!line || line.startsWith(';') || line.startsWith('#')) return;
+
+        const sectionMatch = line.match(/^\[(.+)\]$/);
+        if (sectionMatch) {
+          currentSection = sectionMatch[1];
+          result[currentSection] = {};
+          return;
+        }
+
+        const kvMatch = line.match(/^([^=]+)=(.*)$/);
+        if (kvMatch && currentSection) {
+          result[currentSection][kvMatch[1].trim()] = kvMatch[2].trim();
+        }
+      });
+
+      return result;
+    }
+
+    function extractMercyData(iniData) {
+      const mercySection = iniData['MercySystem'];
+      if (!mercySection) return null;
+
+      const data = {};
+
+      const mapping = {
+        Ancient: { value: 'AncientValueLeg', needFor: 'AncientNeedForLeg', lastHero: 'AncientValueLegLastHero' },
+        Void: { value: 'VoidValueLeg', needFor: 'VoidNeedForLeg', lastHero: 'VoidValueLegLastHero' },
+        Sacred: { value: 'SacredValueLeg', needFor: 'SacredNeedForLeg', lastHero: 'SacredValueLegLastHero' },
+        Prism: { value: 'PrismValueLeg', needFor: null, lastHero: null },
+        Primal: {
+          value: 'PrimeValueMyth',
+          needFor: null,
+          lastHero: null,
+          legendaryValue: 'PrimeValueLeg'
+        },
+        Remnant: { value: 'RemnantValuetMyth', needFor: 'RemnantNeedForMyth', lastHero: 'RemnantMythLastHero' }
+      };
+
+      for (const [type, keys] of Object.entries(mapping)) {
+        data[type] = {};
+
+        for (const [key, val] of Object.entries(mercySection)) {
+          const cleanKey = key.replace(/^um\d+_/, '');
+
+          if (cleanKey === keys.value) {
+            data[type].value = parseInt(val) || 0;
+          }
+          if (keys.needFor && cleanKey === keys.needFor) {
+            data[type].needFor = parseInt(val) || 0;
+          }
+          if (keys.lastHero && cleanKey === keys.lastHero) {
+            data[type].lastHeroId = val;
+          }
+          if (keys.legendaryValue && cleanKey === keys.legendaryValue) {
+            data[type].legendaryValue = parseInt(val) || 0;
+          }
+        }
+      }
+
+      return data;
+    }
+
+    function importRSLHelperData(mercyData) {
+      for (const [type, data] of Object.entries(mercyData)) {
+        if (data.value !== undefined) {
+          localStorage.setItem("pity_" + type, data.value);
+        }
+        if (data.legendaryValue !== undefined) {
+          localStorage.setItem("pity_legendary_" + type, data.legendaryValue);
+        }
+        if (data.lastHeroId) {
+          localStorage.setItem("lastHero_" + type, data.lastHeroId);
+        }
+        if (data.needFor) {
+          localStorage.setItem("lastPull_" + type, data.needFor);
+        }
+
+        if (cardSetProgressFunctions[type]) {
+          cardSetProgressFunctions[type](data.value || 0, data.legendaryValue);
+        }
+        updateLastHeroDisplay(type);
+      }
+
+      lucide.createIcons();
+    }
+
+    function updateLastHeroDisplay(type) {
+      const card = document.querySelector(`.shard-card[data-type="${type}"]`);
+      if (!card) return;
+
+      const lastHeroId = localStorage.getItem("lastHero_" + type);
+      const lastPull = localStorage.getItem("lastPull_" + type);
+      const displayContainer = card.querySelector('.last-hero-display');
+      const inputWrapper = card.querySelector('.last-hero-input-wrapper');
+      const pullInput = card.querySelector('.pull-input');
+
+      if (!displayContainer) return;
+
+      if (pullInput) {
+        pullInput.value = lastPull || '';
+      }
+
+      if (lastHeroId) {
+        const champion = findChampionByIGid(lastHeroId);
+        if (champion) {
+          displayContainer.innerHTML = `
+            <img class="last-hero-img" src="/tools/champions-index/img/champions/${champion.image}.webp" alt="${champion.name}">
+            <div class="last-hero-info">
+              <div class="last-hero-name">${champion.name}</div>
+              ${lastPull ? `<span class="last-hero-badge">Pull #${lastPull}</span>` : ''}
+            </div>
+          `;
+          displayContainer.style.display = 'flex';
+          if (inputWrapper) inputWrapper.style.display = 'none';
+        } else {
+          displayContainer.innerHTML = `
+            <div class="last-hero-info">
+              <div class="last-hero-name">Champion ID: ${lastHeroId}</div>
+              ${lastPull ? `<span class="last-hero-badge">Pull #${lastPull}</span>` : ''}
+            </div>
+          `;
+          displayContainer.style.display = 'flex';
+          if (inputWrapper) inputWrapper.style.display = 'none';
+        }
+      } else {
+        displayContainer.style.display = 'none';
+        if (inputWrapper) inputWrapper.style.display = 'block';
+      }
+    }
 
     async function loadBoostedRates() {
       try {
@@ -387,7 +776,7 @@
           end: new Date(b.end)
         }));
       } catch (err) {
-        console.error("Erreur de chargement du fichier boosted_rates.json :", err);
+        console.error("Error loading boosted_rates.json:", err);
       }
     }
 
@@ -397,123 +786,179 @@
     }
 
     (async () => {
-      await loadBoostedRates();
-      const container = document.querySelector(".pity-container");
+      await Promise.all([loadBoostedRates(), loadChampionsDB()]);
+      const container = document.querySelector(".shards-container");
+
+      const importBtn = document.getElementById('importRSLHelperBtn');
+      const importInput = document.getElementById('importFileInput');
+
+      importBtn.addEventListener('click', () => importInput.click());
+
+      importInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+          const content = await file.text();
+          const iniData = parseINI(content);
+          const mercyData = extractMercyData(iniData);
+
+          if (mercyData) {
+            importRSLHelperData(mercyData);
+            alert('Data imported successfully from RSL Helper!');
+          } else {
+            alert('[MercySystem] section not found in file. Make sure you selected the correct .ini file.');
+          }
+        } catch (err) {
+          console.error('Import error:', err);
+          alert('Error importing file. Please check the file format.');
+        }
+
+        importInput.value = '';
+      });
 
       shards.forEach(shard => {
-        const chanceLabel = (shard.type === "Remnant" || shard.type === "Primal")
-          ? "Mythical chance"
-          : "Legendary chance";
+        const isPrimal = shard.type === "Primal";
+        const rarityLabel = shard.rarity === 'Myth' ? 'Mythical' : 'Legendary';
 
-        // Pour Primal, on ajoute un deuxième cercle pour Legendary
-        const circleHTML = shard.type === "Primal" ? `
-          <div class="dual-circles">
-            <div class="circle-wrapper">
-              <div class="circle-container">
-                <svg class="progress-ring" width="100" height="100">
-                  <circle class="background" r="45" cx="50" cy="50"></circle>
-                  <circle class="progress" r="45" cx="50" cy="50"></circle>
-                </svg>
-                <input type="number" class="circle-input mythical-input" value="0" min="0">
+        const dualRingsHTML = isPrimal ? `
+          <div class="ring-wrapper">
+            <div class="ring-container">
+              <svg class="progress-ring-svg" width="100" height="100">
+                <circle class="ring-bg" r="42" cx="50" cy="50"></circle>
+                <circle class="ring-progress mythical-ring" r="42" cx="50" cy="50"></circle>
+              </svg>
+              <div class="ring-value">
+                <input type="number" class="ring-input mythical-input" value="0" min="0">
               </div>
-              <div class="circle-label">Mythical</div>
-              <button class="reset-btn reset-mythical" style="margin-top: 4px;"><i data-lucide="rotate-cw"></i></button>
             </div>
-            <div class="circle-wrapper">
-              <div class="circle-container">
-                <svg class="progress-ring" width="100" height="100">
-                  <circle class="background" r="45" cx="50" cy="50"></circle>
-                  <circle class="progress legendary-circle" r="45" cx="50" cy="50"></circle>
-                </svg>
-                <input type="number" class="circle-input legendary-input" value="0" min="0">
+            <span class="ring-label">Mythical</span>
+          </div>
+          <div class="ring-wrapper">
+            <div class="ring-container">
+              <svg class="progress-ring-svg" width="100" height="100">
+                <circle class="ring-bg" r="42" cx="50" cy="50"></circle>
+                <circle class="ring-progress legendary-ring" r="42" cx="50" cy="50"></circle>
+              </svg>
+              <div class="ring-value">
+                <input type="number" class="ring-input legendary-input" value="0" min="0">
               </div>
-              <div class="circle-label">Legendary</div>
-              <button class="reset-btn reset-legendary" style="margin-top: 4px;"><i data-lucide="rotate-cw"></i></button>
+            </div>
+            <span class="ring-label">Legendary</span>
+          </div>
+        ` : `
+          <div class="ring-wrapper">
+            <div class="ring-container">
+              <svg class="progress-ring-svg" width="100" height="100">
+                <circle class="ring-bg" r="42" cx="50" cy="50"></circle>
+                <circle class="ring-progress" r="42" cx="50" cy="50"></circle>
+              </svg>
+              <div class="ring-value">
+                <input type="number" class="ring-input" value="0" min="0">
+              </div>
+            </div>
+            <span class="ring-label">${rarityLabel}</span>
+          </div>
+        `;
+
+        const controlsHTML = isPrimal ? `
+          <div class="controls">
+            <button class="ctrl-btn minus">−</button>
+            <button class="ctrl-btn plus">+</button>
+            <button class="ctrl-btn wide plus10">+10</button>
+            <button class="ctrl-btn reset reset-myth" title="Reset Mythical"><i data-lucide="rotate-cw"></i></button>
+            <button class="ctrl-btn reset reset-leg" title="Reset Legendary"><i data-lucide="rotate-cw"></i></button>
+          </div>
+        ` : `
+          <div class="controls">
+            <button class="ctrl-btn minus">−</button>
+            <button class="ctrl-btn plus">+</button>
+            ${["Ancient", "Void", "Prism"].includes(shard.type) ? '<button class="ctrl-btn wide plus10">+10</button>' : ''}
+            <button class="ctrl-btn reset"><i data-lucide="rotate-cw"></i></button>
+          </div>
+        `;
+
+        const statsHTML = isPrimal ? `
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-label">Pull</div>
+              <div class="stat-value count-display">0 / ${shard.max}</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Myth %</div>
+              <div class="stat-value chance percent">${shard.base}%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Leg %</div>
+              <div class="stat-value chance legendary-percent">1%</div>
             </div>
           </div>
         ` : `
-          <div class="circle-container">
-            <svg class="progress-ring" width="100" height="100">
-              <circle class="background" r="45" cx="50" cy="50"></circle>
-              <circle class="progress" r="45" cx="50" cy="50"></circle>
-            </svg>
-            <input type="number" class="circle-input" value="0" min="0">
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-label">Pull Count</div>
+              <div class="stat-value count-display">0 / ${shard.max}</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">${rarityLabel} Chance</div>
+              <div class="stat-value chance percent">${shard.base}%</div>
+            </div>
           </div>
         `;
 
         container.innerHTML += `
           <div class="shard-card" data-type="${shard.type}" data-max="${shard.max}" data-base="${shard.base}" data-start="${shard.start}" data-inc="${shard.inc}">
-            <img class="shard-img" src="/style/img/Misc/${shard.type}.webp" alt="${shard.type} Shard">
-            <div class="right-side">
-              ${circleHTML}
-              <div class="buttons">
-                <button class="btn minus">−</button>
-                <button class="btn plus">+</button>
-                ${(shard.type === "Ancient" || shard.type === "Void" || shard.type === "Primal" || shard.type === "Prism") ? '<button class="btn plus10">+10</button>' : ''}
-                ${shard.type !== "Primal" ? '<button class="reset-btn"><i data-lucide="rotate-cw"></i></button>' : ''}
+            <div class="card-header">
+              <img class="shard-icon" src="/style/img/Misc/${shard.type}.webp" alt="${shard.type}">
+              <div class="card-title-block">
+                <div class="shard-name">${shard.type}</div>
+                <div class="shard-type">Shard</div>
               </div>
-              <div class="progress-info">
-                <input type="number" class="count" value="0" min="0"> / <span class="max">${shard.max}</span>
-              </div>
-              <div class="chance">${chanceLabel}: <span class="percent">${shard.base}%</span></div>
-              ${shard.type === "Primal" ? '<div class="chance legendary-chance">Legendary chance: <span class="legendary-percent">1%</span></div>' : ''}
             </div>
-          </div>`;
+
+            <div class="progress-section">
+              ${dualRingsHTML}
+            </div>
+
+            ${controlsHTML}
+            ${statsHTML}
+
+            <div class="last-hero-section">
+              <div class="last-hero-header">
+                <span class="last-hero-title">Last ${rarityLabel}</span>
+                <div class="last-hero-actions">
+                  <button class="hero-btn edit-btn" title="Edit"><i data-lucide="pencil"></i></button>
+                  <button class="hero-btn delete" title="Clear"><i data-lucide="trash-2"></i></button>
+                </div>
+              </div>
+              <div class="last-hero-content">
+                <div class="last-hero-display" style="display: none;"></div>
+                <div class="last-hero-input-wrapper">
+                  <input type="text" class="hero-search-input" placeholder="Search champion...">
+                  <div class="hero-suggestions"></div>
+                </div>
+                <div class="pull-input-row">
+                  <span class="pull-label">Obtained at pull #</span>
+                  <input type="number" class="pull-input" placeholder="—" min="1">
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
       });
 
+      // Initialize each card
       document.querySelectorAll('.shard-card').forEach(card => {
         const type = card.dataset.type;
         const base = parseFloat(card.dataset.base);
         const start = parseInt(card.dataset.start);
         const inc = parseFloat(card.dataset.inc);
-
-        // Vérifie si un boost est actif
         const boost = getBoostedRate(type);
-
-        // Valeur max de base
         let max = parseInt(card.dataset.max);
 
-        // Si boost actif → recalcul du max (atteinte 100% plus tôt)
         if (boost) {
           const boostedMax = Math.ceil((100 - base) / (inc * boost.boost)) + (start - 1);
           max = Math.min(max, boostedMax);
-          card.querySelector('.max').textContent = max;
-        }
-
-        const isPrimal = type === "Primal";
-        const inputCircle = isPrimal ? card.querySelector('.mythical-input') : card.querySelector('.circle-input');
-        const inputCount = card.querySelector('.count');
-        const plus = card.querySelector('.plus');
-        const minus = card.querySelector('.minus');
-        const plus10 = card.querySelector('.plus10');
-        const reset = isPrimal ? null : card.querySelector('.reset-btn');
-        const resetMythical = isPrimal ? card.querySelector('.reset-mythical') : null;
-        const resetLegendary = isPrimal ? card.querySelector('.reset-legendary') : null;
-        const percent = card.querySelector('.percent');
-        const circle = card.querySelector('.progress');
-        const radius = 45;
-        const circumference = 2 * Math.PI * radius;
-        circle.style.strokeDasharray = circumference;
-
-        let value = parseInt(localStorage.getItem("pity_" + type)) || 0;
-
-        // Legendary pour Primal
-        let legendaryCircle, legendaryInput, legendaryPercent, legendaryValue;
-        const legendaryMax = 174; // 75 + 99 (pour atteindre 100%)
-        if (isPrimal) {
-          legendaryCircle = card.querySelector('.legendary-circle');
-          legendaryInput = card.querySelector('.legendary-input');
-          legendaryPercent = card.querySelector('.legendary-percent');
-          legendaryCircle.style.strokeDasharray = circumference;
-          legendaryValue = parseInt(localStorage.getItem("pity_legendary_" + type)) || 0;
-        }
-
-        // --- Boost visuel et badge ---
-        if (boost) {
-          const boostBox = document.createElement("div");
-          boostBox.className = "boosted-box";
-          boostBox.textContent = `Boosted Rate Active ×${boost.boost}`;
-          card.querySelector(".right-side").appendChild(boostBox);
 
           switch (type) {
             case "Ancient": card.classList.add("boosted-ancient"); break;
@@ -521,7 +966,107 @@
             case "Primal": card.classList.add("boosted-primal"); break;
             case "Sacred": card.classList.add("boosted-sacred"); break;
           }
+
+          const badge = document.createElement('div');
+          badge.className = 'boost-badge';
+          badge.textContent = `Boosted Rate Active ×${boost.boost}`;
+          card.appendChild(badge);
         }
+
+        const isPrimal = type === "Primal";
+        const inputCircle = isPrimal ? card.querySelector('.mythical-input') : card.querySelector('.ring-input');
+        const countDisplay = card.querySelector('.count-display');
+        const plus = card.querySelector('.plus');
+        const minus = card.querySelector('.minus');
+        const plus10 = card.querySelector('.plus10');
+        const reset = isPrimal ? null : card.querySelector('.reset');
+        const resetMyth = isPrimal ? card.querySelector('.reset-myth') : null;
+        const resetLeg = isPrimal ? card.querySelector('.reset-leg') : null;
+        const percent = card.querySelector('.percent');
+        const circle = isPrimal ? card.querySelector('.mythical-ring') : card.querySelector('.ring-progress');
+        const radius = 42;
+        const circumference = 2 * Math.PI * radius;
+        circle.style.strokeDasharray = circumference;
+
+        let value = parseInt(localStorage.getItem("pity_" + type)) || 0;
+
+        let legendaryCircle, legendaryInput, legendaryPercent, legendaryValue;
+        const legendaryMax = 174;
+        if (isPrimal) {
+          legendaryCircle = card.querySelector('.legendary-ring');
+          legendaryInput = card.querySelector('.legendary-input');
+          legendaryPercent = card.querySelector('.legendary-percent');
+          legendaryCircle.style.strokeDasharray = circumference;
+          legendaryValue = parseInt(localStorage.getItem("pity_legendary_" + type)) || 0;
+        }
+
+        // Last Hero setup
+        const heroInput = card.querySelector('.hero-search-input');
+        const heroSuggestions = card.querySelector('.hero-suggestions');
+        const editBtn = card.querySelector('.edit-btn');
+        const deleteBtn = card.querySelector('.delete');
+        const heroDisplay = card.querySelector('.last-hero-display');
+        const heroInputWrapper = card.querySelector('.last-hero-input-wrapper');
+        const pullInput = card.querySelector('.pull-input');
+
+        heroInput.addEventListener('input', () => {
+          const query = heroInput.value;
+          const matches = searchChampionsByName(query);
+
+          heroSuggestions.innerHTML = '';
+          if (matches.length > 0) {
+            heroSuggestions.classList.add('active');
+            matches.forEach(champ => {
+              const item = document.createElement('div');
+              item.className = 'hero-suggestion';
+              item.innerHTML = `
+                <img src="/tools/champions-index/img/champions/${champ.image}.webp" alt="${champ.name}">
+                <span>${champ.name}</span>
+              `;
+              item.addEventListener('click', () => {
+                localStorage.setItem("lastHero_" + type, champ.IGid || champ.id);
+                heroInput.value = '';
+                heroSuggestions.classList.remove('active');
+                updateLastHeroDisplay(type);
+                lucide.createIcons();
+              });
+              heroSuggestions.appendChild(item);
+            });
+          } else {
+            heroSuggestions.classList.remove('active');
+          }
+        });
+
+        heroInput.addEventListener('blur', () => {
+          setTimeout(() => heroSuggestions.classList.remove('active'), 200);
+        });
+
+        editBtn.addEventListener('click', () => {
+          heroDisplay.style.display = 'none';
+          heroInputWrapper.style.display = 'block';
+          heroInput.focus();
+        });
+
+        deleteBtn.addEventListener('click', () => {
+          localStorage.removeItem("lastHero_" + type);
+          localStorage.removeItem("lastPull_" + type);
+          heroDisplay.style.display = 'none';
+          heroInputWrapper.style.display = 'block';
+          pullInput.value = '';
+          lucide.createIcons();
+        });
+
+        pullInput.addEventListener('change', () => {
+          const pullValue = pullInput.value;
+          if (pullValue && parseInt(pullValue) > 0) {
+            localStorage.setItem("lastPull_" + type, pullValue);
+          } else {
+            localStorage.removeItem("lastPull_" + type);
+          }
+          updateLastHeroDisplay(type);
+        });
+
+        updateLastHeroDisplay(type);
 
         function calcChance(v) {
           let rate = v < start ? base : Math.min(base + (v - start + 1) * inc, 100);
@@ -549,7 +1094,7 @@
           const offset = circumference - (v / max) * circumference;
           circle.style.strokeDashoffset = offset;
           inputCircle.value = v;
-          inputCount.value = v;
+          countDisplay.textContent = `${v} / ${max}`;
           percent.textContent = calcChance(v).toFixed(2) + "%";
           localStorage.setItem("pity_" + type, v);
 
@@ -565,6 +1110,8 @@
             updateButtons(v, legendaryValue);
           }
         }
+
+        cardSetProgressFunctions[type] = setProgress;
 
         function setLegendaryProgress(legV) {
           legV = Math.max(0, Math.min(legendaryMax, legV));
@@ -593,7 +1140,6 @@
         }
 
         if (isPrimal) {
-          // Le bouton + incrémente les DEUX cercles en même temps
           holdButton(plus, () => {
             if (value < max || legendaryValue < legendaryMax) {
               if (value < max) value++;
@@ -602,7 +1148,6 @@
             }
           });
 
-          // Le bouton - décrémente les DEUX cercles en même temps
           holdButton(minus, () => {
             if (value > 0 || legendaryValue > 0) {
               if (value > 0) value--;
@@ -619,20 +1164,18 @@
             };
           }
 
-          // Reset séparés
-          resetMythical.onclick = () => {
+          resetMyth.onclick = () => {
             value = 0;
             setProgress(0, legendaryValue);
           };
 
-          resetLegendary.onclick = () => {
+          resetLeg.onclick = () => {
             legendaryValue = 0;
             setLegendaryProgress(0);
           };
 
           inputCircle.oninput = () => setProgress(value = parseInt(inputCircle.value) || 0, legendaryValue);
           legendaryInput.oninput = () => setLegendaryProgress(parseInt(legendaryInput.value) || 0);
-          inputCount.oninput = () => setProgress(value = parseInt(inputCount.value) || 0, legendaryValue);
 
           setProgress(value, legendaryValue);
         } else {
@@ -646,27 +1189,23 @@
           }
           reset.onclick = () => setProgress(value = 0);
           inputCircle.oninput = () => setProgress(value = parseInt(inputCircle.value) || 0);
-          inputCount.oninput = () => setProgress(value = parseInt(inputCount.value) || 0);
 
           setProgress(value);
         }
       });
 
-      // Initialiser les icônes Lucide
       lucide.createIcons();
     })();
   </script>
 
   <div class="adsense-container">
     <div class="ad-label">Advertisement</div>
-
     <ins class="adsbygoogle"
      style="display:block"
      data-ad-client="ca-pub-8653563887265027"
      data-ad-slot="9042028911"
      data-ad-format="auto"
      data-full-width-responsive="true"></ins>
-
     <script>
       (adsbygoogle = window.adsbygoogle || []).push({});
     </script>

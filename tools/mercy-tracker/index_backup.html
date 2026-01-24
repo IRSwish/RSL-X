@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HNK5S7EBCJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-HNK5S7EBCJ');
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+  <script src="/config/site-config.js"></script>
+    <script src="/config/ad-banner.js" defer></script>
+  <script>document.title = "Mercy Tracker | " + window.siteConfig.title;</script>
+  <link rel="stylesheet" href="../../style/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="preload" href="/menu.html" as="fetch" crossorigin>
+  <style>
+    .pity-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 50px;
+      width: fit-content;
+      margin: 50px auto;
+      justify-content: center;
+      justify-items: center;
+    }
+
+    .shard-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: var(--event-bg);
+      border: 2px solid var(--event-border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+      width: 360px;
+      min-height: 280px;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .shard-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .shard-img {
+      width: 120px;
+      height: 160px;
+      object-fit: contain;
+      flex-shrink: 0;
+      margin-left: 20px;
+    }
+
+    .right-side {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+      transform: scale(0.9);
+    }
+
+    .dual-circles {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      transform: scale(0.85);
+    }
+
+    .circle-container {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: 5px auto;
+    }
+
+    .circle-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .circle-label {
+      font-size: 11px;
+      color: var(--text-color);
+      opacity: 0.8;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .circle-wrapper .reset-btn {
+      width: 32px;
+      height: 32px;
+      border-width: 2px;
+    }
+
+    .circle-wrapper .reset-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .progress-ring {
+      transform: rotate(-90deg);
+      width: 100px;
+      height: 100px;
+    }
+
+    .progress-ring circle {
+      fill: none;
+      stroke-width: 8;
+      stroke-linecap: round;
+    }
+
+    .progress-ring .background {
+      stroke: rgba(255, 255, 255, 0.1);
+    }
+
+    .progress-ring .progress {
+      stroke: var(--line-color);
+      transition: stroke-dashoffset 0.3s ease;
+    }
+
+    .circle-input {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--text-color);
+    }
+
+    .progress-info {
+      margin-top: 6px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-color);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+    }
+
+    .progress-info input.count {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      color: var(--text-color);
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      text-align: right;
+      width: 35px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .progress-info input.count:focus {
+      border-color: var(--line-color);
+    }
+
+    .progress-info .max {
+      opacity: 0.8;
+      margin-left: 2px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 6px;
+      min-height: 28px;
+    }
+
+    .shard-card[data-type="Primal"] .buttons {
+      margin-top: 12px;
+    }
+
+    .btn {
+      background: linear-gradient(145deg, #1a1a1a, #2b2b2b);
+      border: 2px solid var(--event-border);
+      color: var(--text-color);
+      border-radius: 6px;
+      width: 28px;
+      height: 28px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn.plus10 {
+      width: 45px;
+      font-size: 14px;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--line-color);
+      color: #0e0e0e;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .reset-btn {
+      background: transparent;
+      border: 1px solid var(--line-color);
+      color: var(--line-color);
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 0;
+    }
+
+    .reset-btn:hover {
+      background: var(--line-color);
+      color: #0e0e0e;
+    }
+
+    .reset-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .chance {
+      margin-top: 2px;
+      text-align: center;
+      font-size: 15px;
+      color: var(--line-color);
+      font-weight: 600;
+    }
+
+    .cache-info {
+      color: var(--text-color);
+      font-style: italic;
+      text-align: center;
+      margin-top: -5px;
+      margin-bottom: 25px;
+      opacity: 0.8;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* === Boost styles === */
+    .boosted-box {
+      margin-top: 8px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      color: #fcf6ff;
+      text-align: center;
+      text-shadow: none;
+    }
+
+    .boosted-ancient {
+      border-color: #00c9ff !important;
+      box-shadow: 0 0 25px #00c9ff;
+    }
+    .boosted-ancient .boosted-box {
+      background: rgba(0, 201, 255, 0.2);
+      border: 1px solid #00c9ff;
+    }
+
+    .boosted-void {
+      border-color: #b000ff !important;
+      box-shadow: 0 0 25px #b000ff;
+    }
+    .boosted-void .boosted-box {
+      background: rgba(176, 0, 255, 0.2);
+      border: 1px solid #b000ff;
+    }
+
+    .boosted-primal {
+      border-color: #ff0040 !important;
+      box-shadow: 0 0 25px #ff0040;
+    }
+    .boosted-primal .boosted-box {
+      background: rgba(255, 0, 64, 0.2);
+      border: 1px solid #ff0040;
+    }
+
+    .boosted-sacred {
+      border-color: #ffae00 !important;
+      box-shadow: 0 0 25px #ffae00;
+    }
+    .boosted-sacred .boosted-box {
+      background: rgba(255, 174, 0, 0.2);
+      border: 1px solid #ffae00;
+    }
+
+    @media (max-width: 1000px) {
+      .pity-container { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 700px) {
+      .pity-container { grid-template-columns: 1fr; }
+    }
+
+    @keyframes pulseGlowBlue {
+  0% { box-shadow: 0 0 10px #00c9ff; }
+  100% { box-shadow: 0 0 25px #00c9ff; }
+}
+
+@keyframes pulseGlowViolet {
+  0% { box-shadow: 0 0 10px #b000ff; }
+  100% { box-shadow: 0 0 25px #b000ff; }
+}
+
+@keyframes pulseGlowRed {
+  0% { box-shadow: 0 0 10px #ff0040; }
+  100% { box-shadow: 0 0 25px #ff0040; }
+}
+
+@keyframes pulseGlowGold {
+  0% { box-shadow: 0 0 10px #ffae00; }
+  100% { box-shadow: 0 0 25px #ffae00; }
+}
+
+/* === Import RSL Helper === */
+.import-section {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.import-btn {
+  background: linear-gradient(145deg, #1a1a1a, #2b2b2b);
+  border: 2px solid var(--event-border);
+  color: var(--text-color);
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.import-btn:hover {
+  background: var(--line-color);
+  color: #0e0e0e;
+}
+
+.import-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+#importFileInput {
+  display: none;
+}
+
+/* === Last Hero Section === */
+.last-hero-section {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.last-hero-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.last-hero-title {
+  font-size: 10px;
+  color: var(--text-color);
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.last-hero-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.last-hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.last-hero-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.last-hero-img-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.last-hero-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 2px solid var(--event-border);
+}
+
+.last-hero-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.last-hero-name {
+  font-size: 12px;
+  color: var(--text-color);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.last-hero-pull-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 10px;
+  color: var(--line-color);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.last-hero-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.last-hero-input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 5px;
+  color: var(--text-color);
+  font-size: 11px;
+  padding: 6px 10px;
+  flex: 1;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.last-hero-input:focus {
+  border-color: var(--line-color);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.last-hero-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.last-hero-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #1a1a1a;
+  border: 1px solid var(--event-border);
+  border-radius: 6px;
+  max-height: 140px;
+  overflow-y: auto;
+  z-index: 100;
+  display: none;
+  margin-top: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.last-hero-suggestions.active {
+  display: block;
+}
+
+.last-hero-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.last-hero-suggestion:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.last-hero-suggestion img {
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.last-hero-suggestion span {
+  font-size: 12px;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.last-hero-pull-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.last-hero-pull-label {
+  font-size: 10px;
+  color: var(--text-color);
+  opacity: 0.5;
+}
+
+.last-hero-pull-input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  color: var(--line-color);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 6px;
+  width: 50px;
+  text-align: center;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.last-hero-pull-input:focus {
+  border-color: var(--line-color);
+}
+
+.last-hero-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-color);
+  border-radius: 4px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.last-hero-btn:hover {
+  background: var(--line-color);
+  color: #0e0e0e;
+  border-color: var(--line-color);
+}
+
+.last-hero-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+.last-hero-btn.delete-btn:hover {
+  background: #ff4757;
+  border-color: #ff4757;
+}
+
+/* Ajout animation par type */
+.boosted-ancient {
+  border-color: #00c9ff !important;
+  animation: pulseGlowBlue 2s infinite alternate;
+}
+
+.boosted-void {
+  border-color: #b000ff !important;
+  animation: pulseGlowViolet 2s infinite alternate;
+}
+
+.boosted-primal {
+  border-color: #ff0040 !important;
+  animation: pulseGlowRed 2s infinite alternate;
+}
+
+.boosted-sacred {
+  border-color: #ffae00 !important;
+  animation: pulseGlowGold 2s infinite alternate;
+}
+  </style>
+</head>
+<body>
+  <div id="menu-container"></div>
+
+  <div class="header-wrapper">
+    <header id="page-title">Mercy Tracker</header>
+    <p class="cache-info">
+      Data is stored in your browser cache. Clearing your cache will reset all pity counters.
+    </p>
+  </div>
+
+  <div class="import-section">
+    <input type="file" id="importFileInput" accept=".ini">
+    <button class="import-btn" id="importRSLHelperBtn">
+      <i data-lucide="upload"></i>
+      Import RSL Helper
+    </button>
+  </div>
+
+  <div class="pity-container"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+  <script src="../../script.js"></script>
+  <script>
+    const shards = [
+      { type: "Ancient", max: 219, base: 0.5, start: 200, inc: 5, rslKey: "Ancient", rarity: "Leg" },
+      { type: "Void", max: 219, base: 0.5, start: 200, inc: 5, rslKey: "Void", rarity: "Leg" },
+      { type: "Primal", max: 209, base: 0.5, start: 200, inc: 10, rslKey: "Prime", rarity: "Myth" },
+      { type: "Sacred", max: 58, base: 6, start: 12, inc: 2, rslKey: "Sacred", rarity: "Leg" },
+      { type: "Prism", max: 51, base: 6, start: 20, inc: 3, rslKey: "Prism", rarity: "Leg" },
+      { type: "Remnant", max: 121, base: 2.5, start: 24, inc: 1, rslKey: "Remnant", rarity: "Myth" }
+    ];
+
+    let boostedRates = [];
+    let championsDB = [];
+    let cardSetProgressFunctions = {};
+
+    // Charger la base de données des champions
+    async function loadChampionsDB() {
+      try {
+        const SQL = await initSqlJs({
+          locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+        });
+        const response = await fetch(`/tools/champions-index/champions.db?v=${Date.now()}`);
+        const buffer = await response.arrayBuffer();
+        const db = new SQL.Database(new Uint8Array(buffer));
+        const result = db.exec("SELECT id, name, image, rarity, IGid FROM champions;");
+
+        if (result.length) {
+          championsDB = result[0].values.map(r => ({
+            id: r[0],
+            name: r[1],
+            image: r[2],
+            rarity: r[3],
+            IGid: r[4]
+          }));
+        }
+        console.log(`Loaded ${championsDB.length} champions`);
+      } catch (err) {
+        console.error("Erreur chargement champions.db:", err);
+      }
+    }
+
+    // Trouver un champion par son IGid
+    function findChampionByIGid(igId) {
+      if (!igId) return null;
+      const idStr = String(igId);
+      return championsDB.find(c => c.IGid === idStr || c.IGid === idStr + "_f1" || String(c.IGid).startsWith(idStr));
+    }
+
+    // Trouver un champion par son nom (recherche partielle)
+    function searchChampionsByName(query) {
+      if (!query || query.length < 2) return [];
+      const q = query.toLowerCase();
+      return championsDB.filter(c => c.name.toLowerCase().includes(q)).slice(0, 8);
+    }
+
+    // Parser un fichier INI
+    function parseINI(content) {
+      const result = {};
+      let currentSection = null;
+
+      content.split(/\r?\n/).forEach(line => {
+        line = line.trim();
+        if (!line || line.startsWith(';') || line.startsWith('#')) return;
+
+        const sectionMatch = line.match(/^\[(.+)\]$/);
+        if (sectionMatch) {
+          currentSection = sectionMatch[1];
+          result[currentSection] = {};
+          return;
+        }
+
+        const kvMatch = line.match(/^([^=]+)=(.*)$/);
+        if (kvMatch && currentSection) {
+          result[currentSection][kvMatch[1].trim()] = kvMatch[2].trim();
+        }
+      });
+
+      return result;
+    }
+
+    // Extraire les données de mercy depuis l'INI RSL Helper
+    function extractMercyData(iniData) {
+      const mercySection = iniData['MercySystem'];
+      if (!mercySection) return null;
+
+      const data = {};
+
+      // Mapping des clés RSL Helper vers nos types
+      const mapping = {
+        Ancient: { value: 'AncientValueLeg', needFor: 'AncientNeedForLeg', lastHero: 'AncientValueLegLastHero' },
+        Void: { value: 'VoidValueLeg', needFor: 'VoidNeedForLeg', lastHero: 'VoidValueLegLastHero' },
+        Sacred: { value: 'SacredValueLeg', needFor: 'SacredNeedForLeg', lastHero: 'SacredValueLegLastHero' },
+        Prism: { value: 'PrismValueLeg', needFor: null, lastHero: null },
+        Primal: {
+          value: 'PrimeValueMyth',
+          needFor: null,
+          lastHero: null,
+          legendaryValue: 'PrimeValueLeg'
+        },
+        Remnant: { value: 'RemnantValuetMyth', needFor: 'RemnantNeedForMyth', lastHero: 'RemnantMythLastHero' }
+      };
+
+      for (const [type, keys] of Object.entries(mapping)) {
+        data[type] = {};
+
+        // Chercher les clés avec le préfixe utilisateur (um...)
+        for (const [key, val] of Object.entries(mercySection)) {
+          const cleanKey = key.replace(/^um\d+_/, '');
+
+          if (cleanKey === keys.value) {
+            data[type].value = parseInt(val) || 0;
+          }
+          if (keys.needFor && cleanKey === keys.needFor) {
+            data[type].needFor = parseInt(val) || 0;
+          }
+          if (keys.lastHero && cleanKey === keys.lastHero) {
+            data[type].lastHeroId = val;
+          }
+          if (keys.legendaryValue && cleanKey === keys.legendaryValue) {
+            data[type].legendaryValue = parseInt(val) || 0;
+          }
+        }
+      }
+
+      return data;
+    }
+
+    // Importer les données RSL Helper
+    function importRSLHelperData(mercyData) {
+      for (const [type, data] of Object.entries(mercyData)) {
+        if (data.value !== undefined) {
+          localStorage.setItem("pity_" + type, data.value);
+        }
+        if (data.legendaryValue !== undefined) {
+          localStorage.setItem("pity_legendary_" + type, data.legendaryValue);
+        }
+        if (data.lastHeroId) {
+          localStorage.setItem("lastHero_" + type, data.lastHeroId);
+        }
+        if (data.needFor) {
+          localStorage.setItem("lastPull_" + type, data.needFor);
+        }
+
+        // Mettre à jour l'affichage
+        if (cardSetProgressFunctions[type]) {
+          cardSetProgressFunctions[type](data.value || 0, data.legendaryValue);
+        }
+        updateLastHeroDisplay(type);
+      }
+
+      lucide.createIcons();
+    }
+
+    // Mettre à jour l'affichage du dernier héro
+    function updateLastHeroDisplay(type) {
+      const card = document.querySelector(`.shard-card[data-type="${type}"]`);
+      if (!card) return;
+
+      const lastHeroId = localStorage.getItem("lastHero_" + type);
+      const lastPull = localStorage.getItem("lastPull_" + type);
+      const displayContainer = card.querySelector('.last-hero-display');
+      const inputWrapper = card.querySelector('.last-hero-input-wrapper');
+      const pullInput = card.querySelector('.last-hero-pull-input');
+
+      if (!displayContainer) return;
+
+      // Mettre à jour l'input du pull
+      if (pullInput) {
+        pullInput.value = lastPull || '';
+      }
+
+      if (lastHeroId) {
+        const champion = findChampionByIGid(lastHeroId);
+        if (champion) {
+          displayContainer.innerHTML = `
+            <div class="last-hero-img-wrapper">
+              <img class="last-hero-img" src="/tools/champions-index/img/champions/${champion.image}.webp" alt="${champion.name}">
+            </div>
+            <div class="last-hero-info">
+              <div class="last-hero-name">${champion.name}</div>
+              ${lastPull ? `<span class="last-hero-pull-badge">Pull #${lastPull}</span>` : ''}
+            </div>
+          `;
+          displayContainer.style.display = 'flex';
+          if (inputWrapper) inputWrapper.style.display = 'none';
+        } else {
+          displayContainer.innerHTML = `
+            <div class="last-hero-info">
+              <div class="last-hero-name">Champion ID: ${lastHeroId}</div>
+              ${lastPull ? `<span class="last-hero-pull-badge">Pull #${lastPull}</span>` : ''}
+            </div>
+          `;
+          displayContainer.style.display = 'flex';
+          if (inputWrapper) inputWrapper.style.display = 'none';
+        }
+      } else {
+        displayContainer.style.display = 'none';
+        if (inputWrapper) inputWrapper.style.display = 'flex';
+      }
+    }
+
+    async function loadBoostedRates() {
+      try {
+        const response = await fetch(`boosted_rates.json?v=${Date.now()}`);
+        const data = await response.json();
+        boostedRates = data.boostedRates.map(b => ({
+          ...b,
+          start: new Date(b.start),
+          end: new Date(b.end)
+        }));
+      } catch (err) {
+        console.error("Erreur de chargement du fichier boosted_rates.json :", err);
+      }
+    }
+
+    function getBoostedRate(type) {
+      const now = new Date();
+      return boostedRates.find(b => b.type === type && now >= b.start && now <= b.end) || null;
+    }
+
+    (async () => {
+      await Promise.all([loadBoostedRates(), loadChampionsDB()]);
+      const container = document.querySelector(".pity-container");
+
+      // Setup import button
+      const importBtn = document.getElementById('importRSLHelperBtn');
+      const importInput = document.getElementById('importFileInput');
+
+      importBtn.addEventListener('click', () => importInput.click());
+
+      importInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+          const content = await file.text();
+          const iniData = parseINI(content);
+          const mercyData = extractMercyData(iniData);
+
+          if (mercyData) {
+            importRSLHelperData(mercyData);
+            alert('Import RSL Helper réussi !');
+          } else {
+            alert('Section [MercySystem] non trouvée dans le fichier.');
+          }
+        } catch (err) {
+          console.error('Erreur import:', err);
+          alert('Erreur lors de l\'import du fichier.');
+        }
+
+        importInput.value = '';
+      });
+
+      shards.forEach(shard => {
+        const chanceLabel = (shard.type === "Remnant" || shard.type === "Primal")
+          ? "Mythical chance"
+          : "Legendary chance";
+
+        // Pour Primal, on ajoute un deuxième cercle pour Legendary
+        const circleHTML = shard.type === "Primal" ? `
+          <div class="dual-circles">
+            <div class="circle-wrapper">
+              <div class="circle-container">
+                <svg class="progress-ring" width="100" height="100">
+                  <circle class="background" r="45" cx="50" cy="50"></circle>
+                  <circle class="progress" r="45" cx="50" cy="50"></circle>
+                </svg>
+                <input type="number" class="circle-input mythical-input" value="0" min="0">
+              </div>
+              <div class="circle-label">Mythical</div>
+              <button class="reset-btn reset-mythical" style="margin-top: 4px;"><i data-lucide="rotate-cw"></i></button>
+            </div>
+            <div class="circle-wrapper">
+              <div class="circle-container">
+                <svg class="progress-ring" width="100" height="100">
+                  <circle class="background" r="45" cx="50" cy="50"></circle>
+                  <circle class="progress legendary-circle" r="45" cx="50" cy="50"></circle>
+                </svg>
+                <input type="number" class="circle-input legendary-input" value="0" min="0">
+              </div>
+              <div class="circle-label">Legendary</div>
+              <button class="reset-btn reset-legendary" style="margin-top: 4px;"><i data-lucide="rotate-cw"></i></button>
+            </div>
+          </div>
+        ` : `
+          <div class="circle-container">
+            <svg class="progress-ring" width="100" height="100">
+              <circle class="background" r="45" cx="50" cy="50"></circle>
+              <circle class="progress" r="45" cx="50" cy="50"></circle>
+            </svg>
+            <input type="number" class="circle-input" value="0" min="0">
+          </div>
+        `;
+
+        // Section last hero
+        const rarityLabel = shard.rarity === 'Myth' ? 'Mythical' : 'Legendary';
+        const lastHeroHTML = `
+          <div class="last-hero-section">
+            <div class="last-hero-header">
+              <span class="last-hero-title">Last ${rarityLabel}</span>
+              <div class="last-hero-actions">
+                <button class="last-hero-btn edit-btn" title="Edit"><i data-lucide="pencil"></i></button>
+                <button class="last-hero-btn delete-btn" title="Clear"><i data-lucide="trash-2"></i></button>
+              </div>
+            </div>
+            <div class="last-hero-content">
+              <div class="last-hero-display" style="display: none;"></div>
+              <div class="last-hero-input-wrapper">
+                <input type="text" class="last-hero-input" placeholder="Search champion...">
+                <div class="last-hero-suggestions"></div>
+              </div>
+              <div class="last-hero-pull-row">
+                <span class="last-hero-pull-label">Obtained at pull #</span>
+                <input type="number" class="last-hero-pull-input" placeholder="—" min="1">
+              </div>
+            </div>
+          </div>
+        `;
+
+        container.innerHTML += `
+          <div class="shard-card" data-type="${shard.type}" data-max="${shard.max}" data-base="${shard.base}" data-start="${shard.start}" data-inc="${shard.inc}">
+            <div class="shard-card-top">
+              <img class="shard-img" src="/style/img/Misc/${shard.type}.webp" alt="${shard.type} Shard">
+              <div class="right-side">
+                ${circleHTML}
+                <div class="buttons">
+                  <button class="btn minus">−</button>
+                  <button class="btn plus">+</button>
+                  ${(shard.type === "Ancient" || shard.type === "Void" || shard.type === "Primal" || shard.type === "Prism") ? '<button class="btn plus10">+10</button>' : ''}
+                  ${shard.type !== "Primal" ? '<button class="reset-btn"><i data-lucide="rotate-cw"></i></button>' : ''}
+                </div>
+                <div class="progress-info">
+                  <input type="number" class="count" value="0" min="0"> / <span class="max">${shard.max}</span>
+                </div>
+                <div class="chance">${chanceLabel}: <span class="percent">${shard.base}%</span></div>
+                ${shard.type === "Primal" ? '<div class="chance legendary-chance">Legendary chance: <span class="legendary-percent">1%</span></div>' : ''}
+              </div>
+            </div>
+            ${lastHeroHTML}
+          </div>`;
+      });
+
+      document.querySelectorAll('.shard-card').forEach(card => {
+        const type = card.dataset.type;
+        const base = parseFloat(card.dataset.base);
+        const start = parseInt(card.dataset.start);
+        const inc = parseFloat(card.dataset.inc);
+
+        // Vérifie si un boost est actif
+        const boost = getBoostedRate(type);
+
+        // Valeur max de base
+        let max = parseInt(card.dataset.max);
+
+        // Si boost actif → recalcul du max (atteinte 100% plus tôt)
+        if (boost) {
+          const boostedMax = Math.ceil((100 - base) / (inc * boost.boost)) + (start - 1);
+          max = Math.min(max, boostedMax);
+          card.querySelector('.max').textContent = max;
+        }
+
+        const isPrimal = type === "Primal";
+        const inputCircle = isPrimal ? card.querySelector('.mythical-input') : card.querySelector('.circle-input');
+        const inputCount = card.querySelector('.count');
+        const plus = card.querySelector('.plus');
+        const minus = card.querySelector('.minus');
+        const plus10 = card.querySelector('.plus10');
+        const reset = isPrimal ? null : card.querySelector('.reset-btn');
+        const resetMythical = isPrimal ? card.querySelector('.reset-mythical') : null;
+        const resetLegendary = isPrimal ? card.querySelector('.reset-legendary') : null;
+        const percent = card.querySelector('.percent');
+        const circle = card.querySelector('.progress');
+        const radius = 45;
+        const circumference = 2 * Math.PI * radius;
+        circle.style.strokeDasharray = circumference;
+
+        let value = parseInt(localStorage.getItem("pity_" + type)) || 0;
+
+        // Legendary pour Primal
+        let legendaryCircle, legendaryInput, legendaryPercent, legendaryValue;
+        const legendaryMax = 174; // 75 + 99 (pour atteindre 100%)
+        if (isPrimal) {
+          legendaryCircle = card.querySelector('.legendary-circle');
+          legendaryInput = card.querySelector('.legendary-input');
+          legendaryPercent = card.querySelector('.legendary-percent');
+          legendaryCircle.style.strokeDasharray = circumference;
+          legendaryValue = parseInt(localStorage.getItem("pity_legendary_" + type)) || 0;
+        }
+
+        // --- Last Hero Input Setup ---
+        const lastHeroInput = card.querySelector('.last-hero-input');
+        const lastHeroSuggestions = card.querySelector('.last-hero-suggestions');
+        const lastHeroEditBtn = card.querySelector('.edit-btn');
+        const lastHeroDeleteBtn = card.querySelector('.delete-btn');
+        const lastHeroDisplay = card.querySelector('.last-hero-display');
+        const lastHeroInputWrapper = card.querySelector('.last-hero-input-wrapper');
+        const lastHeroPullInput = card.querySelector('.last-hero-pull-input');
+
+        // Recherche de champion
+        lastHeroInput.addEventListener('input', () => {
+          const query = lastHeroInput.value;
+          const matches = searchChampionsByName(query);
+
+          lastHeroSuggestions.innerHTML = '';
+          if (matches.length > 0) {
+            lastHeroSuggestions.classList.add('active');
+            matches.forEach(champ => {
+              const item = document.createElement('div');
+              item.className = 'last-hero-suggestion';
+              item.innerHTML = `
+                <img src="/tools/champions-index/img/champions/${champ.image}.webp" alt="${champ.name}">
+                <span>${champ.name}</span>
+              `;
+              item.addEventListener('click', () => {
+                localStorage.setItem("lastHero_" + type, champ.IGid || champ.id);
+                lastHeroInput.value = '';
+                lastHeroSuggestions.classList.remove('active');
+                updateLastHeroDisplay(type);
+                lucide.createIcons();
+              });
+              lastHeroSuggestions.appendChild(item);
+            });
+          } else {
+            lastHeroSuggestions.classList.remove('active');
+          }
+        });
+
+        lastHeroInput.addEventListener('blur', () => {
+          setTimeout(() => lastHeroSuggestions.classList.remove('active'), 200);
+        });
+
+        // Bouton Edit - affiche l'input de recherche
+        lastHeroEditBtn.addEventListener('click', () => {
+          lastHeroDisplay.style.display = 'none';
+          lastHeroInputWrapper.style.display = 'flex';
+          lastHeroInput.focus();
+        });
+
+        // Bouton Delete - efface le champion et le pull
+        lastHeroDeleteBtn.addEventListener('click', () => {
+          localStorage.removeItem("lastHero_" + type);
+          localStorage.removeItem("lastPull_" + type);
+          lastHeroDisplay.style.display = 'none';
+          lastHeroInputWrapper.style.display = 'flex';
+          lastHeroPullInput.value = '';
+          lucide.createIcons();
+        });
+
+        // Input du numéro de pull - sauvegarde à chaque changement
+        lastHeroPullInput.addEventListener('change', () => {
+          const pullValue = lastHeroPullInput.value;
+          if (pullValue && parseInt(pullValue) > 0) {
+            localStorage.setItem("lastPull_" + type, pullValue);
+          } else {
+            localStorage.removeItem("lastPull_" + type);
+          }
+          updateLastHeroDisplay(type);
+        });
+
+        // Afficher le dernier héro sauvegardé
+        updateLastHeroDisplay(type);
+
+        // --- Boost visuel et badge ---
+        if (boost) {
+          const boostBox = document.createElement("div");
+          boostBox.className = "boosted-box";
+          boostBox.textContent = `Boosted Rate Active ×${boost.boost}`;
+          card.querySelector(".right-side").appendChild(boostBox);
+
+          switch (type) {
+            case "Ancient": card.classList.add("boosted-ancient"); break;
+            case "Void": card.classList.add("boosted-void"); break;
+            case "Primal": card.classList.add("boosted-primal"); break;
+            case "Sacred": card.classList.add("boosted-sacred"); break;
+          }
+        }
+
+        function calcChance(v) {
+          let rate = v < start ? base : Math.min(base + (v - start + 1) * inc, 100);
+          if (boost) rate = Math.min(rate * boost.boost, 100);
+          return rate;
+        }
+
+        function calcLegendaryChance(v) {
+          if (v < 75) return 1;
+          return Math.min(1 + (v - 75 + 1) * 1, 100);
+        }
+
+        function updateButtons(v, legV) {
+          if (isPrimal) {
+            minus.disabled = v <= 0 && legV <= 0;
+            plus.disabled = v >= max && legV >= legendaryMax;
+          } else {
+            minus.disabled = v <= 0;
+            plus.disabled = v >= max;
+          }
+        }
+
+        function setProgress(v, legV = null) {
+          v = Math.max(0, Math.min(max, v));
+          const offset = circumference - (v / max) * circumference;
+          circle.style.strokeDashoffset = offset;
+          inputCircle.value = v;
+          inputCount.value = v;
+          percent.textContent = calcChance(v).toFixed(2) + "%";
+          localStorage.setItem("pity_" + type, v);
+
+          if (isPrimal && legV !== null) {
+            legV = Math.max(0, Math.min(legendaryMax, legV));
+            const legOffset = circumference - (legV / legendaryMax) * circumference;
+            legendaryCircle.style.strokeDashoffset = legOffset;
+            legendaryInput.value = legV;
+            legendaryPercent.textContent = calcLegendaryChance(legV).toFixed(2) + "%";
+            localStorage.setItem("pity_legendary_" + type, legV);
+            updateButtons(v, legV);
+          } else {
+            updateButtons(v, legendaryValue);
+          }
+        }
+
+        // Stocker la fonction setProgress pour l'import
+        cardSetProgressFunctions[type] = setProgress;
+
+        function setLegendaryProgress(legV) {
+          legV = Math.max(0, Math.min(legendaryMax, legV));
+          const legOffset = circumference - (legV / legendaryMax) * circumference;
+          legendaryCircle.style.strokeDashoffset = legOffset;
+          legendaryInput.value = legV;
+          legendaryPercent.textContent = calcLegendaryChance(legV).toFixed(2) + "%";
+          localStorage.setItem("pity_legendary_" + type, legV);
+          legendaryValue = legV;
+          updateButtons(value, legV);
+        }
+
+        function holdButton(btn, action) {
+          let interval, timeout;
+          const startHold = () => {
+            action();
+            timeout = setTimeout(() => { interval = setInterval(action, 50); }, 400);
+          };
+          const stopHold = () => { clearTimeout(timeout); clearInterval(interval); };
+          btn.addEventListener('mousedown', startHold);
+          btn.addEventListener('mouseup', stopHold);
+          btn.addEventListener('mouseleave', stopHold);
+          btn.addEventListener('touchstart', e => { e.preventDefault(); startHold(); }, { passive: false });
+          btn.addEventListener('touchend', stopHold);
+          btn.addEventListener('touchcancel', stopHold);
+        }
+
+        if (isPrimal) {
+          // Le bouton + incrémente les DEUX cercles en même temps
+          holdButton(plus, () => {
+            if (value < max || legendaryValue < legendaryMax) {
+              if (value < max) value++;
+              if (legendaryValue < legendaryMax) legendaryValue++;
+              setProgress(value, legendaryValue);
+            }
+          });
+
+          // Le bouton - décrémente les DEUX cercles en même temps
+          holdButton(minus, () => {
+            if (value > 0 || legendaryValue > 0) {
+              if (value > 0) value--;
+              if (legendaryValue > 0) legendaryValue--;
+              setProgress(value, legendaryValue);
+            }
+          });
+
+          if (plus10) {
+            plus10.onclick = () => {
+              value = Math.min(value + 10, max);
+              legendaryValue = Math.min(legendaryValue + 10, legendaryMax);
+              setProgress(value, legendaryValue);
+            };
+          }
+
+          // Reset séparés
+          resetMythical.onclick = () => {
+            value = 0;
+            setProgress(0, legendaryValue);
+          };
+
+          resetLegendary.onclick = () => {
+            legendaryValue = 0;
+            setLegendaryProgress(0);
+          };
+
+          inputCircle.oninput = () => setProgress(value = parseInt(inputCircle.value) || 0, legendaryValue);
+          legendaryInput.oninput = () => setLegendaryProgress(parseInt(legendaryInput.value) || 0);
+          inputCount.oninput = () => setProgress(value = parseInt(inputCount.value) || 0, legendaryValue);
+
+          setProgress(value, legendaryValue);
+        } else {
+          holdButton(plus, () => { if (value < max) setProgress(++value); });
+          holdButton(minus, () => { if (value > 0) setProgress(--value); });
+          if (plus10) {
+            plus10.onclick = () => {
+              value = Math.min(value + 10, max);
+              setProgress(value);
+            };
+          }
+          reset.onclick = () => setProgress(value = 0);
+          inputCircle.oninput = () => setProgress(value = parseInt(inputCircle.value) || 0);
+          inputCount.oninput = () => setProgress(value = parseInt(inputCount.value) || 0);
+
+          setProgress(value);
+        }
+      });
+
+      // Initialiser les icônes Lucide
+      lucide.createIcons();
+    })();
+  </script>
+
+  <div class="adsense-container">
+    <div class="ad-label">Advertisement</div>
+
+    <ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-8653563887265027"
+     data-ad-slot="9042028911"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
+</body>
+</html>
