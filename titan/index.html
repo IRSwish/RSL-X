@@ -61,6 +61,41 @@
     </div>
   </div>
 
+  <!-- Pinned panels (bottom-left) -->
+  <div id="pinned-area">
+    <div id="pinned-legend" class="pinned-panel">
+      <div class="panel">
+        <div class="panel-header">Legend</div>
+        <div class="panel-body">
+          <div class="legend">
+            <div><span class="legend-dot skipped"></span> Skipped</div>
+            <div><span class="legend-dot in-progress"></span> In progress</div>
+            <div><span class="legend-dot done"></span> Done</div>
+            <div><span class="legend-dot not-started"></span> Not started</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="pinned-progress" class="pinned-panel">
+      <div class="panel">
+        <div class="panel-header">Progress</div>
+        <div class="panel-body progress-panel" id="pinned-progress-panel"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pin toggle buttons (bottom-left) -->
+  <div id="pin-toggles">
+    <button type="button" class="pin-toggle-btn" id="pin-legend-btn" title="Pin Legend">
+      <i data-lucide="map"></i>
+      <span>Legend</span>
+    </button>
+    <button type="button" class="pin-toggle-btn" id="pin-progress-btn" title="Pin Progress">
+      <i data-lucide="bar-chart-3"></i>
+      <span>Progress</span>
+    </button>
+  </div>
+
   <!-- Scripts -->
   <script src="/titan/titans-config.js"></script>
   <script src="/titan/titans.js"></script>

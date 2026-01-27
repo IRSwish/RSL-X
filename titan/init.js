@@ -31,3 +31,64 @@ window.addEventListener('hashchange', loadFusionFromHash);
 document.getElementById("info-btn")?.addEventListener("click", () => {
   document.getElementById("info-sidebar").classList.toggle("open");
 });
+
+// ——— Pin/Unpin Legend & Progress ———
+(function initPinToggle() {
+  const pinLegendBtn = document.getElementById('pin-legend-btn');
+  const pinProgressBtn = document.getElementById('pin-progress-btn');
+  const pinnedLegend = document.getElementById('pinned-legend');
+  const pinnedProgress = document.getElementById('pinned-progress');
+  const pinnedProgressPanel = document.getElementById('pinned-progress-panel');
+  const sidebarProgressPanel = document.getElementById('progress-panel');
+
+  if (!pinLegendBtn || !pinProgressBtn) return;
+
+  // Restore from localStorage
+  const legendPinned = localStorage.getItem('titan_pin_legend') === 'true';
+  const progressPinned = localStorage.getItem('titan_pin_progress') === 'true';
+
+  function applyPin(type, active) {
+    if (type === 'legend') {
+      pinnedLegend.classList.toggle('visible', active);
+      pinLegendBtn.classList.toggle('active', active);
+      localStorage.setItem('titan_pin_legend', active);
+    } else {
+      pinnedProgress.classList.toggle('visible', active);
+      pinProgressBtn.classList.toggle('active', active);
+      localStorage.setItem('titan_pin_progress', active);
+      if (active) syncPinnedProgress();
+    }
+  }
+
+  // Sync progress panel content from sidebar to pinned
+  function syncPinnedProgress() {
+    if (sidebarProgressPanel && pinnedProgressPanel) {
+      pinnedProgressPanel.innerHTML = sidebarProgressPanel.innerHTML;
+    }
+  }
+
+  // Observe sidebar progress panel changes to keep pinned in sync
+  if (sidebarProgressPanel && pinnedProgressPanel) {
+    const observer = new MutationObserver(() => {
+      if (localStorage.getItem('titan_pin_progress') === 'true') {
+        syncPinnedProgress();
+      }
+    });
+    observer.observe(sidebarProgressPanel, { childList: true, subtree: true, characterData: true });
+  }
+
+  // Apply saved state
+  applyPin('legend', legendPinned);
+  applyPin('progress', progressPinned);
+
+  // Toggle buttons
+  pinLegendBtn.addEventListener('click', () => {
+    const active = localStorage.getItem('titan_pin_legend') !== 'true';
+    applyPin('legend', active);
+  });
+
+  pinProgressBtn.addEventListener('click', () => {
+    const active = localStorage.getItem('titan_pin_progress') !== 'true';
+    applyPin('progress', active);
+  });
+})();

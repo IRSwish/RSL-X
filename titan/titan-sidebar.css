@@ -152,3 +152,118 @@
   border-radius: 3px;
   transition: width 0.4s ease;
 }
+
+/* ——— Pin Toggle Buttons (bottom-left) ——— */
+#pin-toggles {
+  position: fixed;
+  bottom: 130px;
+  left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10000;
+}
+
+.pin-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10, 10, 10, 0.85);
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  color: var(--text, #fcf6ff);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.pin-toggle-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pin-toggle-btn:hover {
+  border-color: var(--gold, #d4af37);
+  background: rgba(212, 175, 55, 0.15);
+}
+
+.pin-toggle-btn.active {
+  border-color: var(--gold, #d4af37);
+  background: rgba(212, 175, 55, 0.2);
+  color: var(--gold, #d4af37);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+}
+
+/* ——— Pinned Panels (bottom-left, above buttons) ——— */
+#pinned-area {
+  position: fixed;
+  bottom: 220px;
+  left: 16px;
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 320px;
+  max-height: calc(100vh - 120px);
+}
+
+.pinned-panel {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transform: translateY(20px) scale(0.95);
+  transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease;
+  pointer-events: none;
+}
+
+.pinned-panel.visible {
+  opacity: 1;
+  max-height: 500px;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+#pinned-area .panel {
+  margin-bottom: 0;
+  font-size: 13px;
+}
+
+#pinned-area .panel-header {
+  padding: 7px 0;
+  font-size: 14px;
+}
+
+#pinned-area .panel-body {
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+#pinned-area .legend {
+  font-size: 12px;
+  gap: 5px;
+}
+
+#pinned-area .stat {
+  padding: 6px 10px;
+  gap: 8px;
+}
+
+#pinned-area .stat .label { font-size: 11px; }
+#pinned-area .stat .value { font-size: 15px; }
+#pinned-area .stat img.stat-icon { width: 36px; height: 36px; }
+
+@media (max-width: 700px) {
+  #pin-toggles {
+    bottom: 70px;
+    left: 10px;
+  }
+  #pinned-area {
+    bottom: 150px;
+    left: 10px;
+    max-width: calc(100vw - 20px);
+  }
+}
