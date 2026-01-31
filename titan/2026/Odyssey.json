@@ -98,7 +98,7 @@
       "type": "Tournament",
       "start_date": "2026-01-31",
       "end_date": "2026-02-03",
-      "points": [200]
+      "points": [30, 70]
     },
     {
       "name": "Classic Arena",
