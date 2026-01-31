@@ -106,6 +106,34 @@
       "start_date": "2026-02-01",
       "end_date": "2026-02-04",
       "points": [20]
+    },
+    {
+      "name": "Deck of Fate",
+      "type": "Event",
+      "start_date": "2026-02-02",
+      "end_date": "2026-02-05",
+      "points": [10,10,20,20,40]
+    },
+    {
+      "name": "Dragon",
+      "type": "Tournament",
+      "start_date": "2026-02-01",
+      "end_date": "2026-02-03",
+      "points": [40]
+    },
+    {
+      "name": "Ice Golem",
+      "type": "Tournament",
+      "start_date": "2026-02-04",
+      "end_date": "2026-02-06",
+      "points": [40]
+    },
+    {
+      "name": "Fire Knight",
+      "type": "Tournament",
+      "start_date": "2026-02-06",
+      "end_date": "2026-02-08",
+      "points": [40]
     }
   ]
 }
