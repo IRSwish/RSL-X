@@ -1,5 +1,9 @@
 // fusions-config.js
 window.fusions = {
+  Noldua: {
+    name: "Noldua Fusion",
+    json: "2026/Noldua.json"
+  },  
   Kassandra: {
     name: "Kassandra Fusion",
     json: "2026/Kassandra.json"
