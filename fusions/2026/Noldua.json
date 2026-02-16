@@ -22,7 +22,7 @@
       "start_date": "2026-02-13",
       "end_date": "2026-02-16",
       "reward": "Fragments",
-      "points": [15],
+      "points": [5,10],
       "extra_choices": [
         { "label": "1st Place", "fragments": 10 },
         { "label": "2nd Place", "fragments": 5 }
@@ -75,7 +75,7 @@
       "start_date": "2026-02-12",
       "end_date": "2026-02-16",
       "reward": "Fragments",
-      "points": [10],
+      "points": [5,5],
       "extra_choices": [
         { "label": "1st Place", "fragments": 10 },
         { "label": "2nd Place", "fragments": 5 }
