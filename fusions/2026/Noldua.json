@@ -21,7 +21,7 @@
       "name": "Champion Chase Tournament",
       "start_date": "2026-02-13",
       "end_date": "2026-02-16",
-      "reward": "Fragments",
+      "reward": "Fragments, Fragments",
       "points": [5,10],
       "extra_choices": [
         { "label": "1st Place", "fragments": 10 },
@@ -74,7 +74,7 @@
       "name": "Champion Training Tournament",
       "start_date": "2026-02-12",
       "end_date": "2026-02-16",
-      "reward": "Fragments",
+      "reward": "Fragments, Fragments",
       "points": [5,5],
       "extra_choices": [
         { "label": "1st Place", "fragments": 10 },
