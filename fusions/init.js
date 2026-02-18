@@ -27,11 +27,6 @@ loadFusionFromHash();
 // Listen to hash changes
 window.addEventListener('hashchange', loadFusionFromHash);
 
-// Auto-open sidebar on desktop only
-if (window.innerWidth > 700) {
-  document.getElementById("info-sidebar")?.classList.add("open");
-}
-
 // Toggle sidebar on button click
 document.getElementById("info-btn")?.addEventListener("click", () => {
   document.getElementById("info-sidebar").classList.toggle("open");
