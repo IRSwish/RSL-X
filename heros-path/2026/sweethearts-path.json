@@ -279,7 +279,7 @@
     "id": "t8-4",
     "name": "Wings of Winter (Mythical) x1",
     "image": "wings-of-winter-mythical",
-    "cost": 20000,
+    "cost": 15000,
     "requires": [
       "t7-1",
       "t7-2",
