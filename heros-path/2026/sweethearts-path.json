@@ -347,7 +347,7 @@
   {
     "id": "t10-1",
     "name": "Avatar Frame x1",
-    "image": "-frame",
+    "image": "sweethearts-frame",
     "cost": 5000,
     "requires": [
       "t9-1",
