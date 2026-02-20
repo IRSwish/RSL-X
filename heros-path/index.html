@@ -15,7 +15,7 @@
   <title>Hero's Path - RSL-X</title>
   <script src="https://unpkg.com/lucide@latest" defer></script>
   <script src="/config/site-config.js"></script>
-    <script src="/config/ad-banner.js" defer></script>
+  <script src="/config/ad-banner.js" defer></script>
   <link rel="stylesheet" href="/style/style.css">
   <link rel="stylesheet" href="/heros-path/heros-path.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -39,7 +39,9 @@
   </div>
 
   <!-- Scripts -->
-  <script src="/heros-path/heros-path-config.js"></script>
+  <script>
+    document.write('<script src="/heros-path/heros-path-config.js?v=' + Date.now() + '"><\/script>');
+  </script>
   <script src="/heros-path/script.js"></script>
   <script src="/script.js"></script>
 
