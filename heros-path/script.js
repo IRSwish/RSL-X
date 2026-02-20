@@ -131,10 +131,10 @@ function updateStats() {
   }, 0);
   totalPointsDiv.textContent = `Total tree: ${totalTreePoints.toLocaleString("en-US")} pts`;
 
-  // Calcul des shards nécessaires pour le planned
-  if (currentShardCosts && plannedPoints > 0) {
+  // Calcul des shards nécessaires pour le planned (en soustrayant les points disponibles)
+  if (currentShardCosts && needed > 0) {
     shardsSection.style.display = 'block';
-    updateShardDisplay(plannedPoints);
+    updateShardDisplay(needed);
   } else {
     shardsSection.style.display = 'none';
   }
