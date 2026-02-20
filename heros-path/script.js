@@ -180,7 +180,7 @@ function recalcKeysAndPoints() {
       newTotalKeys += r.keys && r.keys > 0 ? r.keys : 1;
       newPoints += r.cost || 0;
     } else if (name.includes("lock")) {
-      newLocks += 1;
+      newLocks += r.cost || 1;
       newPoints += r.cost || 0;
     } else {
       newPoints += r.cost || 0;
@@ -321,7 +321,7 @@ async function init() {
       const cost = document.createElement("div");
       cost.className = "reward-cost";
       cost.textContent = r.name.toLowerCase().includes("lock")
-        ? "1 key"
+        ? `${r.cost || 1} key${(r.cost || 1) > 1 ? "s" : ""}`
         : `${r.cost.toLocaleString("en-US")} pts`;
 
       box.append(img, name, cost);
@@ -437,7 +437,7 @@ function handleClick(reward, box) {
       return;
     }
 
-    if (isLock && keys <= 0) {
+    if (isLock && keys < (reward.cost || 1)) {
       flashRed(box);
       return;
     }

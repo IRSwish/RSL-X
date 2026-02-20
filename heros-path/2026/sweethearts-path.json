@@ -59,7 +59,7 @@
   {
     "id": "t3-2",
     "name": "Noldua Fragments x5",
-    "image": "",
+    "image": "fragments",
     "cost": 3000,
     "requires": [
       "t2-2"
@@ -88,8 +88,8 @@
   },
   {
     "id": "t4-2",
-    "name": "Winds of Winter (Epic) x50",
-    "image": "",
+    "name": "Wings of Winter (Epic) x50",
+    "image": "wings-of-winter-epic",
     "cost": 3500,
     "requires": [
       "t3-2"
@@ -98,8 +98,8 @@
   },
   {
     "id": "t4-3",
-    "name": "Winds of Winter (Epic) x50",
-    "image": "",
+    "name": "Wings of Winter (Epic) x50",
+    "image": "wings-of-winter-epic",
     "cost": 3500,
     "requires": [
       "t3-2"
@@ -159,7 +159,7 @@
   {
     "id": "t6-1",
     "name": "Noldua Fragments x5",
-    "image": "",
+    "image": "fragments",
     "cost": 3000,
     "requires": [
       "t5-1"
@@ -169,7 +169,7 @@
   {
     "id": "t6-2",
     "name": "Wings of Winter (Legendary) x50",
-    "image": "",
+    "image": "wings-of-winter-legendary",
     "cost": 7500,
     "requires": [
       "t5-3"
@@ -179,7 +179,7 @@
   {
     "id": "t6-3",
     "name": "Wings of Winter (Legendary) x50",
-    "image": "",
+    "image": "wings-of-winter-legendary",
     "cost": 7500,
     "requires": [
       "t5-4"
@@ -189,7 +189,7 @@
   {
     "id": "t6-4",
     "name": "Noldua Fragments x5",
-    "image": "",
+    "image": "fragments",
     "cost": 3000,
     "requires": [
       "t5-5"
@@ -209,7 +209,7 @@
   {
     "id": "t7-2",
     "name": "Noldua Fragments x5",
-    "image": "",
+    "image": "fragments",
     "cost": 3000,
     "requires": [
       "t6-2"
@@ -219,7 +219,7 @@
   {
     "id": "t7-3",
     "name": "Noldua Fragments x5",
-    "image": "",
+    "image": "fragments",
     "cost": 3000,
     "requires": [
       "t6-3"
@@ -278,7 +278,7 @@
   {
     "id": "t8-4",
     "name": "Wings of Winter (Mythical) x1",
-    "image": "",
+    "image": "wings-of-winter-mythical",
     "cost": 20000,
     "requires": [
       "t7-1",
