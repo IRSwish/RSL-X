@@ -68,6 +68,8 @@
     .event .name{font-weight:600}
     .event .type{font-size:.85rem;opacity:.8}
     .event .resize{position:absolute;top:0;right:-6px;width:10px;height:100%;cursor:ew-resize}
+    .event .resize-left{position:absolute;top:0;left:-6px;width:10px;height:100%;cursor:ew-resize}
+    .event .rewards-info{font-size:.75rem;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
 
     .event.training{border-color:#7bd88f}
     .event.summon{border-color:#ffd166}
@@ -287,16 +289,16 @@
       startColSel = colFromClientX(e.clientX);
       const rect = daysEl.getBoundingClientRect(); const cols = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--days')); const colw = rect.width / cols;
       rubber.style.display='block';
-      rubber.style.left = (startColSel*colw) + 'px'; // bord gauche du jour
-      rubber.style.width = (colw) + 'px';
+      rubber.style.left = (startColSel*colw + colw/2) + 'px';
+      rubber.style.width = '1px';
     }
     function onMove(e){
       if(!isDown) return;
       const rect = daysEl.getBoundingClientRect(); const cols = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--days')); const colw = rect.width / cols;
       const c = colFromClientX(e.clientX); const c1 = Math.min(startColSel, c), c2 = Math.max(startColSel, c);
       rubber.style.display='block';
-      rubber.style.left = (c1*colw) + 'px';
-      rubber.style.width = ((c2-c1+1)*colw) + 'px';
+      rubber.style.left = (c1*colw + colw/2) + 'px';
+      rubber.style.width = Math.max(1, (c2-c1)*colw) + 'px';
     }
     function onUp(e){
       if(!isDown) return; isDown=false; rubber.style.display='none';
@@ -333,8 +335,8 @@
         if(lane >= 10) { console.warn('Plus de 10 lanes, event masqué visuellement'); continue; }
         lanes[lane] = c2;
 
-        const left = c1 * colw;
-        const width = (c2 - c1 + 1) * colw;
+        const left = c1 * colw + colw / 2;
+        const width = Math.max(2, (c2 - c1) * colw);
         const top = lane * (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--lane-h'))||52) + 6;
 
         const div = document.createElement('div');
@@ -343,7 +345,8 @@
         div.style.top  = top + 'px';
         div.style.width = width + 'px';
         div.dataset.id = ev.id;
-        div.innerHTML = `<div class="name">${ev.name||'Sans titre'}</div><div class="type">${ev.type||''}</div><div class="resize" data-resize="1"></div>`;
+        const rewardsText = (ev.rewards||[]).filter(r=>r.name).map(r=>`${r.name} ×${r.points}`).join(' · ');
+        div.innerHTML = `<div class="resize-left" data-resize-left="1"></div><div class="name">${ev.name||'Sans titre'}</div><div class="type">${ev.type||''}</div>${rewardsText?`<div class="rewards-info">${rewardsText}</div>`:''}<div class="resize" data-resize="1"></div>`;
 
         // open modal on click
         div.addEventListener('click', (e)=>{ e.stopPropagation(); openModal(ev.id); });
@@ -360,6 +363,20 @@
           const onUpR = ()=>{ document.removeEventListener('mousemove',onMoveR); document.removeEventListener('mouseup',onUpR); updateJSON(); };
           document.addEventListener('mousemove',onMoveR);
           document.addEventListener('mouseup',onUpR);
+        });
+
+        // resize handle (gauche, modifie start)
+        div.addEventListener('mousedown', (e)=>{
+          if(!(e.target && e.target.dataset && e.target.dataset.resizeLeft)) return;
+          e.preventDefault(); e.stopPropagation();
+          const endCol = c2;
+          const onMoveL = (me)=>{
+            const rect2 = daysEl.getBoundingClientRect(); const col = clamp(Math.floor(clamp(me.clientX - rect2.left, 0, rect2.width) / colw), 0, cols-1);
+            ev.start = dateForCol(Math.min(col, endCol)); renderEvents();
+          };
+          const onUpL = ()=>{ document.removeEventListener('mousemove',onMoveL); document.removeEventListener('mouseup',onUpL); updateJSON(); };
+          document.addEventListener('mousemove',onMoveL);
+          document.addEventListener('mouseup',onUpL);
         });
 
         layerEl.appendChild(div);
@@ -427,7 +444,7 @@
           type: ev.type||'',
           start_date: ev.start,
           end_date: ev.end,
-          reward: rewardNames.join(' + ') || '',
+          reward: rewardNames.join(', ') || '',
           points: points
         };
       });

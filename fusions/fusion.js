@@ -24,11 +24,15 @@
 
     if (dataType === 'CLASSIC') {
       if (upper === 'RARE')  return data?.Rare || 'Rare';
-      if (upper === 'EPIC')  return data?.Epic || 'Epic';
+      if (upper === 'EPIC')  return data?.Epic || data?.Epic1 || 'Epic';
       if (upper === 'RARE1') return data?.Rare1 || 'Rare1';
       if (upper === 'RARE2') return data?.Rare2 || 'Rare2';
       if (upper === 'RARE3') return data?.Rare3 || 'Rare3';
       if (upper === 'RARE4') return data?.Rare4 || 'Rare4';
+      if (upper === 'EPIC1') return data?.Epic1 || 'Epic1';
+      if (upper === 'EPIC2') return data?.Epic2 || 'Epic2';
+      if (upper === 'EPIC3') return data?.Epic3 || 'Epic3';
+      if (upper === 'EPIC4') return data?.Epic4 || 'Epic4';
     }
 
     if (upper.includes('FRAG')) return 'Fragments';
@@ -600,9 +604,10 @@
     }
 
     if (type === 'CLASSIC') {
-      const rareKeys = Object.keys(data).filter(k => k.toUpperCase().startsWith('RARE'));
-      const multiRare = rareKeys.length > 1;
-      const epicName = data.Epic;
+      const rareKeys = Object.keys(data).filter(k => /^Rare\d*$/i.test(k));
+      const epicKeys = Object.keys(data).filter(k => /^Epic\d*$/i.test(k));
+      const allRares = rareKeys.map(k => data[k]).filter(Boolean);
+      const allEpics = epicKeys.map(k => data[k]).filter(Boolean);
 
       const countValidated = (name) =>
         boxes.filter(b => b.dataset.reward === name && b.classList.contains('state-validated')).length;
@@ -611,43 +616,45 @@
       const countSkipped = (name) =>
         boxes.filter(b => b.dataset.reward === name && b.classList.contains('state-passed')).length;
 
-      const allRares = rareKeys.length
-        ? rareKeys.map(k => data[k]).filter(Boolean)
-        : (data.Rare ? [data.Rare] : []);
-
       // additionne toutes les copies rares validées
       const raresValidated = allRares.reduce((a, n) => a + countValidated(n), 0);
       const raresOngoing   = allRares.reduce((a, n) => a + countOngoing(n), 0);
       const raresSkipped   = allRares.reduce((a, n) => a + countSkipped(n), 0);
 
-      const epicsValidated = countValidated(epicName);
-      const epicsOngoing   = countOngoing(epicName);
-      const epicsSkipped   = countSkipped(epicName);
+      const epicsValidated = allEpics.reduce((a, n) => a + countValidated(n), 0);
+      const epicsOngoing   = allEpics.reduce((a, n) => a + countOngoing(n), 0);
+      const epicsSkipped   = allEpics.reduce((a, n) => a + countSkipped(n), 0);
 
       const totalEquivalent = raresValidated + (4 * epicsValidated);
-      const complete = totalEquivalent >= 16 && (raresValidated >= 12 || epicsValidated >= 1);
+      const complete = totalEquivalent >= 16 && (raresValidated >= 12 || epicsValidated >= allEpics.length);
 
       const rareStatus = complete ? 'status-green' : '';
       const epicStatus = complete ? 'status-green' : '';
 
+      const raresHTML = allRares.map(name => `
+          <div class="stat ${rareStatus}">
+            <img class="stat-icon" src="/tools/champions-index/img/champions/${name}.webp" alt="${name}"/>
+            <div>
+              <span class="label">${name} (Rare)</span>
+              <br />
+              <span class="value">${countValidated(name)} / 4</span>
+            </div>
+          </div>`).join('');
+
+      const epicsHTML = allEpics.map(name => `
+          <div class="stat ${epicStatus}">
+            <img class="stat-icon" src="/tools/champions-index/img/champions/${name}.webp" alt="${name}"/>
+            <div>
+              <span class="label">${name} (Epic)</span>
+              <br />
+              <span class="value">${countValidated(name)} / 1</span>
+            </div>
+          </div>`).join('');
+
       panel.innerHTML = `
         <div class="progress-grid">
-          <div class="stat ${rareStatus}">
-            <img class="stat-icon" src="/tools/champions-index/img/champions/${allRares[0]}.webp" alt="Rares"/>
-            <div>
-              <span class="label">${allRares[0]} (Rare)</span>
-              <br />
-              <span class="value">${raresValidated} / 16</span>
-            </div>
-          </div>
-          <div class="stat ${epicStatus}">
-            <img class="stat-icon" src="/tools/champions-index/img/champions/${epicName}.webp" alt="${epicName}"/>
-            <div>
-              <span class="label">${epicName} (Epic)</span>
-              <br />
-              <span class="value">${epicsValidated} / 1</span>
-            </div>
-          </div>
+          ${raresHTML}
+          ${epicsHTML}
         </div>
         <div style="font-size:12px;opacity:.8;margin-top:6px">
           Virtual: ${raresValidated + raresOngoing + (4 * (epicsValidated + epicsOngoing))} • Skipped: ${raresSkipped + epicsSkipped}
@@ -770,10 +777,8 @@ function buildResourcesPanel(data) {
   };
 
   if (type === 'CLASSIC') {
-    const rareKeys = Object.keys(data).filter(k => k.toUpperCase().startsWith('RARE'));
-    const rareNames = rareKeys.length
-      ? rareKeys.map(k => data[k]).filter(Boolean)
-      : (data.Rare ? [data.Rare] : []);
+    const rareKeys = Object.keys(data).filter(k => /^Rare\d*$/i.test(k));
+    const rareNames = rareKeys.map(k => data[k]).filter(Boolean);
 
     let totalRareCopies = 0;
 
@@ -785,40 +790,33 @@ function buildResourcesPanel(data) {
       pushCopies(name, 'RARE', rareAff, 4, total);
     });
 
-    // ⚙️ Épics obtenus :
-let epicsTotal = 0;
-if (data.Epic) {
+    // ⚙️ Épics obtenus (gère Epic, Epic1, Epic2, etc.)
+    const epicKeys = Object.keys(data).filter(k => /^Epic\d*$/i.test(k));
+    const allEpicNames = epicKeys.map(k => data[k]).filter(Boolean);
 
-  // Copies physiques obtenues via events
-  const ce = counts.get(data.Epic);
-  const fromEvents = ce ? (ce.validated || 0) + (ce.planned || 0) : 0;
-
-  // Comptage des rares réellement BUILT (rank max + asc max)
-  let raresBuilt = 0;
-  entries.forEach(ent => {
-    if (ent.kind === 'RARE') {
-
-      const rank = parseInt(localStorage.getItem(`resRank_${fusionKey}_${ent.id}`) || '0', 10);
-      const asc  = parseInt(localStorage.getItem(`resAsc_${fusionKey}_${ent.id}`)  || '0', 10);
-
-      // Rare built = rank max *et* asc max
-      if (rank >= ent.starsMax && asc >= ent.starsMax) {
-        raresBuilt++;
+    // Comptage des rares réellement BUILT (rank max + asc max)
+    let raresBuilt = 0;
+    entries.forEach(ent => {
+      if (ent.kind === 'RARE') {
+        const rank = parseInt(localStorage.getItem(`resRank_${fusionKey}_${ent.id}`) || '0', 10);
+        const asc  = parseInt(localStorage.getItem(`resAsc_${fusionKey}_${ent.id}`)  || '0', 10);
+        if (rank >= ent.starsMax && asc >= ent.starsMax) {
+          raresBuilt++;
+        }
       }
-    }
-  });
+    });
 
-  // 1 epic gratuit pour 4 rares built
-  const fromRares = Math.floor(raresBuilt / 4);
+    // 1 epic gratuit pour 4 rares built, distribué sur le premier epic
+    const fromRares = Math.floor(raresBuilt / 4);
 
-  // Total final = copies event + épics gratuits
-  epicsTotal = fromEvents + fromRares;
-
-  // Ajout dans la ressource
-  if (epicsTotal > 0) {
-    pushCopies(data.Epic, 'EPIC', epicAff, 5, epicsTotal);
-  }
-}
+    allEpicNames.forEach((epicName, idx) => {
+      const ce = counts.get(epicName);
+      const fromEvents = ce ? (ce.validated || 0) + (ce.planned || 0) : 0;
+      const epicsTotal = fromEvents + (idx === 0 ? fromRares : 0);
+      if (epicsTotal > 0) {
+        pushCopies(epicName, 'EPIC', epicAff, 5, epicsTotal);
+      }
+    });
   } else if (type === 'HYBRID' && data.Epic) {
     const cf = counts.get('Fragments') || { validated: 0, planned: 0 };
     const totalEpics = Math.floor(((cf.validated || 0) + (cf.planned || 0)) / 100);

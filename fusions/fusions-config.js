@@ -164,6 +164,18 @@ window.fusions = {
     name: "Pythion Fusion",
     json: "2023/Pythion.json"
   },
+  Gnishak: {
+    name: "Gnishak Verminlord Fusion",
+    json: "2022/Gnishak.json"
+  },
+  Hoskarul: {
+    name: "Hoskarul Fusion",
+    json: "2022/Hoskarul.json"
+  },
+  Morrigaine: {
+    name: "Morrigaine Fusion",
+    json: "2022/Morrigaine.json"
+  },
   Opardin: {
     name: "Opardin Clanfather Fusion",
     json: "2022/Opardin.json"

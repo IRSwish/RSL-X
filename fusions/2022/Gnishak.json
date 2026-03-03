@@ -1,0 +1,169 @@
+{
+  "title": "Gnishak Verminlord",
+  "type": "Classic",
+  "datespan": "15/12/2022 - 31/12/2022",
+  "Rare": "Riscarm",
+  "RareAff": "Spirit", 
+  "Epic1": "Aeshma",
+  "Epic2": "Endalia",
+  "Epic3": "Morag",
+  "Epic4": "Trumborr",
+  "Epic1Aff":"Magic",
+  "Epic2Aff":"Magic",
+  "Epic3Aff":"Spirit",
+  "Epic4Aff":"Spirit",
+  "events": [
+    {
+      "name": "Ice Golem Tournament",
+      "type": "Tournament",
+      "start_date": "2022-12-15",
+      "end_date": "2022-12-18",
+      "reward": "Riscarm",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Fire Knight Tournament",
+      "type": "Tournament",
+      "start_date": "2022-12-18",
+      "end_date": "2022-12-21",
+      "reward": "Riscarm",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2022-12-17",
+      "end_date": "2022-12-20",
+      "reward": "Riscarm",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Spider Tournament",
+      "type": "Tournament",
+      "start_date": "2022-12-22",
+      "end_date": "2022-12-25",
+      "reward": "Riscarm",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Dragon Tournament",
+      "type": "Tournament",
+      "start_date": "2022-12-25",
+      "end_date": "2022-12-28",
+      "reward": "Riscarm",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Champion Training Tournament",
+      "type": "Tournament",
+      "start_date": "2022-12-26",
+      "end_date": "2022-12-29",
+      "reward": "Riscarm",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Tournament",
+      "start_date": "2022-12-15",
+      "end_date": "2022-12-18",
+      "reward": "Riscarm",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Summon Rush",
+      "type": "Event",
+      "start_date": "2022-12-16",
+      "end_date": "2022-12-19",
+      "reward": "Riscarm, Endalia",
+      "points": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2022-12-17",
+      "end_date": "2022-12-20",
+      "reward": "Riscarm",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Champion Training Event",
+      "type": "Event",
+      "start_date": "2022-12-18",
+      "end_date": "2022-12-23",
+      "reward": "Riscarm, Riscarm",
+      "points": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Tournament",
+      "start_date": "2022-12-21",
+      "end_date": "2022-12-24",
+      "reward": "Riscarm",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2022-12-22",
+      "end_date": "2022-12-25",
+      "reward": "Riscarm",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2022-12-23",
+      "end_date": "2022-12-26",
+      "reward": "Riscarm",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Tournament",
+      "start_date": "2022-12-26",
+      "end_date": "2022-12-29",
+      "reward": "Riscarm",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2022-12-27",
+      "end_date": "2022-12-30",
+      "reward": "Riscarm",
+      "points": [
+        1
+      ]
+    }
+  ]
+}

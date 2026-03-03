@@ -1,0 +1,162 @@
+{
+  "title": "Morrigaine",
+  "type": "Classic",
+  "datespan": "27/10/2022 - 11/11/2022",
+  "Rare": "Cait",
+  "RareAff": "Magic", 
+  "Epic1": "Orn",
+  "Epic1Aff": "Spirit",
+  "events": [
+    {
+      "name": "Fire Knight Tournament",
+      "type": "Tournament",
+      "start_date": "2022-10-27",
+      "end_date": "2022-10-30",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2022-10-27",
+      "end_date": "2022-10-30",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Champion Training Event",
+      "type": "Event",
+      "start_date": "2022-10-27",
+      "end_date": "2022-11-01",
+      "reward": "Cait, Cait",
+      "points": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "Champion Chase Tournament",
+      "type": "Tournament",
+      "start_date": "2022-10-28",
+      "end_date": "2022-10-31",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2022-10-29",
+      "end_date": "2022-11-01",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Tournament",
+      "start_date": "2022-10-29",
+      "end_date": "2022-11-02",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Spider Tournament",
+      "type": "Tournament",
+      "start_date": "2022-10-30",
+      "end_date": "2022-11-02",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2022-11-01",
+      "end_date": "2022-11-04",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Dragon Tournament",
+      "type": "Tournament",
+      "start_date": "2022-11-03",
+      "end_date": "2022-11-06",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Champion Training Tournament",
+      "type": "Tournament",
+      "start_date": "2022-11-03",
+      "end_date": "2022-11-07",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Summon Rush",
+      "type": "Event",
+      "start_date": "2022-11-04",
+      "end_date": "2022-11-07",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2022-11-04",
+      "end_date": "2022-11-07",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Tournament",
+      "start_date": "2022-11-05",
+      "end_date": "2022-11-09",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2022-11-06",
+      "end_date": "2022-11-09",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    },
+    {
+      "name": "Ice Golem Tournament",
+      "type": "Tournament",
+      "start_date": "2022-11-06",
+      "end_date": "2022-11-09",
+      "reward": "Cait",
+      "points": [
+        1
+      ]
+    }
+  ]
+}

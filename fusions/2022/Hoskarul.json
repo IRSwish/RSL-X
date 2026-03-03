@@ -1,0 +1,80 @@
+{
+  "title": "Hoskarul",
+  "type": "Fragment",
+  "datespan": "24/11/2022 - 02/12/2022",
+  "events": [
+    {
+      "name": "Champion Training Event",
+      "type": "Event",
+      "start_date": "2022-11-24",
+      "end_date": "2022-11-27",
+      "reward": "Fragments",
+      "points": [
+        20
+      ]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Tournament",
+      "start_date": "2022-11-24",
+      "end_date": "2022-11-27",
+      "reward": "Fragments",
+      "points": [
+        20
+      ]
+    },
+    {
+      "name": "Spider Tournament",
+      "type": "Tournament",
+      "start_date": "2022-11-25",
+      "end_date": "2022-11-28",
+      "reward": "Fragments, Fragments",
+      "points": [
+        15,
+        5
+      ]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2022-11-26",
+      "end_date": "2022-11-29",
+      "reward": "Fragments, Fragments",
+      "points": [
+        10,
+        5
+      ]
+    },
+    {
+      "name": "Dragon Tournament",
+      "type": "Tournament",
+      "start_date": "2022-11-28",
+      "end_date": "2022-12-01",
+      "reward": "Fragments, Fragments",
+      "points": [
+        15,
+        5
+      ]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2022-11-26",
+      "end_date": "2022-11-30",
+      "reward": "Fragments",
+      "points": [
+        20
+      ]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Tournament",
+      "start_date": "2022-11-29",
+      "end_date": "2022-12-02",
+      "reward": "Fragments",
+      "points": [
+        20
+      ]
+    }
+  ]
+}
