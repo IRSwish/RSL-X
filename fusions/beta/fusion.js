@@ -220,6 +220,7 @@
     const sectionGap = 60;
     let evtOffset = 0;
 
+    // Séparateur "Tournaments" tout en haut
     if (tournamentEvts.length > 0) {
       const sepTop = document.createElement('div');
       sepTop.className = 'section-separator';

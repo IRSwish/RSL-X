@@ -1,0 +1,139 @@
+{
+  "title": "PELOPS THE VICTOR",
+  "type": "CLASSIC",
+  "datespan": "05/03/2026 - 20/03/2026",
+  "Rare": "Sunken-Sentinel",
+  "Epic": "Dexikos",
+  "RareAff":"Void",
+  "EpicAff":"Magic",
+  "events": [
+    {
+      "name": "Dragon",
+	  "type": "Tournament",
+      "start_date": "2026-03-15",
+      "end_date": "2026-03-18",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Champion Training",
+	  "type": "Tournament",
+      "start_date": "2026-03-06",
+      "end_date": "2026-03-10",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Classic Arena",
+	  "type": "Tournament",
+      "start_date": "2026-03-07",
+      "end_date": "2026-03-10",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Ice Golem",
+	  "type": "Tournament",
+      "start_date": "2026-03-05",
+      "end_date": "2026-03-08",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Fire Knight",
+	  "type": "Tournament",
+      "start_date": "2026-03-08",
+      "end_date": "2026-03-11",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Anniversary Path",
+	  "type": "Event",
+      "start_date": "2026-03-05",
+      "end_date": "2026-03-09",
+      "reward": "Rare, Rare, Epic",
+      "points": [1, 1, 1]
+    },
+	{
+      "name": "Classic Arena",
+	  "type": "Tournament",
+      "start_date": "2026-03-14",
+      "end_date": "2026-03-17",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Spider",
+	  "type": "Tournament",
+      "start_date": "2026-03-12",
+      "end_date": "2026-03-15",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Gear Hunters",
+	  "type": "Event",
+      "start_date": "2026-03-13",
+      "end_date": "2026-03-16",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Champion Chase",
+	  "type": "Event",
+      "start_date": "2026-03-13",
+      "end_date": "2026-03-16",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Gear Enhancement",
+	  "type": "Event",
+      "start_date": "2026-03-06",
+      "end_date": "2026-03-09",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Gear Hunters",
+	  "type": "Event",
+      "start_date": "2026-03-05",
+      "end_date": "2026-03-08",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Gear Enhancement",
+	  "type": "Event",
+      "start_date": "2026-03-11",
+      "end_date": "2026-03-14",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Champion Training",
+	  "type": "Event",
+      "start_date": "2026-03-12",
+      "end_date": "2026-03-16",
+      "reward": "Rare, Rare",
+      "points": [1, 1]
+    },
+	{
+      "name": "Gear Enhancement",
+	  "type": "Event",
+      "start_date": "2026-03-15",
+      "end_date": "2026-03-18",
+      "reward": "Rare",
+      "points": [1]
+    },
+	{
+      "name": "Gear Hunters",
+	  "type": "Event",
+      "start_date": "2026-03-05",
+      "end_date": "2026-03-08",
+      "reward": "Rare",
+      "points": [1]
+    }
+  ]
+}

@@ -1,5 +1,9 @@
 // fusions-config.js
 window.fusions = {
+  Pelops: {
+    name: "Pelops Fusion",
+    json: "2026/Pelops.json"
+  },
   Noldua: {
     name: "Noldua Fusion",
     json: "2026/Noldua.json"
