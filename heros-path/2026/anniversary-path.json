@@ -464,7 +464,7 @@
   {
     "id": "t10-1",
     "name": "Regal Masks (Mythical) x100",
-    "image": "oregal-masks-mythical",
+    "image": "regal-masks-mythical",
     "cost": 30000,
     "requires": [
       "t9-1"
