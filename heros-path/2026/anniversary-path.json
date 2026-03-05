@@ -372,7 +372,7 @@
   {
     "id": "t8-3",
     "name": "Dexikos x1",
-    "image": "",
+    "image": "dexikos",
     "cost": 15000,
     "requires": [
       "t7-3"
@@ -484,7 +484,7 @@
   {
     "id": "t10-3",
     "name": "Avatar Frame x1",
-    "image": "-frame",
+    "image": "avatar-anniversary",
     "cost": 5000,
     "requires": [
       "t9-3",
