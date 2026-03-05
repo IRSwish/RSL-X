@@ -141,7 +141,7 @@
   {
     "id": "t3-5",
     "name": "Celestial Crystals (Rare) x25",
-    "image": "celestial-crystals-rare",
+    "image": "wings-of-winter-rare",
     "cost": 1250,
     "requires": [
       "t2-6",
@@ -242,7 +242,7 @@
   {
     "id": "t5-5",
     "name": "Celestial Crystals (Epic) x75",
-    "image": "",
+    "image": "wings-of-winter-epic",
     "cost": 5250,
     "requires": [
       "t4-5"
@@ -392,7 +392,7 @@
   {
     "id": "t8-5",
     "name": "Celestial Crystal (Legendary) x100",
-    "image": "",
+    "image": "wings-of-winter-legendary",
     "cost": 15000,
     "requires": [
       "t7-5"
@@ -505,7 +505,7 @@
   {
     "id": "t10-5",
     "name": "Celestial Crystal (Mythical) x100",
-    "image": "",
+    "image": "wings-of-winter-mythical",
     "cost": 30000,
     "requires": [
       "t9-6"
