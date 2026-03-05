@@ -96,14 +96,6 @@
       "points": [1]
     },
 	{
-      "name": "Gear Hunters",
-	  "type": "Event",
-      "start_date": "2026-03-05",
-      "end_date": "2026-03-08",
-      "reward": "Rare",
-      "points": [1]
-    },
-	{
       "name": "Gear Enhancement",
 	  "type": "Event",
       "start_date": "2026-03-11",
