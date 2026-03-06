@@ -124,7 +124,7 @@
       - parseFloat(containerStyle.paddingLeft)
       - parseFloat(containerStyle.paddingRight);
     const isMobile = window.innerWidth <= 768;
-    const minDayWidth = isMobile ? 60 : 0;
+    const minDayWidth = isMobile ? 90 : 0;
     const dayWidth = Math.max(usableWidth / totalDays, minDayWidth);
 
     const selectedDates = new Set();

@@ -84,7 +84,8 @@ header {
 
 /* Timeline globale */
 .timeline-container {
-  overflow-x: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 0 50px;
 }
 
@@ -466,6 +467,12 @@ input[type=number] {
 @media (max-width: 768px) {
   .adsense-footer {
     display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .fusion-title-line {
+    font-size: 24px;
   }
 }
 
