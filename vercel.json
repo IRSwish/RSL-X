@@ -11,25 +11,25 @@
       ]
     },
     {
-      "source": "/**/*.html",
+      "source": "/(.*)\\.html",
       "headers": [
         { "key": "Cache-Control", "value": "public, no-cache" }
       ]
     },
     {
-      "source": "/**/*.js",
+      "source": "/(.*)\\.js",
       "headers": [
         { "key": "Cache-Control", "value": "public, no-cache" }
       ]
     },
     {
-      "source": "/**/*.json",
+      "source": "/(.*)\\.json",
       "headers": [
         { "key": "Cache-Control", "value": "public, no-cache" }
       ]
     },
     {
-      "source": "/**/*.css",
+      "source": "/(.*)\\.css",
       "headers": [
         { "key": "Cache-Control", "value": "public, no-cache" }
       ]
