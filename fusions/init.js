@@ -16,7 +16,7 @@ function loadFusionFromHash() {
     timelineContainer.setAttribute('data-json', fusion.json);
     if (typeof window.reloadTimeline === 'function') window.reloadTimeline();
   } else {
-    document.getElementById('page-title').textContent = "Unlisted fusion yet";
+    document.getElementById('page-title').textContent = "Unlisted fusion (Or try refreshing the page cache)";
     document.title = "Unlisted fusion - " + window.siteConfig.title;
   }
 }
