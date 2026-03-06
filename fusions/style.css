@@ -9,6 +9,28 @@
   padding: 0 50px 20px 50px;
 }
 
+@media (max-width: 768px) {
+  .timeline-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 10px 20px 10px;
+  }
+  .timeline {
+    margin-left: 40px;
+  }
+  .date-column .day {
+    font-size: 10px;
+  }
+  .date-column .date {
+    font-size: 10px;
+  }
+  .category-label {
+    left: -45px;
+    width: 38px;
+    font-size: 9px;
+  }
+}
+
 .timeline {
   position: relative;
   display: flex;

@@ -123,7 +123,9 @@
     const usableWidth = timelineContainer.clientWidth
       - parseFloat(containerStyle.paddingLeft)
       - parseFloat(containerStyle.paddingRight);
-    const dayWidth = usableWidth / totalDays;
+    const isMobile = window.innerWidth <= 768;
+    const minDayWidth = isMobile ? 60 : 0;
+    const dayWidth = Math.max(usableWidth / totalDays, minDayWidth);
 
     const selectedDates = new Set();
 
