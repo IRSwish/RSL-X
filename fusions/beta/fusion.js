@@ -82,7 +82,7 @@
   }
 
   window.reloadTimeline = fetchAndRenderTimeline;
-  window.addEventListener('load', () => { fetchAndRenderTimeline(); loadMenu(); });
+  window.addEventListener('load', () => { fetchAndRenderTimeline(); });
   window.addEventListener('hashchange', fetchAndRenderTimeline);
   window.addEventListener('resize', () => { if (timelineData) renderTimeline(timelineData); });
 
