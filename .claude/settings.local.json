@@ -6,7 +6,8 @@
       "Bash(python:*)",
       "Bash(dir:*)",
       "Bash(ls:*)",
-      "Bash(del temp_check_db.py)"
+      "Bash(del temp_check_db.py)",
+      "Bash(xxd vercel.json)"
     ],
     "deny": [],
     "ask": []
