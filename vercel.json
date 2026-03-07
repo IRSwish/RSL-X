@@ -10,7 +10,25 @@
       ]
     },
     {
-      "source": "/(.*\\.(html|js|json|css))",
+      "source": "/(.*\\.html)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, no-cache" }
+      ]
+    },
+    {
+      "source": "/(.*\\.js)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, no-cache" }
+      ]
+    },
+    {
+      "source": "/(.*\\.json)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, no-cache" }
+      ]
+    },
+    {
+      "source": "/(.*\\.css)",
       "headers": [
         { "key": "Cache-Control", "value": "public, no-cache" }
       ]
