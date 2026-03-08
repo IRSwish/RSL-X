@@ -117,17 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
             "normal-5": r[9], "hard-5": r[10]
           }));
 
-          // Pré-calcul des counts sintranos par champion
-          champions.forEach(c => {
-            c.sint_normal = sintranosData.filter(row => {
-              for (let n = 1; n <= 5; n++) if (isSintEligible(c, row[`normal-${n}`])) return true;
-              return false;
-            }).length;
-            c.sint_hard = sintranosData.filter(row => {
-              for (let n = 1; n <= 5; n++) if (isSintEligible(c, row[`hard-${n}`])) return true;
-              return false;
-            }).length;
-          });
         }
 
         // === Regrouper les formes mythiques par nom ===
@@ -135,6 +124,21 @@ document.addEventListener("DOMContentLoaded", () => {
           if (!championForms[c.name]) championForms[c.name] = [];
           championForms[c.name].push(c);
         });
+
+        // === Pré-calcul des counts sintranos (toutes formes combinées) ===
+        if (sintranosData.length) {
+          champions.forEach(c => {
+            const forms = championForms[c.name] || [c];
+            c.sint_normal = sintranosData.filter(row => {
+              for (let n = 1; n <= 5; n++) if (forms.some(f => isSintEligible(f, row[`normal-${n}`]))) return true;
+              return false;
+            }).length;
+            c.sint_hard = sintranosData.filter(row => {
+              for (let n = 1; n <= 5; n++) if (forms.some(f => isSintEligible(f, row[`hard-${n}`]))) return true;
+              return false;
+            }).length;
+          });
+        }
 
         // === Générer les filtres Buffs ===
         const buffGrid = document.getElementById("buffFilterGrid");
@@ -721,8 +725,9 @@ function updateStatsDisplay(primary, secondary = null) {
 function renderSkills(champ) {
    const container = document.getElementById("modalSkills");
     if (!container) return;
+    const sintWasOpen = document.getElementById("sintranosSection")?.classList.contains("open") || false;
     container.innerHTML = "";
-    renderSintranos(champ);
+    renderSintranos(champ, sintWasOpen);
 
     const gid = champ.IGid || champ.image || champ.id;
 
@@ -957,6 +962,7 @@ function loadForm(index) {
   currentFormIndex = index;
   const champ = currentForms[index];
 
+  const savedCompare = compareChampion;
   primaryChampion = champ;
   resetCompareUI();
 
@@ -971,8 +977,12 @@ function loadForm(index) {
   document.getElementById("modalChampionTitle").textContent = champ.name;
   document.getElementById("modalStatsTitle").textContent = champ.type;
 
-  // stats
-  updateStatsDisplay(champ, null);
+  // stats — restore compare if it was active
+  if (savedCompare) {
+    selectCompareChampion(savedCompare);
+  } else {
+    updateStatsDisplay(champ, null);
+  }
 
   // skills
   renderSkills(champ);
@@ -1165,20 +1175,21 @@ function isSintEligible(champ, cell) {
   return true;
 }
 
-function renderSintranos(champ) {
+function renderSintranos(champ, keepOpen = false) {
   const prev = document.getElementById("sintranosSection");
   if (prev) prev.remove();
   if (!sintranosData.length) return;
 
+  const forms = currentForms || [champ];
   const groupLabels = { C: "Cobblemarket", D: "Deadrise", P: "Plagueholme", S: "Soulcross", Other: "Boss" };
 
-  // Collect per-stage eligible rotation numbers for normal and hard
+  // Collect per-stage eligible rotation numbers for normal and hard (any form eligible = eligible)
   const stageData = [];
   for (const row of sintranosData) {
     const normalNums = [], hardNums = [];
     for (let n = 1; n <= 5; n++) {
-      if (isSintEligible(champ, row[`normal-${n}`])) normalNums.push(n);
-      if (isSintEligible(champ, row[`hard-${n}`]))   hardNums.push(n);
+      if (forms.some(f => isSintEligible(f, row[`normal-${n}`]))) normalNums.push(n);
+      if (forms.some(f => isSintEligible(f, row[`hard-${n}`])))   hardNums.push(n);
     }
     if (!normalNums.length && !hardNums.length) continue;
     const prefix = row.stage.replace(/\d+$/, "");
@@ -1231,6 +1242,8 @@ function renderSintranos(champ) {
   `;
 
   document.getElementById("modalSkills").insertAdjacentHTML("beforeend", sectionHTML);
+
+  if (keepOpen) document.getElementById("sintranosSection").classList.add("open");
 
   document.querySelector("#sintranosSection .sintranos-toggle").addEventListener("click", () => {
     document.getElementById("sintranosSection").classList.toggle("open");
