@@ -40,6 +40,8 @@ let selectedFactions = [];
 let selectedRarities = [];
 let selectedAffinities = [];
 let selectedTypes = [];
+let selectedSintStage = "";
+let selectedSintDiff = "both";
 let currentSort = { stat: null, order: "asc" };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -137,6 +139,43 @@ document.addEventListener("DOMContentLoaded", () => {
               for (let n = 1; n <= 5; n++) if (forms.some(f => isSintEligible(f, row[`hard-${n}`]))) return true;
               return false;
             }).length;
+          });
+        }
+
+        // === Populer le select Sintranos ===
+        if (sintranosData.length) {
+          const sintSelect = document.getElementById("sintStageFilter");
+          const zoneLabels = { C: "Cobblemarket", D: "Deadrise", P: "Plagueholme", S: "Soulcross" };
+          const zoneGroups = { C: [], D: [], P: [], S: [], Other: [] };
+          sintranosData.forEach(row => {
+            const prefix = row.stage.replace(/\d+$/, "");
+            const gk = ["C","D","P","S"].includes(prefix) ? prefix : "Other";
+            zoneGroups[gk].push(row.stage);
+          });
+          for (const [key, stages] of Object.entries(zoneGroups)) {
+            if (!stages.length) continue;
+            const group = document.createElement("optgroup");
+            group.label = zoneLabels[key] || "Boss";
+            stages.forEach(stage => {
+              const opt = document.createElement("option");
+              opt.value = stage;
+              opt.textContent = stage;
+              group.appendChild(opt);
+            });
+            sintSelect.appendChild(group);
+          }
+          sintSelect.addEventListener("change", () => {
+            selectedSintStage = sintSelect.value;
+            displayChampions();
+          });
+
+          document.querySelectorAll(".sint-diff-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+              document.querySelectorAll(".sint-diff-btn").forEach(b => b.classList.remove("active"));
+              btn.classList.add("active");
+              selectedSintDiff = btn.dataset.diff;
+              displayChampions();
+            });
           });
         }
 
@@ -417,6 +456,22 @@ function displayChampions() {
   const matchesType      = selectedTypes.length === 0 || selectedTypes.includes(c.type);
   const matchesInvocable = !invocableOnly || c.invocable;
 
+  // === SINTRANOS STAGE ===
+  let matchesSintStage = true;
+  if (selectedSintStage) {
+    const row = sintranosData.find(r => r.stage === selectedSintStage);
+    if (row) {
+      const forms = championForms[c.name] || [c];
+      matchesSintStage = forms.some(f => {
+        for (let n = 1; n <= 5; n++) {
+          if (selectedSintDiff !== "hard"   && isSintEligible(f, row[`normal-${n}`])) return true;
+          if (selectedSintDiff !== "normal" && isSintEligible(f, row[`hard-${n}`]))   return true;
+        }
+        return false;
+      });
+    }
+  }
+
   // === AURAS ===
   let matchesAura = true;
 
@@ -476,7 +531,8 @@ function displayChampions() {
     matchesAffinity &&
     matchesType &&
     matchesInvocable &&
-    matchesAura
+    matchesAura &&
+    matchesSintStage
   );
 });
 
@@ -620,11 +676,18 @@ function resetAllFilters() {
   document.querySelectorAll(".affinity-btn").forEach(el => el.classList.remove("active"));
   document.querySelectorAll(".type-btn").forEach(el => el.classList.remove("active"));
 
-    // Aura filters
+  // Aura filters
   selectedAuraStats = [];
   selectedAuraZones = [];
   document.querySelectorAll(".aura-stat-btn").forEach(btn => btn.classList.remove("active"));
   document.querySelectorAll(".aura-area-btn").forEach(btn => btn.classList.remove("active"));
+
+  // Sintranos stage filter
+  selectedSintStage = "";
+  selectedSintDiff = "both";
+  const sintSelect = document.getElementById("sintStageFilter");
+  if (sintSelect) sintSelect.value = "";
+  document.querySelectorAll(".sint-diff-btn").forEach((b, i) => b.classList.toggle("active", i === 0));
 
 
   // Invocable only

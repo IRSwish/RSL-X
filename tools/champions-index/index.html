@@ -220,15 +220,30 @@
           <i class="sort-icon" data-lucide="arrow-down-wide-narrow"></i>
         </button>
 
-        <button class="sort-btn" data-stat="sint_normal" title="Sintranos Normal stages">
-          <span class="sort-sint-label sint-normal-label">SIN<br>NRM</span>
-          <i class="sort-icon" data-lucide="arrow-down-wide-narrow"></i>
-        </button>
+      </div>
+    </div>
 
-        <button class="sort-btn" data-stat="sint_hard" title="Sintranos Hard stages">
-          <span class="sort-sint-label sint-hard-label">SIN<br>HRD</span>
-          <i class="sort-icon" data-lucide="arrow-down-wide-narrow"></i>
-        </button>
+    <div class="advanced-group">
+      <div class="advanced-label">Sintranos :</div>
+      <div class="sint-filter-block">
+        <div class="sint-diff-btns sint-diff-btns-row">
+          <button class="sint-diff-btn active" data-diff="both">ALL</button>
+          <button class="sint-diff-btn sint-diff-normal" data-diff="normal">NORMAL</button>
+          <button class="sint-diff-btn sint-diff-hard" data-diff="hard">HARD</button>
+        </div>
+        <select id="sintStageFilter" class="sint-stage-select">
+          <option value="">— Any Stage —</option>
+        </select>
+        <div class="sint-sort-row">
+          <button class="sort-btn" data-stat="sint_normal" title="Sintranos Normal stages">
+            <span class="sort-sint-label sint-normal-label">SIN<br>NRM</span>
+            <i class="sort-icon" data-lucide="arrow-down-wide-narrow"></i>
+          </button>
+          <button class="sort-btn" data-stat="sint_hard" title="Sintranos Hard stages">
+            <span class="sort-sint-label sint-hard-label">SIN<br>HRD</span>
+            <i class="sort-icon" data-lucide="arrow-down-wide-narrow"></i>
+          </button>
+        </div>
       </div>
     </div>
 
