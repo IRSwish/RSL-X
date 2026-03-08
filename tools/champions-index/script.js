@@ -726,8 +726,9 @@ function renderSkills(champ) {
    const container = document.getElementById("modalSkills");
     if (!container) return;
     const sintWasOpen = document.getElementById("sintranosSection")?.classList.contains("open") || false;
+    const sintActiveTab = document.querySelector("#sintranosSection .sint-tab.active")?.dataset.tab || "normal";
     container.innerHTML = "";
-    renderSintranos(champ, sintWasOpen);
+    renderSintranos(champ, sintWasOpen, sintActiveTab);
 
     const gid = champ.IGid || champ.image || champ.id;
 
@@ -1175,7 +1176,7 @@ function isSintEligible(champ, cell) {
   return true;
 }
 
-function renderSintranos(champ, keepOpen = false) {
+function renderSintranos(champ, keepOpen = false, activeTab = "normal") {
   const prev = document.getElementById("sintranosSection");
   if (prev) prev.remove();
   if (!sintranosData.length) return;
@@ -1232,11 +1233,11 @@ function renderSintranos(champ, keepOpen = false) {
       </button>
       <div class="sintranos-body">
         <div class="sint-tabs">
-          <button class="sint-tab sint-tab-normal active" data-tab="normal">NORMAL <span class="sint-tab-count">(${stageData.filter(s => s.normalNums.length).length} STAGES)</span></button>
-          <button class="sint-tab sint-tab-hard" data-tab="hard">HARD <span class="sint-tab-count">(${stageData.filter(s => s.hardNums.length).length} STAGES)</span></button>
+          <button class="sint-tab sint-tab-normal ${activeTab === "normal" ? "active" : ""}" data-tab="normal">NORMAL <span class="sint-tab-count">(${stageData.filter(s => s.normalNums.length).length} STAGES)</span></button>
+          <button class="sint-tab sint-tab-hard ${activeTab === "hard" ? "active" : ""}" data-tab="hard">HARD <span class="sint-tab-count">(${stageData.filter(s => s.hardNums.length).length} STAGES)</span></button>
         </div>
-        <div class="sint-panel active" data-panel="normal">${buildPanel("normal")}</div>
-        <div class="sint-panel" data-panel="hard">${buildPanel("hard")}</div>
+        <div class="sint-panel ${activeTab === "normal" ? "active" : ""}" data-panel="normal">${buildPanel("normal")}</div>
+        <div class="sint-panel ${activeTab === "hard" ? "active" : ""}" data-panel="hard">${buildPanel("hard")}</div>
       </div>
     </div>
   `;
