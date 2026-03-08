@@ -116,7 +116,7 @@
     const maxDate = new Date(Math.max(...events.map(e => parseLocal(e.end_date))));
     const totalDays = Math.ceil((maxDate - minDate) / (1000 * 60 * 60 * 24)) + 1;
 
-    const savedStates = JSON.parse(localStorage.getItem('pointStates') || '{}');
+    const savedStates = JSON.parse(LS.getItem('pointStates') || '{}');
     const horizontalGap = 16;
 
     const containerStyle = getComputedStyle(timelineContainer);
@@ -319,7 +319,7 @@
       const fusionType = (data.type || '').toUpperCase();
       if (fusionType === 'FRAGMENT' && Array.isArray(event.extra_choices) && event.extra_choices.length > 0) {
         const extraKey = makeExtraKey(event);
-        const savedValue = parseInt(localStorage.getItem(extraKey) || '0', 10);
+        const savedValue = parseInt(LS.getItem(extraKey) || '0', 10);
 
         const extraDiv = document.createElement('div');
         extraDiv.className = 'extra-choices';
@@ -342,10 +342,10 @@
           }
 
           btn.addEventListener('click', () => {
-            const current = parseInt(localStorage.getItem(extraKey) || '0', 10);
+            const current = parseInt(LS.getItem(extraKey) || '0', 10);
             const newValue = (current === val ? 0 : val);
 
-            localStorage.setItem(extraKey, String(newValue));
+            LS.setItem(extraKey, String(newValue));
 
             // visuel : un seul choix actif
             extraDiv.querySelectorAll('.extra-choice').forEach(el => el.classList.remove('active'));
@@ -361,7 +361,7 @@
         // --- Extra rewards (classement 1st/2nd) version compact corner ---
         if (fusionType === 'FRAGMENT' && Array.isArray(event.extra_choices) && event.extra_choices.length > 0) {
             const extraKey = makeExtraKey(event);
-            const savedValue = parseInt(localStorage.getItem(extraKey) || '0', 10);
+            const savedValue = parseInt(LS.getItem(extraKey) || '0', 10);
 
             const corner = document.createElement('div');
             corner.className = 'extra-corner';
@@ -384,9 +384,9 @@
               }
 
               btn.addEventListener('click', () => {
-                const current = parseInt(localStorage.getItem(extraKey) || '0', 10);
+                const current = parseInt(LS.getItem(extraKey) || '0', 10);
                 const newValue = (current === val ? 0 : val);
-                localStorage.setItem(extraKey, String(newValue));
+                LS.setItem(extraKey, String(newValue));
 
                 corner.querySelectorAll('.extra-corner-btn').forEach(el => el.classList.remove('active'));
                 if (newValue > 0) btn.classList.add('active');
@@ -423,7 +423,7 @@
           allStates.forEach(s => box.classList.remove(s));
           box.classList.add(isValidated ? 'state-passed' : 'state-validated');
           savedStates[id] = box.classList.contains('state-validated') ? 'state-validated' : 'state-passed';
-          localStorage.setItem('pointStates', JSON.stringify(savedStates));
+          LS.setItem('pointStates', JSON.stringify(savedStates));
 
           const allPoints = parentEvent.querySelectorAll('.point-box');
           const validatedCount = Array.from(allPoints).filter(p => p.classList.contains('state-validated')).length;
@@ -446,7 +446,7 @@
         states.forEach(s => box.classList.remove(s));
         box.classList.add(states[nextIndex]);
         savedStates[id] = states[nextIndex];
-        localStorage.setItem('pointStates', JSON.stringify(savedStates));
+        LS.setItem('pointStates', JSON.stringify(savedStates));
 
         updateSummary();
         updateProgressPanelFromData(timelineData);
@@ -475,7 +475,7 @@
         });
 
         parentEvent.classList.remove('validated', 'partial');
-        localStorage.setItem('pointStates', JSON.stringify(savedStates));
+        LS.setItem('pointStates', JSON.stringify(savedStates));
         updateSummary();
         updateProgressPanelFromData(timelineData);
         buildResourcesPanel(timelineData);
@@ -507,7 +507,7 @@
         });
 
         document.querySelectorAll('.event-block').forEach(ev => ev.classList.remove('validated', 'partial'));
-        localStorage.setItem('pointStates', JSON.stringify(savedStates));
+        LS.setItem('pointStates', JSON.stringify(savedStates));
         updateSummary();
         updateProgressPanelFromData(timelineData);
         buildResourcesPanel(timelineData);
@@ -606,7 +606,7 @@
         data.events.forEach(ev => {
           if (!Array.isArray(ev.extra_choices) || ev.extra_choices.length === 0) return;
           const extraKey = makeExtraKey(ev);
-          const val = parseInt(localStorage.getItem(extraKey) || '0', 10);
+          const val = parseInt(LS.getItem(extraKey) || '0', 10);
           if (val > 0) {
             // on les considère comme des fragments validés (obtenus)
             fragsValidated += val;
@@ -841,8 +841,8 @@ function buildResourcesPanel(data) {
     let raresBuilt = 0;
     entries.forEach(ent => {
       if (ent.kind === 'RARE') {
-        const rank = parseInt(localStorage.getItem(`resRank_${fusionKey}_${ent.id}`) || '0', 10);
-        const asc  = parseInt(localStorage.getItem(`resAsc_${fusionKey}_${ent.id}`)  || '0', 10);
+        const rank = parseInt(LS.getItem(`resRank_${fusionKey}_${ent.id}`) || '0', 10);
+        const asc  = parseInt(LS.getItem(`resAsc_${fusionKey}_${ent.id}`)  || '0', 10);
         if (rank >= ent.starsMax && asc >= ent.starsMax) {
           raresBuilt++;
         }
@@ -899,8 +899,8 @@ function buildResourcesPanel(data) {
     const storeAscKey  = `resAsc_${fusionKey}_${e.id}`;
 
     // états init
-    let rankVal = parseInt(localStorage.getItem(storeRankKey) || (e.kind === 'RARE' ? 3 : 4), 10);
-    let ascVal  = parseInt(localStorage.getItem(storeAscKey)  || '0', 10);
+    let rankVal = parseInt(LS.getItem(storeRankKey) || (e.kind === 'RARE' ? 3 : 4), 10);
+    let ascVal  = parseInt(LS.getItem(storeAscKey)  || '0', 10);
 
     // fabrique une ligne d’étoiles : boutons wrapper + <i data-lucide="star">
     const makeStarsLine = (count, cls, min, getValue, onChange) => {
@@ -932,8 +932,8 @@ function buildResourcesPanel(data) {
           rankVal = next;
           if (ascVal > rankVal) ascVal = rankVal;
 
-          localStorage.setItem(storeRankKey, rankVal);
-          localStorage.setItem(storeAscKey, ascVal);
+          LS.setItem(storeRankKey, rankVal);
+          LS.setItem(storeAscKey, ascVal);
 
           render();
           updateGlobal();
@@ -946,8 +946,8 @@ function buildResourcesPanel(data) {
           ascVal = i;
           if (rankVal < ascVal) rankVal = ascVal;
 
-          localStorage.setItem(storeRankKey, rankVal);
-          localStorage.setItem(storeAscKey, ascVal);
+          LS.setItem(storeRankKey, rankVal);
+          LS.setItem(storeAscKey, ascVal);
 
           render();
           updateGlobal();
@@ -976,8 +976,8 @@ function buildResourcesPanel(data) {
     resetBtn.addEventListener('click', () => {
       rankVal = (e.kind === 'RARE') ? 3 : 4;
       ascVal = 0;
-      localStorage.setItem(storeRankKey, String(rankVal));
-      localStorage.setItem(storeAscKey,  String(ascVal));
+      LS.setItem(storeRankKey, String(rankVal));
+      LS.setItem(storeAscKey,  String(ascVal));
       render(true);
       updateGlobal();
       buildResourcesPanel(data);
@@ -1152,7 +1152,7 @@ function updateResourcesSummary(entries, data = timelineData) {
   let totalBuilt = 0;
   const fusionKey = (location.hash || '#').slice(1) || 'default';
   entries.forEach(e => {
-    const built = Math.min(parseInt(localStorage.getItem(resKeyBuilt(fusionKey, e.name)) || '0', 10), e.validated);
+    const built = Math.min(parseInt(LS.getItem(resKeyBuilt(fusionKey, e.name)) || '0', 10), e.validated);
     totalBuilt += Math.max(0, built);
   });
 
@@ -1171,8 +1171,8 @@ function updateResourcesSummary(entries, data = timelineData) {
   const totalsEpic = { affL:0, arcL:0, affG:0, arcG:0, affS:0, arcS:0, chk3:0, chk4:0 };
 
   entries.forEach(e => {
-    const curStars = parseInt(localStorage.getItem(resKeyStars(fusionKey, e.name)) || '0', 10);
-    const built = Math.min(parseInt(localStorage.getItem(resKeyBuilt(fusionKey, e.name)) || '0', 10), e.validated);
+    const curStars = parseInt(LS.getItem(resKeyStars(fusionKey, e.name)) || '0', 10);
+    const built = Math.min(parseInt(LS.getItem(resKeyBuilt(fusionKey, e.name)) || '0', 10), e.validated);
     const copiesNow = Math.max(0, e.validated - built);
     if (!copiesNow) return;
 

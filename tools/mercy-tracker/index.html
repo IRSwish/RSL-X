@@ -12,6 +12,7 @@
   <meta charset="UTF-8">
   <script src="https://unpkg.com/lucide@latest" defer></script>
   <script src="/config/site-config.js"></script>
+  <script src="/config/sessions.js"></script>
   <script src="/config/ad-banner.js" defer></script>
   <script>document.title = "Mercy Tracker | " + window.siteConfig.title;</script>
   <link rel="stylesheet" href="../../style/style.css">
@@ -701,16 +702,16 @@
     function importRSLHelperData(mercyData) {
       for (const [type, data] of Object.entries(mercyData)) {
         if (data.value !== undefined) {
-          localStorage.setItem("pity_" + type, data.value);
+          LS.setItem("pity_" + type, data.value);
         }
         if (data.legendaryValue !== undefined) {
-          localStorage.setItem("pity_legendary_" + type, data.legendaryValue);
+          LS.setItem("pity_legendary_" + type, data.legendaryValue);
         }
         if (data.lastHeroId) {
-          localStorage.setItem("lastHero_" + type, data.lastHeroId);
+          LS.setItem("lastHero_" + type, data.lastHeroId);
         }
         if (data.needFor) {
-          localStorage.setItem("lastPull_" + type, data.needFor);
+          LS.setItem("lastPull_" + type, data.needFor);
         }
 
         if (cardSetProgressFunctions[type]) {
@@ -726,8 +727,8 @@
       const card = document.querySelector(`.shard-card[data-type="${type}"]`);
       if (!card) return;
 
-      const lastHeroId = localStorage.getItem("lastHero_" + type);
-      const lastPull = localStorage.getItem("lastPull_" + type);
+      const lastHeroId = LS.getItem("lastHero_" + type);
+      const lastPull = LS.getItem("lastPull_" + type);
       const displayContainer = card.querySelector('.last-hero-display');
       const inputWrapper = card.querySelector('.last-hero-input-wrapper');
       const pullInput = card.querySelector('.pull-input');
@@ -988,7 +989,7 @@
         const circumference = 2 * Math.PI * radius;
         circle.style.strokeDasharray = circumference;
 
-        let value = parseInt(localStorage.getItem("pity_" + type)) || 0;
+        let value = parseInt(LS.getItem("pity_" + type)) || 0;
 
         let legendaryCircle, legendaryInput, legendaryPercent, legendaryValue;
         const legendaryMax = 174;
@@ -997,7 +998,7 @@
           legendaryInput = card.querySelector('.legendary-input');
           legendaryPercent = card.querySelector('.legendary-percent');
           legendaryCircle.style.strokeDasharray = circumference;
-          legendaryValue = parseInt(localStorage.getItem("pity_legendary_" + type)) || 0;
+          legendaryValue = parseInt(LS.getItem("pity_legendary_" + type)) || 0;
         }
 
         // Last Hero setup
@@ -1024,7 +1025,7 @@
                 <span>${champ.name}</span>
               `;
               item.addEventListener('click', () => {
-                localStorage.setItem("lastHero_" + type, champ.IGid || champ.id);
+                LS.setItem("lastHero_" + type, champ.IGid || champ.id);
                 heroInput.value = '';
                 heroSuggestions.classList.remove('active');
                 updateLastHeroDisplay(type);
@@ -1048,8 +1049,8 @@
         });
 
         deleteBtn.addEventListener('click', () => {
-          localStorage.removeItem("lastHero_" + type);
-          localStorage.removeItem("lastPull_" + type);
+          LS.removeItem("lastHero_" + type);
+          LS.removeItem("lastPull_" + type);
           heroDisplay.style.display = 'none';
           heroInputWrapper.style.display = 'block';
           pullInput.value = '';
@@ -1059,9 +1060,9 @@
         pullInput.addEventListener('change', () => {
           const pullValue = pullInput.value;
           if (pullValue && parseInt(pullValue) > 0) {
-            localStorage.setItem("lastPull_" + type, pullValue);
+            LS.setItem("lastPull_" + type, pullValue);
           } else {
-            localStorage.removeItem("lastPull_" + type);
+            LS.removeItem("lastPull_" + type);
           }
           updateLastHeroDisplay(type);
         });
@@ -1096,7 +1097,7 @@
           inputCircle.value = v;
           countDisplay.textContent = `${v} / ${max}`;
           percent.textContent = calcChance(v).toFixed(2) + "%";
-          localStorage.setItem("pity_" + type, v);
+          LS.setItem("pity_" + type, v);
 
           if (isPrimal && legV !== null) {
             legV = Math.max(0, Math.min(legendaryMax, legV));
@@ -1104,7 +1105,7 @@
             legendaryCircle.style.strokeDashoffset = legOffset;
             legendaryInput.value = legV;
             legendaryPercent.textContent = calcLegendaryChance(legV).toFixed(2) + "%";
-            localStorage.setItem("pity_legendary_" + type, legV);
+            LS.setItem("pity_legendary_" + type, legV);
             updateButtons(v, legV);
           } else {
             updateButtons(v, legendaryValue);
@@ -1119,7 +1120,7 @@
           legendaryCircle.style.strokeDashoffset = legOffset;
           legendaryInput.value = legV;
           legendaryPercent.textContent = calcLegendaryChance(legV).toFixed(2) + "%";
-          localStorage.setItem("pity_legendary_" + type, legV);
+          LS.setItem("pity_legendary_" + type, legV);
           legendaryValue = legV;
           updateButtons(value, legV);
         }
@@ -1197,6 +1198,7 @@
       lucide.createIcons();
     })();
   </script>
+  <script src="/config/session-widget.js"></script>
 
   <div class="adsense-container">
     <div class="ad-label">Advertisement</div>

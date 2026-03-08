@@ -80,11 +80,11 @@ function saveState() {
     planned: [...planned],
     pointsAvailable: Number(pointsAvailableInput.value || 0),
   };
-  localStorage.setItem(getStorageKey(), JSON.stringify(state));
+  LS.setItem(getStorageKey(), JSON.stringify(state));
 }
 
 function loadState() {
-  const raw = localStorage.getItem(getStorageKey());
+  const raw = LS.getItem(getStorageKey());
   if (!raw) return;
   try {
     const s = JSON.parse(raw);

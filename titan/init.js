@@ -44,18 +44,18 @@ document.getElementById("info-btn")?.addEventListener("click", () => {
   if (!pinLegendBtn || !pinProgressBtn) return;
 
   // Restore from localStorage
-  const legendPinned = localStorage.getItem('titan_pin_legend') === 'true';
-  const progressPinned = localStorage.getItem('titan_pin_progress') === 'true';
+  const legendPinned = LS.getItem('titan_pin_legend') === 'true';
+  const progressPinned = LS.getItem('titan_pin_progress') === 'true';
 
   function applyPin(type, active) {
     if (type === 'legend') {
       pinnedLegend.classList.toggle('visible', active);
       pinLegendBtn.classList.toggle('active', active);
-      localStorage.setItem('titan_pin_legend', active);
+      LS.setItem('titan_pin_legend', active);
     } else {
       pinnedProgress.classList.toggle('visible', active);
       pinProgressBtn.classList.toggle('active', active);
-      localStorage.setItem('titan_pin_progress', active);
+      LS.setItem('titan_pin_progress', active);
       if (active) syncPinnedProgress();
     }
   }
@@ -70,7 +70,7 @@ document.getElementById("info-btn")?.addEventListener("click", () => {
   // Observe sidebar progress panel changes to keep pinned in sync
   if (sidebarProgressPanel && pinnedProgressPanel) {
     const observer = new MutationObserver(() => {
-      if (localStorage.getItem('titan_pin_progress') === 'true') {
+      if (LS.getItem('titan_pin_progress') === 'true') {
         syncPinnedProgress();
       }
     });
@@ -83,12 +83,12 @@ document.getElementById("info-btn")?.addEventListener("click", () => {
 
   // Toggle buttons
   pinLegendBtn.addEventListener('click', () => {
-    const active = localStorage.getItem('titan_pin_legend') !== 'true';
+    const active = LS.getItem('titan_pin_legend') !== 'true';
     applyPin('legend', active);
   });
 
   pinProgressBtn.addEventListener('click', () => {
-    const active = localStorage.getItem('titan_pin_progress') !== 'true';
+    const active = LS.getItem('titan_pin_progress') !== 'true';
     applyPin('progress', active);
   });
 })();

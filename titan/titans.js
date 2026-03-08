@@ -89,7 +89,7 @@
     const maxDate = new Date(Math.max(...events.map(e => parseLocal(e.end_date))));
     const totalDays = Math.ceil((maxDate - minDate) / (1000 * 60 * 60 * 24)) + 1;
 
-    const savedStates = JSON.parse(localStorage.getItem('pointStates') || '{}');
+    const savedStates = JSON.parse(LS.getItem('pointStates') || '{}');
     const horizontalGap = 16;
 
     const containerStyle = getComputedStyle(timelineContainer);
@@ -288,7 +288,7 @@
         const newState = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed']
           .find(s => box.classList.contains(s));
         savedStates[id] = newState;
-        localStorage.setItem('pointStates', JSON.stringify(savedStates));
+        LS.setItem('pointStates', JSON.stringify(savedStates));
 
         // Mise à jour classes event (validated / partial)
         if (parentEvent) {
@@ -326,7 +326,7 @@
           savedStates[id] = initialState;
         });
 
-        localStorage.setItem('pointStates', JSON.stringify(savedStates));
+        LS.setItem('pointStates', JSON.stringify(savedStates));
         updateSummary();
         updateProgressPanelFromData(timelineData);
       });
