@@ -1,6 +1,7 @@
 let currentModalIndex = null;
 let modalNavigationList = [];
 let champions = [];
+let sintranosData = [];
 let factions = [];
 let filteredChampions = [];
 let championForms = {};
@@ -102,6 +103,31 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         } else {
           console.warn("Table 'effects' introuvable ou vide");
+        }
+
+        // === Charger la table sintranos ===
+        const sintResult = db.exec(`SELECT stage, "normal-1", "hard-1", "normal-2", "hard-2", "normal-3", "hard-3", "normal-4", "hard-4", "normal-5", "hard-5" FROM sintranos`);
+        if (sintResult.length) {
+          sintranosData = sintResult[0].values.map(r => ({
+            stage: r[0],
+            "normal-1": r[1], "hard-1": r[2],
+            "normal-2": r[3], "hard-2": r[4],
+            "normal-3": r[5], "hard-3": r[6],
+            "normal-4": r[7], "hard-4": r[8],
+            "normal-5": r[9], "hard-5": r[10]
+          }));
+
+          // Pré-calcul des counts sintranos par champion
+          champions.forEach(c => {
+            c.sint_normal = sintranosData.filter(row => {
+              for (let n = 1; n <= 5; n++) if (isSintEligible(c, row[`normal-${n}`])) return true;
+              return false;
+            }).length;
+            c.sint_hard = sintranosData.filter(row => {
+              for (let n = 1; n <= 5; n++) if (isSintEligible(c, row[`hard-${n}`])) return true;
+              return false;
+            }).length;
+          });
         }
 
         // === Regrouper les formes mythiques par nom ===
@@ -696,6 +722,7 @@ function renderSkills(champ) {
    const container = document.getElementById("modalSkills");
     if (!container) return;
     container.innerHTML = "";
+    renderSintranos(champ);
 
     const gid = champ.IGid || champ.image || champ.id;
 
@@ -1111,3 +1138,110 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowRight") openNextChampion();
   if (e.key === "ArrowLeft")  openPrevChampion();
 });
+
+// ===== SINTRANOS =====
+
+const SINT_FACTIONS = new Set(["Argonites","Banner Lords","Barbarians","Dark Elves","Demonspawn","Dwarves","High Elves","Knights Revenant","Lizardmen","Ogryn Tribes","Orcs","Sacred Order","Shadowkin","Skinwalkers","Sylvan Watchers","Undead Hordes"]);
+const SINT_RARITIES = new Set(["Common","Uncommon","Rare","Epic","Legendary","Mythical"]);
+const SINT_AFFINITIES = new Set(["Force","Magic","Spirit","Void"]);
+const SINT_TYPES = new Set(["Attack","Defense","HP","Support"]);
+const SINT_ROT_KEYS = ["normal-1","hard-1","normal-2","hard-2","normal-3","hard-3","normal-4","hard-4","normal-5","hard-5"];
+const SINT_ROT_LABELS = {"normal-1":"N1","hard-1":"H1","normal-2":"N2","hard-2":"H2","normal-3":"N3","hard-3":"H3","normal-4":"N4","hard-4":"H4","normal-5":"N5","hard-5":"H5"};
+
+function isSintEligible(champ, cell) {
+  if (cell === null || cell === undefined) return false; // rotation doesn't exist
+  const tokens = cell.split(",").map(t => t.trim()).filter(Boolean);
+  const cats = { faction: [], rarity: [], affinity: [], type: [] };
+  for (const t of tokens) {
+    if (SINT_FACTIONS.has(t))  cats.faction.push(t);
+    else if (SINT_RARITIES.has(t))  cats.rarity.push(t);
+    else if (SINT_AFFINITIES.has(t)) cats.affinity.push(t);
+    else if (SINT_TYPES.has(t))    cats.type.push(t);
+  }
+  if (cats.faction.length  && !cats.faction.includes(champ.faction))   return false;
+  if (cats.rarity.length   && !cats.rarity.includes(champ.rarity))    return false;
+  if (cats.affinity.length && !cats.affinity.includes(champ.affinity)) return false;
+  if (cats.type.length     && !cats.type.includes(champ.type))        return false;
+  return true;
+}
+
+function renderSintranos(champ) {
+  const prev = document.getElementById("sintranosSection");
+  if (prev) prev.remove();
+  if (!sintranosData.length) return;
+
+  const groupLabels = { C: "Cobblemarket", D: "Deadrise", P: "Plagueholme", S: "Soulcross", Other: "Boss" };
+
+  // Collect per-stage eligible rotation numbers for normal and hard
+  const stageData = [];
+  for (const row of sintranosData) {
+    const normalNums = [], hardNums = [];
+    for (let n = 1; n <= 5; n++) {
+      if (isSintEligible(champ, row[`normal-${n}`])) normalNums.push(n);
+      if (isSintEligible(champ, row[`hard-${n}`]))   hardNums.push(n);
+    }
+    if (!normalNums.length && !hardNums.length) continue;
+    const prefix = row.stage.replace(/\d+$/, "");
+    stageData.push({ stage: row.stage, gk: ["C","D","P","S"].includes(prefix) ? prefix : "Other", normalNums, hardNums });
+  }
+
+  function buildPanel(type) {
+    const groups = { C: [], D: [], P: [], S: [], Other: [] };
+    for (const s of stageData) {
+      const nums = type === "normal" ? s.normalNums : s.hardNums;
+      if (nums.length) groups[s.gk].push({ stage: s.stage, nums });
+    }
+    let html = "";
+    for (const key of ["C","D","P","S","Other"]) {
+      if (!groups[key].length) continue;
+      html += `
+        <div class="sint-group">
+          <div class="sint-group-label">${groupLabels[key]}</div>
+          <div class="sint-stages">
+            ${groups[key].map(s => `
+              <div class="sint-stage">
+                <span class="sint-stage-name">${s.stage}</span>
+                <div class="sint-rots">
+                  ${s.nums.map(n => `<span class="sint-rot sint-${type}">${n}</span>`).join("")}
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>`;
+    }
+    if (!html) html = `<p class="sint-none">Not eligible.</p>`;
+    return html;
+  }
+
+  const sectionHTML = `
+    <div id="sintranosSection" class="sintranos-section">
+      <button class="sintranos-toggle">
+        <span class="sint-title">Cursed City of Sintranos</span>
+        <i data-lucide="chevron-down" class="sint-chevron"></i>
+      </button>
+      <div class="sintranos-body">
+        <div class="sint-tabs">
+          <button class="sint-tab sint-tab-normal active" data-tab="normal">NORMAL <span class="sint-tab-count">(${stageData.filter(s => s.normalNums.length).length} STAGES)</span></button>
+          <button class="sint-tab sint-tab-hard" data-tab="hard">HARD <span class="sint-tab-count">(${stageData.filter(s => s.hardNums.length).length} STAGES)</span></button>
+        </div>
+        <div class="sint-panel active" data-panel="normal">${buildPanel("normal")}</div>
+        <div class="sint-panel" data-panel="hard">${buildPanel("hard")}</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("modalSkills").insertAdjacentHTML("beforeend", sectionHTML);
+
+  document.querySelector("#sintranosSection .sintranos-toggle").addEventListener("click", () => {
+    document.getElementById("sintranosSection").classList.toggle("open");
+  });
+
+  document.querySelectorAll("#sintranosSection .sint-tab").forEach(tab => {
+    tab.addEventListener("click", e => {
+      e.stopPropagation();
+      const target = tab.dataset.tab;
+      document.querySelectorAll("#sintranosSection .sint-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === target));
+      document.querySelectorAll("#sintranosSection .sint-panel").forEach(p => p.classList.toggle("active", p.dataset.panel === target));
+    });
+  });
+}
