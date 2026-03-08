@@ -667,6 +667,8 @@ const compareTargetName = document.getElementById("compareTargetName");
 const compareInputWrapper = document.getElementById("compareInputWrapper");
 const compareInput = document.getElementById("compareInput");
 const compareSuggestions = document.getElementById("compareSuggestions");
+const compareFormSwitch = document.getElementById("compareFormSwitch");
+let compareFormIndex = 0;
 
 const STAT_CONFIG = [
   { key: "hp",   id: "statHP",   isPercent: false },
@@ -950,7 +952,9 @@ function renderSkills(champ) {
 
 function resetCompareUI() {
   compareChampion = null;
+  compareFormIndex = 0;
   compareHeader.style.display = "none";
+  compareFormSwitch.style.display = "none";
   compareTargetName.textContent = "";
   compareInputWrapper.style.display = "none";
   compareSuggestions.innerHTML = "";
@@ -1045,11 +1049,22 @@ compareToggle.addEventListener("click", () => {
 });
 
 function selectCompareChampion(champ) {
-  compareChampion = champ;
+  const forms = championForms[champ.name] || [champ];
+  compareFormIndex = 0;
+  compareChampion = forms[0];
   compareToggle.dataset.mode = "on";
 
   compareHeader.style.display = "block";
   compareTargetName.textContent = champ.name;
+
+  if (forms.length > 1) {
+    compareFormSwitch.style.display = "flex";
+    compareFormSwitch.querySelectorAll(".compare-form-btn").forEach((btn, i) => {
+      btn.classList.toggle("active", i === 0);
+    });
+  } else {
+    compareFormSwitch.style.display = "none";
+  }
 
   compareInputWrapper.style.display = "none";
   compareSuggestions.innerHTML = "";
@@ -1057,18 +1072,33 @@ function selectCompareChampion(champ) {
   updateStatsDisplay(primaryChampion, compareChampion);
 }
 
+compareFormSwitch.querySelectorAll(".compare-form-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    compareFormIndex = parseInt(btn.dataset.form);
+    const forms = championForms[compareChampion.name] || [compareChampion];
+    compareChampion = forms[compareFormIndex] || compareChampion;
+    compareFormSwitch.querySelectorAll(".compare-form-btn").forEach((b, i) => {
+      b.classList.toggle("active", i === compareFormIndex);
+    });
+    updateStatsDisplay(primaryChampion, compareChampion);
+  });
+});
+
 compareInput.addEventListener("input", () => {
   const query = compareInput.value.toLowerCase();
   compareSuggestions.innerHTML = "";
   if (!query) return;
 
-  const matches = champions
-    .filter(c =>
-      primaryChampion &&
-      c.id !== primaryChampion.id &&
-      c.name.toLowerCase().includes(query)
-    )
-    .slice(0, 8);
+  const seen = new Set();
+  const matches = [];
+  for (const c of champions) {
+    if (!primaryChampion || c.name === primaryChampion.name) continue;
+    if (!c.name.toLowerCase().includes(query)) continue;
+    if (seen.has(c.name)) continue;
+    seen.add(c.name);
+    matches.push(c);
+    if (matches.length >= 8) break;
+  }
 
   matches.forEach(c => {
     const item = document.createElement("div");
