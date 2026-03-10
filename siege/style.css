@@ -2222,9 +2222,49 @@ body.modal-open .map-filters-container {
     }
 }
 
-.lead-aura-display.lead-aura-restricted .lead-aura-zone {
+.lead-aura-display.lead-aura-restricted .lead-aura-zone,
+.lead-aura-zone.lead-aura-zone-restricted {
     animation: pulse-red-text 1.5s ease-in-out infinite;
     font-weight: 700;
+}
+
+.lead-aura-dual {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.lead-aura-entry {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding-top: 14px;
+}
+
+.lead-aura-sep {
+    font-size: 11px;
+    color: #666;
+    align-self: flex-start;
+    margin-top: calc(14px + 23px);
+}
+
+.lead-aura-faction-label {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    color: #888;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 64px;
 }
 
 .modal-right-row {
@@ -2756,12 +2796,16 @@ body.modal-open .map-filters-container {
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 600;
+    position: sticky;
+    top: 0;
+    background: #0e0e0e;
+    z-index: 1;
+    box-shadow: 0 1px 0 #333;
 }
 
 #membersTable th.sortable {
     cursor: pointer;
     user-select: none;
-    position: relative;
     transition: background 0.2s;
 }
 
@@ -2918,7 +2962,7 @@ tr.profile-open {
 
 .section-content {
     max-height: 5000px;
-    overflow: hidden;
+    overflow: clip;
     transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
     opacity: 1;
 }
@@ -2987,12 +3031,16 @@ tr.profile-open {
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 600;
+    position: sticky;
+    top: 0;
+    background: #0e0e0e;
+    z-index: 1;
+    box-shadow: 0 1px 0 #333;
 }
 
 #summaryTable th.sortable {
     cursor: pointer;
     user-select: none;
-    position: relative;
     transition: background 0.2s;
 }
 

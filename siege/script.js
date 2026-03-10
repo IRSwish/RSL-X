@@ -2022,6 +2022,42 @@ function updateVisualForInput(inputEl, champImgEl, rarityImgEl) {
     }
 }
 
+function parseAuraParts(text) {
+    const zoneMatch = text.match(/in (all battles|dungeons|doom tower|arena)/i);
+    const zone = zoneMatch ? zoneMatch[1] : '';
+    const valueMatch = text.match(/by (\d+%?)(?:\s*(?:SPD|ACC|ATK|DEF|HP|C\.RATE|C\.DMG|RES))?\s*$/i);
+    let value = valueMatch ? valueMatch[1] : '';
+    if (value && !value.includes('%') && text.includes('%')) value += '%';
+    return { zone, value };
+}
+
+function getSecondAuraIcon(text) {
+    const m = text.match(/Increases Ally (C\.RATE|C\.DMG|HP|ATK|DEF|SPD|ACC|RES)/i);
+    if (!m) return 'HP';
+    return m[1].toUpperCase().replace('C.RATE', 'CRATE').replace('C.DMG', 'CDMG');
+}
+
+function getFactionLabel(text) {
+    const m = text.match(/\[([^\]]+?)\s*(?:only)?\s*\]/i);
+    return m ? m[1].trim() : text.replace(/[\[\]]/g, '').replace(/\s*only\s*$/i, '').trim();
+}
+
+function buildAuraEntryHTML(iconKey, auraText, factionLabel) {
+    const { zone, value } = parseAuraParts(auraText);
+    const restricted = zone && zone.toLowerCase() !== 'all battles';
+    return `
+        <div class="lead-aura-entry">
+            ${factionLabel ? `<div class="lead-aura-faction-label">${factionLabel}</div>` : ''}
+            <div class="lead-aura-container">
+                <img class="lead-aura-icon" src="/tools/champions-index/img/aura/${iconKey}.webp" alt="">
+                <img class="lead-aura-border" src="/tools/champions-index/img/aura/BORDER.webp" alt="">
+            </div>
+            <div class="lead-aura-zone${restricted ? ' lead-aura-zone-restricted' : ''}">${zone}</div>
+            <div class="lead-aura-value">${value}</div>
+        </div>
+    `;
+}
+
 function updateLeadAura(teamRow) {
     const auraDisplay = teamRow.querySelector(".lead-aura-display");
     if (!auraDisplay) return;
@@ -2052,44 +2088,38 @@ function updateLeadAura(teamRow) {
         return;
     }
 
-    // Parser l'aura pour extraire zone et valeur
-    const auraText = lead.auratext || '';
-    let zone = '';
-    let value = '';
+    auraDisplay.classList.remove('lead-aura-restricted', 'lead-aura-dual');
 
-    // Extraire la zone (All Battles, Dungeons, Doom Tower, Arena)
-    const zoneMatch = auraText.match(/in (all battles|dungeons|doom tower|arena)/i);
-    if (zoneMatch) {
-        zone = zoneMatch[1];
-    }
+    if (lead.aura.startsWith('FAC-')) {
+        const parts = lead.auratext.split('\n\n');
+        const firstText = parts[0] || '';
+        const factionBracket = parts[1] || '';
+        const secondText = parts[2] || '';
+        const factionLabel = factionBracket ? getFactionLabel(factionBracket) : '';
+        const icon2 = getSecondAuraIcon(secondText);
 
-    // Extraire la valeur (dernier nombre avec % si présent)
-    const valueMatch = auraText.match(/by (\d+%?)\s*(?:SPD|ACC|ATK|DEF|HP|C\.RATE|C\.DMG|RES)?$/i);
-    if (valueMatch) {
-        value = valueMatch[1];
-        // Ajouter le % s'il n'y est pas mais qu'il y a un % ailleurs dans le texte
-        if (!value.includes('%') && auraText.includes('%')) {
-            value += '%';
+        auraDisplay.innerHTML = `
+            ${buildAuraEntryHTML(lead.aura, firstText, '')}
+            <div class="lead-aura-sep">+</div>
+            ${buildAuraEntryHTML(icon2, secondText, factionLabel)}
+        `;
+        auraDisplay.classList.add('lead-aura-dual');
+    } else {
+        const { zone, value } = parseAuraParts(lead.auratext);
+        auraDisplay.innerHTML = `
+            <div class="lead-aura-container">
+                <img class="lead-aura-icon" src="/tools/champions-index/img/aura/${lead.aura}.webp" alt="">
+                <img class="lead-aura-border" src="/tools/champions-index/img/aura/BORDER.webp" alt="">
+            </div>
+            <div class="lead-aura-zone">${zone}</div>
+            <div class="lead-aura-value">${value}</div>
+        `;
+        if (zone && zone.toLowerCase() !== 'all battles') {
+            auraDisplay.classList.add('lead-aura-restricted');
         }
     }
 
-    // Afficher l'aura
-    auraDisplay.innerHTML = `
-        <div class="lead-aura-container">
-            <img class="lead-aura-icon" src="/tools/champions-index/img/aura/${lead.aura}.webp" alt="Aura">
-            <img class="lead-aura-border" src="/tools/champions-index/img/aura/BORDER.webp" alt="">
-        </div>
-        <div class="lead-aura-zone">${zone}</div>
-        <div class="lead-aura-value">${value}</div>
-    `;
     auraDisplay.style.display = "flex";
-
-    // Add pulsing red effect if not "All Battles"
-    if (zone && zone.toLowerCase() !== 'all battles') {
-        auraDisplay.classList.add('lead-aura-restricted');
-    } else {
-        auraDisplay.classList.remove('lead-aura-restricted');
-    }
 }
 
 // Generic functions for row reordering (works for both team-row and preset-row)
@@ -2770,113 +2800,49 @@ function createTeamRow(teamData = {}, index = 0, hasSelectedTeam = false) {
 
             if (fromIndex === toIndex) return;
 
-            // Échanger les champions dans la même team
-            const allSlots = rightRow.querySelectorAll(".champ-slot");
-
-            const fromSlot = Array.from(allSlots).find(s => parseInt(s.dataset.champIndex) === fromIndex);
-            const toSlot = champSlot;
-
-            if (!fromSlot || !toSlot) return;
-
-            const fromInput = fromSlot.querySelector(".champ-input");
-            const toInput = toSlot.querySelector(".champ-input");
-            const fromChampImg = fromSlot.querySelector(".champ-img");
-            const toChampImg = toSlot.querySelector(".champ-img");
-            const fromRarityImg = fromSlot.querySelector(".rarity-img");
-            const toRarityImg = toSlot.querySelector(".rarity-img");
-
-            // Get blessing containers
-            const fromVisual = fromSlot.querySelector(".champ-visual");
-            const toVisual = toSlot.querySelector(".champ-visual");
-            const fromBlessingContainer = fromVisual ? fromVisual.querySelector(".blessing-img-container") : null;
-            const toBlessingContainer = toVisual ? toVisual.querySelector(".blessing-img-container") : null;
-
-            // Échanger les valeurs
-            const tempValue = fromInput.value;
-            const tempChampSrc = fromChampImg.src;
-            const tempChampDisplay = fromChampImg.style.display;
-            const tempRaritySrc = fromRarityImg.src;
-            const tempRarityDisplay = fromRarityImg.style.display;
-
-            fromInput.value = toInput.value;
-            fromChampImg.src = toChampImg.src;
-            fromChampImg.style.display = toChampImg.style.display;
-            fromRarityImg.src = toRarityImg.src;
-            fromRarityImg.style.display = toRarityImg.style.display;
-
-            toInput.value = tempValue;
-            toChampImg.src = tempChampSrc;
-            toChampImg.style.display = tempChampDisplay;
-            toRarityImg.src = tempRaritySrc;
-            toRarityImg.style.display = tempRarityDisplay;
-
-            // Swap blessings - swap the entire containers
-            if (fromBlessingContainer && toBlessingContainer) {
-                // Clone both containers
-                const fromClone = fromBlessingContainer.cloneNode(true);
-                const toClone = toBlessingContainer.cloneNode(true);
-
-                // Replace them
-                fromBlessingContainer.parentNode.replaceChild(toClone, fromBlessingContainer);
-                toBlessingContainer.parentNode.replaceChild(fromClone, toBlessingContainer);
-            }
-
-            // Swap blessing stars
-            const fromStarsContainer = fromVisual ? fromVisual.querySelector(".blessing-stars") : null;
-            const toStarsContainer = toVisual ? toVisual.querySelector(".blessing-stars") : null;
-
-            if (fromStarsContainer && toStarsContainer) {
-                // Clone both star containers
-                const fromStarsClone = fromStarsContainer.cloneNode(true);
-                const toStarsClone = toStarsContainer.cloneNode(true);
-
-                // Replace them
-                fromStarsContainer.parentNode.replaceChild(toStarsClone, fromStarsContainer);
-                toStarsContainer.parentNode.replaceChild(fromStarsClone, toStarsContainer);
-            }
-
-            // Update lead aura if champion 4 was involved in the swap
-            if (fromIndex === 4 || toIndex === 4) {
-                setTimeout(() => updateLeadAura(teamRow), 50);
-            }
-
-            // Save swapped blessing data to Firebase
+            // Swap champion data in local cache then rebuild the modal entirely.
+            // This avoids cloneNode (loses event listeners) and in-place patching
+            // (causes race conditions with Firebase onValue rebuilds).
             const teamIndex = teamRow.dataset.teamIndex;
-            if (currentPostId && currentRoomId && teamIndex !== undefined) {
-                const postData = postDataCache[currentPostId];
-                if (postData && postData.teams && postData.teams[teamIndex]) {
-                    const teamData = postData.teams[teamIndex];
+            if (!currentPostId || !currentRoomId || teamIndex === undefined) return;
 
-                    // Update team data in cache
-                    const tempChamp = teamData[`c${fromIndex}`];
-                    const tempBlessing = teamData[`c${fromIndex}_blessing`];
-                    const tempBlessingRarity = teamData[`c${fromIndex}_blessing_rarity`];
-                    const tempBlessingLevel = teamData[`c${fromIndex}_blessing_level`];
+            const postData = postDataCache[currentPostId];
+            if (!postData || !postData.teams || !postData.teams[teamIndex]) return;
 
-                    teamData[`c${fromIndex}`] = teamData[`c${toIndex}`];
-                    teamData[`c${fromIndex}_blessing`] = teamData[`c${toIndex}_blessing`];
-                    teamData[`c${fromIndex}_blessing_rarity`] = teamData[`c${toIndex}_blessing_rarity`];
-                    teamData[`c${fromIndex}_blessing_level`] = teamData[`c${toIndex}_blessing_level`];
+            const teamData = postData.teams[teamIndex];
 
-                    teamData[`c${toIndex}`] = tempChamp;
-                    teamData[`c${toIndex}_blessing`] = tempBlessing;
-                    teamData[`c${toIndex}_blessing_rarity`] = tempBlessingRarity;
-                    teamData[`c${toIndex}_blessing_level`] = tempBlessingLevel;
+            // Swap all champion + blessing data in the local cache
+            const tempChamp = teamData[`c${fromIndex}`];
+            const tempBlessing = teamData[`c${fromIndex}_blessing`];
+            const tempBlessingRarity = teamData[`c${fromIndex}_blessing_rarity`];
+            const tempBlessingLevel = teamData[`c${fromIndex}_blessing_level`];
 
-                    // Save to Firebase
-                    const teamRef = ref(db, `rooms/${currentRoomId}/siege/${currentPostId}/teams/${teamIndex}`);
-                    update(teamRef, {
-                        [`c${fromIndex}`]: teamData[`c${fromIndex}`],
-                        [`c${fromIndex}_blessing`]: teamData[`c${fromIndex}_blessing`],
-                        [`c${fromIndex}_blessing_rarity`]: teamData[`c${fromIndex}_blessing_rarity`],
-                        [`c${fromIndex}_blessing_level`]: teamData[`c${fromIndex}_blessing_level`],
-                        [`c${toIndex}`]: teamData[`c${toIndex}`],
-                        [`c${toIndex}_blessing`]: teamData[`c${toIndex}_blessing`],
-                        [`c${toIndex}_blessing_rarity`]: teamData[`c${toIndex}_blessing_rarity`],
-                        [`c${toIndex}_blessing_level`]: teamData[`c${toIndex}_blessing_level`]
-                    });
-                }
-            }
+            teamData[`c${fromIndex}`] = teamData[`c${toIndex}`];
+            teamData[`c${fromIndex}_blessing`] = teamData[`c${toIndex}_blessing`];
+            teamData[`c${fromIndex}_blessing_rarity`] = teamData[`c${toIndex}_blessing_rarity`];
+            teamData[`c${fromIndex}_blessing_level`] = teamData[`c${toIndex}_blessing_level`];
+
+            teamData[`c${toIndex}`] = tempChamp;
+            teamData[`c${toIndex}_blessing`] = tempBlessing;
+            teamData[`c${toIndex}_blessing_rarity`] = tempBlessingRarity;
+            teamData[`c${toIndex}_blessing_level`] = tempBlessingLevel;
+
+            // Rebuild modal immediately from the updated local cache.
+            // This gives fresh DOM elements with correct closures (no stale references).
+            fillModalFromData(postData);
+
+            // Persist to Firebase (onValue will trigger a second rebuild with confirmed data)
+            const teamRef = ref(db, `rooms/${currentRoomId}/siege/${currentPostId}/teams/${teamIndex}`);
+            update(teamRef, {
+                [`c${fromIndex}`]: teamData[`c${fromIndex}`],
+                [`c${fromIndex}_blessing`]: teamData[`c${fromIndex}_blessing`],
+                [`c${fromIndex}_blessing_rarity`]: teamData[`c${fromIndex}_blessing_rarity`],
+                [`c${fromIndex}_blessing_level`]: teamData[`c${fromIndex}_blessing_level`],
+                [`c${toIndex}`]: teamData[`c${toIndex}`],
+                [`c${toIndex}_blessing`]: teamData[`c${toIndex}_blessing`],
+                [`c${toIndex}_blessing_rarity`]: teamData[`c${toIndex}_blessing_rarity`],
+                [`c${toIndex}_blessing_level`]: teamData[`c${toIndex}_blessing_level`]
+            });
         });
 
         // Store slot instead of appending directly
@@ -6984,59 +6950,48 @@ window.addEventListener("DOMContentLoaded", () => {
 
         display.style.display = "flex";
 
-        const container = document.createElement("div");
-        container.className = "lead-aura-container";
+        if (champData.aura.startsWith('FAC-')) {
+            const parts = champData.auratext.split('\n\n');
+            const firstText = parts[0] || '';
+            const factionBracket = parts[1] || '';
+            const secondText = parts[2] || '';
+            const factionLabel = factionBracket ? getFactionLabel(factionBracket) : '';
+            const icon2 = getSecondAuraIcon(secondText);
 
-        // Aura icon
-        const auraIcon = document.createElement("img");
-        auraIcon.className = "lead-aura-icon";
-        auraIcon.src = `/tools/champions-index/img/aura/${champData.aura}.webp`;
-        container.appendChild(auraIcon);
+            display.classList.add('lead-aura-dual');
+            display.innerHTML = `
+                ${buildAuraEntryHTML(champData.aura, firstText, '')}
+                <div class="lead-aura-sep">+</div>
+                ${buildAuraEntryHTML(icon2, secondText, factionLabel)}
+            `;
+        } else {
+            const { zone, value } = parseAuraParts(champData.auratext);
 
-        // Border
-        const auraBorder = document.createElement("img");
-        auraBorder.className = "lead-aura-border";
-        auraBorder.src = `/tools/champions-index/img/aura/BORDER.webp`;
-        container.appendChild(auraBorder);
+            const container = document.createElement("div");
+            container.className = "lead-aura-container";
+            const auraIcon = document.createElement("img");
+            auraIcon.className = "lead-aura-icon";
+            auraIcon.src = `/tools/champions-index/img/aura/${champData.aura}.webp`;
+            container.appendChild(auraIcon);
+            const auraBorder = document.createElement("img");
+            auraBorder.className = "lead-aura-border";
+            auraBorder.src = `/tools/champions-index/img/aura/BORDER.webp`;
+            container.appendChild(auraBorder);
+            display.appendChild(container);
 
-        display.appendChild(container);
+            const zoneText = document.createElement("div");
+            zoneText.className = "lead-aura-zone";
+            zoneText.textContent = zone;
+            display.appendChild(zoneText);
 
-        // Parse aura text to extract zone and value
-        const auraText = champData.auratext || '';
-        let zone = '';
-        let value = '';
+            const valueText = document.createElement("div");
+            valueText.className = "lead-aura-value";
+            valueText.textContent = value;
+            display.appendChild(valueText);
 
-        // Extract zone (All Battles, Dungeons, Doom Tower, Arena)
-        const zoneMatch = auraText.match(/in (all battles|dungeons|doom tower|arena)/i);
-        if (zoneMatch) {
-            zone = zoneMatch[1];
-        }
-
-        // Extract value (last number with % if present)
-        const valueMatch = auraText.match(/by (\d+%?)\s*(?:SPD|ACC|ATK|DEF|HP|C\.RATE|C\.DMG|RES)?$/i);
-        if (valueMatch) {
-            value = valueMatch[1];
-            // Add % if not present but % is in text
-            if (!value.includes('%') && auraText.includes('%')) {
-                value += '%';
+            if (zone && zone.toLowerCase() !== 'all battles') {
+                display.classList.add('lead-aura-restricted');
             }
-        }
-
-        // Zone text
-        const zoneText = document.createElement("div");
-        zoneText.className = "lead-aura-zone";
-        zoneText.textContent = zone;
-        display.appendChild(zoneText);
-
-        // Value text
-        const valueText = document.createElement("div");
-        valueText.className = "lead-aura-value";
-        valueText.textContent = value;
-        display.appendChild(valueText);
-
-        // Add pulsing red effect if not "All Battles"
-        if (zone && zone.toLowerCase() !== 'all battles') {
-            display.classList.add('lead-aura-restricted');
         }
 
         return display;
@@ -7310,36 +7265,58 @@ window.addEventListener("DOMContentLoaded", () => {
         updatePresetChampionVisual(draggedPresetSlot, draggedInput.value);
         updatePresetChampionVisual(e.currentTarget, targetInput.value);
 
-        // Swap blessings - swap the entire containers
+        // Swap blessings and stars - update in place to preserve event listeners
         const draggedVisual = draggedPresetSlot.querySelector(".champ-visual");
         const targetVisual = e.currentTarget.querySelector(".champ-visual");
 
         if (draggedVisual && targetVisual) {
             const draggedBlessingContainer = draggedVisual.querySelector(".blessing-img-container");
             const targetBlessingContainer = targetVisual.querySelector(".blessing-img-container");
-
-            if (draggedBlessingContainer && targetBlessingContainer) {
-                // Clone both containers
-                const draggedClone = draggedBlessingContainer.cloneNode(true);
-                const targetClone = targetBlessingContainer.cloneNode(true);
-
-                // Replace them
-                draggedBlessingContainer.parentNode.replaceChild(targetClone, draggedBlessingContainer);
-                targetBlessingContainer.parentNode.replaceChild(draggedClone, targetBlessingContainer);
-            }
-
-            // Swap blessing stars
             const draggedStarsContainer = draggedVisual.querySelector(".blessing-stars");
             const targetStarsContainer = targetVisual.querySelector(".blessing-stars");
 
-            if (draggedStarsContainer && targetStarsContainer) {
-                // Clone both star containers
-                const draggedStarsClone = draggedStarsContainer.cloneNode(true);
-                const targetStarsClone = targetStarsContainer.cloneNode(true);
+            // Capture current state before modifying anything
+            const draggedStarsLevel = draggedStarsContainer ? parseInt(draggedStarsContainer.dataset.currentLevel || "0") : 0;
+            const targetStarsLevel = targetStarsContainer ? parseInt(targetStarsContainer.dataset.currentLevel || "0") : 0;
+            const draggedBlessingName = draggedBlessingContainer ? (draggedBlessingContainer.dataset.blessing || null) : null;
+            const draggedBlessingRarity = draggedBlessingContainer ? (draggedBlessingContainer.dataset.rarity || null) : null;
+            const targetBlessingName = targetBlessingContainer ? (targetBlessingContainer.dataset.blessing || null) : null;
+            const targetBlessingRarity = targetBlessingContainer ? (targetBlessingContainer.dataset.rarity || null) : null;
 
-                // Replace them
-                draggedStarsContainer.parentNode.replaceChild(targetStarsClone, draggedStarsContainer);
-                targetStarsContainer.parentNode.replaceChild(draggedStarsClone, targetStarsContainer);
+            // Update a blessing container's visuals in place (no cloneNode = event listeners stay intact)
+            const updatePresetBlessingContainerInPlace = (container, blessingName, blessingRarity, level) => {
+                if (!container) return;
+                const rImg = container.querySelector(".blessing-rarity-bg");
+                const iImg = container.querySelector(".blessing-icon-overlay");
+                if (blessingName && blessingRarity) {
+                    if (rImg) rImg.src = `/tools/champions-index/img/blessings/${blessingRarity}.webp`;
+                    const bd = getBlessingData(blessingName);
+                    if (iImg) {
+                        if (bd && bd.image) { iImg.src = `/tools/champions-index/img/blessings/icons/${bd.image}.webp`; iImg.style.display = "block"; }
+                        else { iImg.style.display = "none"; }
+                    }
+                    container.dataset.blessing = blessingName;
+                    container.dataset.rarity = blessingRarity;
+                } else {
+                    if (rImg) rImg.src = "/tools/champions-index/img/blessings/Unselected.webp";
+                    if (iImg) iImg.style.display = "none";
+                    delete container.dataset.blessing;
+                    delete container.dataset.rarity;
+                }
+                container.style.display = level > 0 ? "block" : "none";
+            };
+
+            updatePresetBlessingContainerInPlace(draggedBlessingContainer, targetBlessingName, targetBlessingRarity, targetStarsLevel);
+            updatePresetBlessingContainerInPlace(targetBlessingContainer, draggedBlessingName, draggedBlessingRarity, draggedStarsLevel);
+
+            // Update stars in place
+            if (draggedStarsContainer) {
+                updateBlessingStars(draggedStarsContainer, targetStarsLevel);
+                draggedStarsContainer.dataset.currentLevel = targetStarsLevel;
+            }
+            if (targetStarsContainer) {
+                updateBlessingStars(targetStarsContainer, draggedStarsLevel);
+                targetStarsContainer.dataset.currentLevel = draggedStarsLevel;
             }
         }
 

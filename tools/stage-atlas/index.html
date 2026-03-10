@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HNK5S7EBCJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-HNK5S7EBCJ');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+
+  <script src="/config/site-config.js"></script>
+  <script src="/config/ad-banner.js" defer></script>
+  <script>document.title = "Stage Atlas | " + window.siteConfig.title;</script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style/style.css">
+  <link rel="stylesheet" href="/tools/stage-atlas/style.css">
+</head>
+<body>
+
+  <!-- ── Menu ─────────────────────────────────────────────────────────── -->
+  <div id="menu-placeholder"></div>
+  <script>
+    fetch('/menu.html').then(r => r.text()).then(html => {
+      document.getElementById('menu-placeholder').outerHTML = html;
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+
+  <!-- ── Layout ────────────────────────────────────────────────────────── -->
+  <div class="atlas-layout">
+
+    <!-- Sidebar -->
+    <aside class="atlas-sidebar">
+
+      <!-- Area tabs -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">Content</div>
+        <div id="area-tabs" class="area-tabs"></div>
+      </div>
+
+      <!-- Difficulty -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">Difficulty</div>
+        <div id="diff-buttons" class="diff-buttons"></div>
+      </div>
+
+      <!-- Region / Act list -->
+      <div class="sidebar-section">
+        <div class="sidebar-label">Region</div>
+        <div id="region-list" class="region-list"></div>
+      </div>
+
+      <!-- Stage list -->
+      <div class="sidebar-section stage-section" id="stage-section" style="display:none">
+        <div class="sidebar-label" id="stage-section-label">Stages</div>
+        <div id="stage-list" class="stage-list"></div>
+      </div>
+
+    </aside>
+
+    <!-- Main content -->
+    <main class="atlas-main">
+      <div id="main-placeholder" class="main-placeholder">
+        <div class="placeholder-icon"><i data-lucide="map"></i></div>
+        <div class="placeholder-text">Select a stage to view enemy data</div>
+      </div>
+      <div id="stage-view" style="display:none">
+        <div class="stage-header">
+          <span id="stage-breadcrumb" class="stage-breadcrumb"></span>
+        </div>
+        <div id="waves-container" class="waves-container"></div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ── Enemy Modal ──────────────────────────────────────────────────── -->
+  <div id="enemy-modal" class="enemy-modal-overlay">
+    <div class="enemy-modal-content">
+      <button class="enemy-modal-close" id="enemy-modal-close">×</button>
+      <div class="enemy-modal-top">
+
+        <!-- Portrait -->
+        <div class="enemy-modal-portrait-col">
+          <div id="em-portrait" class="card-portrait">
+            <img id="em-img" class="portrait-img" src="" alt=""
+                 onerror="this.style.display='none';document.getElementById('em-fallback').style.display='flex'">
+            <div id="em-fallback" class="portrait-fallback" style="display:none"></div>
+            <img id="em-frame" class="portrait-frame" src="" alt="" onerror="this.style.display='none'">
+            <img id="em-affinity" class="portrait-affinity" src="" alt="" onerror="this.style.display='none'">
+          </div>
+          <div id="em-name" class="em-name"></div>
+          <div id="em-meta" class="em-meta"></div>
+        </div>
+
+        <!-- Stats -->
+        <div class="enemy-modal-stats-col">
+          <div id="em-stats-title" class="em-stats-title"></div>
+          <div class="em-stat-row"><span class="em-stat-label">HP</span><span class="em-stat-value em-hp" id="em-hp"></span></div>
+          <div class="em-stat-row"><span class="em-stat-label">ATK</span><span class="em-stat-value" id="em-atk"></span></div>
+          <div class="em-stat-row"><span class="em-stat-label">DEF</span><span class="em-stat-value" id="em-def"></span></div>
+          <div class="em-stat-row"><span class="em-stat-label">SPD</span><span class="em-stat-value" id="em-spd"></span></div>
+          <div class="em-stat-row"><span class="em-stat-label">C.Rate</span><span class="em-stat-value" id="em-crate"></span></div>
+          <div class="em-stat-row"><span class="em-stat-label">C.Dmg</span><span class="em-stat-value" id="em-cdmg"></span></div>
+          <div class="em-stat-row"><span class="em-stat-label">RES</span><span class="em-stat-value" id="em-res"></span></div>
+          <div class="em-stat-row"><span class="em-stat-label">ACC</span><span class="em-stat-value" id="em-acc"></span></div>
+        </div>
+
+      </div>
+      <div class="em-separator"></div>
+      <div id="em-skills" class="em-skills"></div>
+    </div>
+  </div>
+
+  <script src="/tools/stage-atlas/script.js"></script>
+</body>
+</html>
