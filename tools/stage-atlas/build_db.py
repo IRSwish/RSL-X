@@ -130,11 +130,13 @@ REGION_NAMES = {
     508: 'Orcs',              509: 'Demonspawn',        510: 'Undead Hordes',
     511: 'Dark Elves',        512: 'Knights Revenant',  513: 'Barbarians',
     514: 'Sylvan Watchers',   515: 'Shadowkin',         516: 'Dwarves',
-    # Doom Tower
-    701: 'Normal (1-60)',     702: 'Hard (1-60)',       703: 'Hard (61-120)',
+    # Doom Tower (each region = one rotation, 132 floors incl. 12 secret rooms)
+    701: 'Rotation 1 – Sorath',
+    702: 'Rotation 2 – Iragoth',
+    703: 'Rotation 3 – Astranyx',
     # Hydra
-    801: 'Season 1', 802: 'Season 2', 803: 'Season 3',
-    804: 'Season 4', 805: 'Season 5', 806: 'Season 6',
+    801: 'Rotation 1', 802: 'Rotation 2', 803: 'Rotation 3',
+    804: 'Rotation 4', 805: 'Rotation 5', 806: 'Rotation 6',
     # Clan Boss
     401: 'Clan Boss',
     # Arena
@@ -142,8 +144,8 @@ REGION_NAMES = {
     # Live Arena
     901: 'Live Arena',
     # Cursed City
-    1001: 'District 1', 1002: 'District 2', 1003: 'District 3',
-    1004: 'District 4', 1005: 'Main Boss',
+    1001: 'Cobblemarket', 1002: 'Deadrise', 1003: 'Plagueholme',
+    1004: 'Soulcross',   1005: 'Amius',
     # Siege
     1101: 'Siege',
     # Chimera

@@ -245,11 +245,14 @@ function showError(err) {
 
 function onDbReady() {
   // Distinct areas
+  const AREA_NAME_OVERRIDES = { 14: 'Grim Forest' };
   areas = query(`SELECT DISTINCT area_id as id, area_name as name
-                 FROM stages ORDER BY area_id`);
-  // Distinct regions
+                 FROM stages ORDER BY area_id`)
+    .map(a => ({ ...a, name: AREA_NAME_OVERRIDES[a.id] ?? a.name }));
+  // Distinct regions (with display name overrides)
   regions = query(`SELECT DISTINCT region_id as id, region_name as name, area_id
-                   FROM stages ORDER BY area_id, region_id`);
+                   FROM stages ORDER BY area_id, region_id`)
+    .map(r => ({ ...r, name: REGION_NAME_OVERRIDES[r.id] ?? r.name }));
 
   renderAreaTabs();
   if (window.lucide) lucide.createIcons();
@@ -348,6 +351,126 @@ const REGION_TO_GROUP  = Object.fromEntries(Object.entries(REGION_GROUPS).flatMa
 
 // Dungeons that have Normal + Hard
 const MULTI_DIFF_DUNGEONS = new Set([206, 207, 208, 209]);
+
+// ── Region name overrides (applied after DB load) ─────────────────────────────
+const HERO_NAME_OVERRIDES = {
+  1060: 'Rockbeast',
+  1066: 'Rockbeast',
+  8686: 'Acelin the Stalwart',
+  25310: 'The Disruptor Minion',
+  25320: 'The Disruptor Minion',
+  25330: 'The Mirrorer Minion',
+  25340: 'The Mirrorer Minion',
+  25350: 'The Protector Minion',
+  25360: 'The Protector Minion',
+  25370: 'The Incinerator Minion',
+  25380: 'The Incinerator Minion',
+  25660: 'Tainted Protector Minion',
+  25670: 'Tainted Protector Minion',
+  25680: 'Tainted Disruptor Minion',
+  25690: 'Tainted Disruptor Minion',
+  25700: 'Tainted Mirrorer Minion',
+  25710: 'Tainted Mirrorer Minion',
+  25720: 'Tainted Incinerator Minion',
+  25730: 'Tainted Incinerator Minion',
+  25210: 'Klyssus Minion',
+  25220: 'Klyssus Minion',
+  25640: 'Tainted Klyssus Minion',
+  25650: 'Tainted Klyssus Minion',
+  25270: 'Small Minotaur',
+  25300: 'Small Minotaur',
+  25010: 'Arcane Guardian Minion',
+  25020: 'Arcane Guardian Minion',
+  25030: 'Arcane Guardian Minion',
+  25040: 'Arcane Guardian Minion',
+  25050: 'Force Guardian Minion',
+  25060: 'Force Guardian Minion',
+  25070: 'Force Guardian Minion',
+  25080: 'Force Guardian Minion',
+  25090: 'Void Guardian Minion',
+  25100: 'Void Guardian Minion',
+  25110: 'Void Guardian Minion',
+  25120: 'Void Guardian Minion',
+  25130: 'Magic Guardian Minion',
+  25140: 'Magic Guardian Minion',
+  25150: 'Magic Guardian Minion',
+  25160: 'Magic Guardian Minion',
+  25170: 'Spirit Guardian Minion',
+  25180: 'Spirit Guardian Minion',
+  25190: 'Spirit Guardian Minion',
+  25200: 'Spirit Guardian Minion',
+};
+
+const REGION_NAME_OVERRIDES = {
+  // Doom Tower rotations
+  701: 'Rotation 1 – Sorath',
+  702: 'Rotation 2 – Iragoth',
+  703: 'Rotation 3 – Astranyx',
+  // Hydra rotations
+  801: 'Rotation 1', 802: 'Rotation 2', 803: 'Rotation 3',
+  804: 'Rotation 4', 805: 'Rotation 5', 806: 'Rotation 6',
+  // Cursed City districts
+  1001: 'Cobblemarket', 1002: 'Deadrise', 1003: 'Plagueholme',
+  1004: 'Soulcross',   1005: 'Amius',
+  // Chimera rotations
+  1301: 'Rotation 1', 1302: 'Rotation 2', 1303: 'Rotation 3', 1304: 'Rotation 4',
+};
+
+// ── Special stage regions ─────────────────────────────────────────────────────
+// Clan Boss: Void stages only, labeled by difficulty
+const CB_VOID_STAGES = new Map([
+  [1,'Easy'], [5,'Normal'], [9,'Hard'], [13,'Brutal'], [17,'Nightmare'], [21,'Ultra-Nightmare'],
+]);
+
+// Hydra: 4 stages = difficulties
+const HYDRA_REGIONS      = new Set([801, 802, 803, 804, 805, 806]);
+const HYDRA_STAGE_LABELS = { 1:'Normal', 2:'Hard', 3:'Brutal', 4:'Nightmare' };
+
+// Chimera: 6 stages = difficulties
+const CHIMERA_REGIONS      = new Set([1301, 1302, 1303, 1304]);
+const CHIMERA_STAGE_LABELS = { 1:'Easy', 2:'Normal', 3:'Hard', 4:'Brutal', 5:'Nightmare', 6:'Ultra-Nightmare' };
+
+// Doom Tower: collapsible groups of 10 + Secret Rooms (121-132)
+const DT_REGIONS = new Set([701, 702, 703]);
+
+// Faction Wars: collapsible groups of 7 (boss on stage 7/14/21)
+const FW_REGIONS = new Set([501,502,503,505,506,507,508,509,510,511,512,513,514,515,516]);
+
+function stageLabel(stageNum, regionId) {
+  if (regionId === 401)           return CB_VOID_STAGES.get(stageNum)        ?? `Stage ${stageNum}`;
+  if (HYDRA_REGIONS.has(regionId))   return HYDRA_STAGE_LABELS[stageNum]   ?? `Stage ${stageNum}`;
+  if (CHIMERA_REGIONS.has(regionId)) return CHIMERA_STAGE_LABELS[stageNum] ?? `Stage ${stageNum}`;
+  if (DT_REGIONS.has(regionId))   return stageNum >= 121 ? `SR ${stageNum - 120}` : `Floor ${stageNum}`;
+  return `Stage ${stageNum}`;
+}
+
+// ── Generic collapsible stage group renderer ──────────────────────────────────
+function renderGroupedStages(allStages, list, groupSize) {
+  const groups = new Map();
+  for (const s of allStages) {
+    const key = Math.floor((s.stage_num - 1) / groupSize) * groupSize + 1;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(s);
+  }
+  list.innerHTML = [...groups.entries()].map(([key, stages]) =>
+    `<div class="stage-group">
+      <button class="stage-group-btn" data-key="${key}">${key} – ${key + groupSize - 1}</button>
+      <div class="stage-group-body" style="display:none">
+        ${stages.map(s => `<button class="stage-btn" data-stage="${s.id}">Stage ${s.stage_num}</button>`).join('')}
+      </div>
+    </div>`
+  ).join('');
+  list.querySelectorAll('.stage-group-btn').forEach(btn =>
+    btn.addEventListener('click', () => {
+      const body = btn.nextElementSibling;
+      const isOpen = body.style.display !== 'none';
+      list.querySelectorAll('.stage-group-body').forEach(b => b.style.display = 'none');
+      list.querySelectorAll('.stage-group-btn').forEach(b => b.classList.remove('active'));
+      if (!isOpen) { body.style.display = ''; btn.classList.add('active'); }
+    })
+  );
+  list.querySelectorAll('.stage-btn').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
+}
 
 // ── Difficulty buttons ────────────────────────────────────────────────────────
 const DIFF_COLORS = { 1:'normal', 2:'hard', 3:'brutal', 4:'nightmare' };
@@ -497,9 +620,8 @@ function selectRegion(regionId) {
 
 // ── Stage list ────────────────────────────────────────────────────────────────
 function renderStageList(regionId) {
-  const stages = query(
-    `SELECT id, stage_num FROM stages
-     WHERE region_id=? AND difficulty=? ORDER BY stage_num`,
+  const allStages = query(
+    `SELECT id, stage_num FROM stages WHERE region_id=? AND difficulty=? ORDER BY stage_num`,
     [regionId, selectedDiff]
   );
 
@@ -507,24 +629,115 @@ function renderStageList(regionId) {
   const label   = document.getElementById('stage-section-label');
   const list    = document.getElementById('stage-list');
 
-  if (!stages.length) {
-    section.style.display = 'none';
+  if (!allStages.length) { section.style.display = 'none'; return; }
+  section.style.display = '';
+
+  // ── Clan Boss: Void stages only, labeled by difficulty ───────────────────
+  if (regionId === 401) {
+    const stages = allStages.filter(s => CB_VOID_STAGES.has(s.stage_num));
+    label.textContent = 'Difficulty';
+    list.innerHTML = stages.map(s =>
+      `<button class="stage-btn" data-stage="${s.id}">${CB_VOID_STAGES.get(s.stage_num)}</button>`
+    ).join('');
+    list.querySelectorAll('.stage-btn').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
+    const target = currentStageNum && stages.find(s => s.stage_num === currentStageNum);
+    if (target) loadStage(target.id);
     return;
   }
 
-  label.textContent = `Stages (${stages.length})`;
-  section.style.display = '';
+  // ── Hydra: 4 stages = Normal / Hard / Brutal / Nightmare ─────────────────
+  if (HYDRA_REGIONS.has(regionId)) {
+    label.textContent = 'Difficulty';
+    list.innerHTML = allStages.map(s =>
+      `<button class="stage-btn" data-stage="${s.id}">${HYDRA_STAGE_LABELS[s.stage_num] ?? `Stage ${s.stage_num}`}</button>`
+    ).join('');
+    list.querySelectorAll('.stage-btn').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
+    const target = currentStageNum && allStages.find(s => s.stage_num === currentStageNum);
+    if (target) loadStage(target.id);
+    return;
+  }
 
-  list.innerHTML = stages.map(s =>
+  // ── Chimera: 6 stages = Easy / Normal / Hard / Brutal / Nightmare / Ultra-Nightmare ──
+  if (CHIMERA_REGIONS.has(regionId)) {
+    label.textContent = 'Difficulty';
+    list.innerHTML = allStages.map(s =>
+      `<button class="stage-btn" data-stage="${s.id}">${CHIMERA_STAGE_LABELS[s.stage_num] ?? `Stage ${s.stage_num}`}</button>`
+    ).join('');
+    list.querySelectorAll('.stage-btn').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
+    const target = currentStageNum && allStages.find(s => s.stage_num === currentStageNum);
+    if (target) loadStage(target.id);
+    return;
+  }
+
+  // ── Faction Wars: collapsible groups of 7 (boss on stage 7/14/21) ────────
+  if (FW_REGIONS.has(regionId)) {
+    label.textContent = `Stages (${allStages.length})`;
+    renderGroupedStages(allStages, list, 7);
+    const target = currentStageNum && allStages.find(s => s.stage_num === currentStageNum);
+    if (target) {
+      const key = Math.floor((target.stage_num - 1) / 7) * 7 + 1;
+      const btn = list.querySelector(`.stage-group-btn[data-key="${key}"]`);
+      if (btn) { btn.nextElementSibling.style.display = ''; btn.classList.add('active'); }
+      loadStage(target.id);
+    }
+    return;
+  }
+
+  // ── Doom Tower: collapsible groups of 10 floors + Secret Rooms ──────────
+  if (DT_REGIONS.has(regionId)) {
+    label.textContent = `Stages (${allStages.length})`;
+
+    // Build groups: key = first floor of group (121 = secret rooms)
+    const groups = new Map();
+    for (const s of allStages) {
+      const key = s.stage_num >= 121 ? 121 : (Math.floor((s.stage_num - 1) / 10) * 10 + 1);
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(s);
+    }
+
+    list.innerHTML = [...groups.entries()].map(([key, stages]) => {
+      const gLabel = key === 121 ? 'Secret Rooms' : `${key} – ${key + 9}`;
+      const btns = stages.map(s =>
+        `<button class="stage-btn" data-stage="${s.id}">${key === 121 ? `SR ${s.stage_num - 120}` : `Floor ${s.stage_num}`}</button>`
+      ).join('');
+      return `
+        <div class="stage-group">
+          <button class="stage-group-btn" data-key="${key}">${gLabel}</button>
+          <div class="stage-group-body" style="display:none">${btns}</div>
+        </div>`;
+    }).join('');
+
+    // Group toggle (accordion — only one open at a time)
+    list.querySelectorAll('.stage-group-btn').forEach(btn =>
+      btn.addEventListener('click', () => {
+        const body = btn.nextElementSibling;
+        const isOpen = body.style.display !== 'none';
+        list.querySelectorAll('.stage-group-body').forEach(b => b.style.display = 'none');
+        list.querySelectorAll('.stage-group-btn').forEach(b => b.classList.remove('active'));
+        if (!isOpen) { body.style.display = ''; btn.classList.add('active'); }
+      })
+    );
+
+    list.querySelectorAll('.stage-btn').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
+
+    // Auto-open the group of the current/target stage
+    const target = currentStageNum && allStages.find(s => s.stage_num === currentStageNum);
+    if (target) {
+      const key = target.stage_num >= 121 ? 121 : (Math.floor((target.stage_num - 1) / 10) * 10 + 1);
+      const groupBtn = list.querySelector(`.stage-group-btn[data-key="${key}"]`);
+      if (groupBtn) { groupBtn.nextElementSibling.style.display = ''; groupBtn.classList.add('active'); }
+      loadStage(target.id);
+    }
+    return;
+  }
+
+  // ── Default ───────────────────────────────────────────────────────────────
+  label.textContent = `Stages (${allStages.length})`;
+  list.innerHTML = allStages.map(s =>
     `<button class="stage-btn" data-stage="${s.id}">Stage ${s.stage_num}</button>`
   ).join('');
-
-  list.querySelectorAll('.stage-btn').forEach(btn =>
-    btn.addEventListener('click', () => loadStage(+btn.dataset.stage))
-  );
-
-  // Auto-reload same stage number if we had one
-  const target = currentStageNum && stages.find(s => s.stage_num === currentStageNum);
+  list.querySelectorAll('.stage-btn').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
+  const target = currentStageNum && allStages.find(s => s.stage_num === currentStageNum);
   if (target) loadStage(target.id);
 }
 
@@ -556,6 +769,9 @@ function loadStage(stageId) {
     [stageId]
   );
 
+  // Apply hero name overrides
+  waveRows.forEach(e => { if (HERO_NAME_OVERRIDES[e.hero_id]) e.name = HERO_NAME_OVERRIDES[e.hero_id]; });
+
   // Group by wave
   const waveMap = {};
   for (const row of waveRows) {
@@ -568,12 +784,14 @@ function loadStage(stageId) {
   const diffName    = DIFF_LABELS[stage.difficulty] ?? stage.diff_name;
   const diffCount   = query(`SELECT COUNT(DISTINCT difficulty) as n FROM stages WHERE region_id=?`,
                             [stage.region_id])[0]?.n ?? 1;
+  const regionDisplayName = REGION_NAME_OVERRIDES[stage.region_id] ?? stage.region_name;
+  const areaDisplayName   = areas.find(a => a.id === stage.area_id)?.name ?? stage.area_name;
   const segs = [
-    { text: stage.area_name,   action: 'area'   },
-    { text: stage.region_name, action: 'region' },
+    { text: areaDisplayName,    action: 'area'   },
+    { text: regionDisplayName,  action: 'region' },
   ];
   if (diffCount > 1) segs.push({ text: diffName, action: 'diff' });
-  segs.push({ text: `Stage ${stage.stage_num}`, action: 'stage' });
+  segs.push({ text: stageLabel(stage.stage_num, stage.region_id), action: 'stage' });
 
   const bcEl = document.getElementById('stage-breadcrumb');
   bcEl.innerHTML = segs.map(s =>
@@ -608,12 +826,16 @@ function loadStage(stageId) {
         openBcDropdown(btn, items);
 
       } else if (action === 'stage') {
-        const stages = query(
+        const stageList = query(
           `SELECT id, stage_num FROM stages WHERE region_id=? AND difficulty=? ORDER BY stage_num`,
           [stage.region_id, stage.difficulty]
         );
-        const items = stages.map(s => ({
-          label: `Stage ${s.stage_num}`, active: s.id === stageId,
+        // For Clan Boss only show Void stages
+        const filtered = stage.region_id === 401
+          ? stageList.filter(s => CB_VOID_STAGES.has(s.stage_num))
+          : stageList;
+        const items = filtered.map(s => ({
+          label: stageLabel(s.stage_num, stage.region_id), active: s.id === stageId,
           onSelect: () => loadStage(s.id)
         }));
         openBcDropdown(btn, items);
@@ -783,7 +1005,7 @@ function openEnemyModal(ds) {
   const heroId   = +ds.heroId;
   const grade    = +ds.grade;
   const level    = +ds.level;
-  const name     = ds.name;
+  const name     = HERO_NAME_OVERRIDES[heroId] ?? ds.name;
   const affinity = ds.affinity;
   const rarity   = ds.rarity;
   const rarClass = GRADE_TO_RARITY[grade] ?? 'common';
