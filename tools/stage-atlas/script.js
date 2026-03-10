@@ -6,71 +6,194 @@ let areas        = [];      // [{ id, name }]
 let regions      = [];      // [{ id, name, area_id }]
 let difficulties = [];      // numbers available for selected area
 
-let selectedArea   = null;
-let selectedDiff   = null;
-let selectedRegion = null;
+let selectedArea    = null;
+let selectedDiff    = null;
+let selectedRegion  = null;
+let selectedGroup   = null;
+let currentStageNum = null;
+let tableView      = false;
+let currentWaveMap = null;
 let champDb        = null;
 let champByIdMap   = new Map(); // hero_id (int) → champ row
 let champByNameMap = new Map(); // name.toLowerCase() → champ row
 
-// ── Stat formula ──────────────────────────────────────────────────────────────
-/**
- * Grade multipliers calibrated from in-game confirmed data.
- *
- * Grades 3 & 4:  linear formula, calibrated on Act 1 Hard stage 3.
- *   mult(G, L) = MULT_BASE[G] + (L-1) * 0.07852
- *   Error: ATK/DEF ±1, HP ±7.
- *
- * Grade 6, levels 220-230:  calibrated from Act 12 Nightmare stage 6 screenshots.
- *   mult_DEF(6, L) = 23.213 + (L-220) * 0.2185
- *   NOTE: base_hp and base_atk stored in the DB (Forms[0]) appear to be ½ the
- *   effective value for grade-6 enemies → HP_ATK_FACTOR = 2 applied below.
- *   This may be a Forms[0] vs Forms[1] issue to investigate.
- *
- * Grades 1, 2, 5: not yet calibrated (marked as estimated in UI).
- */
-const MULT_BASE = {
-  1: 1.0,      // TODO calibrate
-  2: 1.5,      // TODO calibrate
-  3: 2.0796,   // confirmed
-  4: 3.0792,   // confirmed
-  5: 5.15,     // TODO calibrate
-  // 6: handled specially
-};
-const MULT_INC_STD = 0.07852;  // per-level increment (grades 3-4)
+// ── Stat formula (source: GetConvertedStatValue from game code) ───────────────
+// converted = baseStat * multi1 * Power(multi2, (Level-1) / (10*Grade-1))
+// HP = Round(converted) * 15 — ATK/DEF = Round(converted)
+const GRADE_MULTI1 = { 1: 1.0, 2: 1.60000002, 3: 2.43199992, 4: 3.5020796, 5: 4.76282883, 6: 6.47744703 };
+const GRADE_MULTI2 = { 1: 2.0, 2: 1.89999998, 3: 1.79999995, 4: 1.70000005, 5: 1.70000005, 6: 1.70000005 };
 
-// Grade-6 anchor (from Act 12 Nightmare, DEF stat)
-const G6_ANCHOR_LEVEL = 220;
-const G6_ANCHOR_MULT  = 23.213;
-const G6_INC          = 0.2185;  // per level at high levels
-
-function getMult(grade, level) {
-  if (grade === 6) {
-    return G6_ANCHOR_MULT + (level - G6_ANCHOR_LEVEL) * G6_INC;
-  }
-  const base = MULT_BASE[grade] ?? 1.0;
-  return base + (level - 1) * MULT_INC_STD;
+function convertedStat(baseStat, level, grade) {
+  const m1  = GRADE_MULTI1[grade] ?? 1;
+  const m2  = GRADE_MULTI2[grade] ?? 2;
+  const exp = (level - 1) / (10 * grade - 1);
+  return baseStat * m1 * Math.pow(m2, exp);
 }
 
 function computeStats(hero, grade, level) {
-  const m = getMult(grade, level);
-  // Grade-6 correction: base_hp / base_atk in Forms[0] are ½ the effective value.
-  const hpAtkFactor = grade === 6 ? 2 : 1;
   return {
-    hp:  Math.round(hero.base_hp  * hpAtkFactor * 15 * m),
-    atk: Math.round(hero.base_atk * hpAtkFactor * m),
-    def: Math.round(hero.base_def * m),
-    spd: hero.spd,
+    hp:        Math.round(convertedStat(hero.base_hp,  level, grade)) * 15,
+    atk:       Math.round(convertedStat(hero.base_atk, level, grade)),
+    def:       Math.round(convertedStat(hero.base_def, level, grade)),
+    spd:       hero.spd,
     crit_rate: hero.crit_rate,
     crit_dmg:  hero.crit_dmg,
-    res: hero.res,
-    acc: hero.acc,
+    res:       hero.res,
+    acc:       hero.acc,
   };
 }
 
-// Whether the stat formula is considered calibrated for this grade
-function isCalibrated(grade) {
-  return grade === 3 || grade === 4 || grade === 6;
+// All grades now use the exact formula — no estimation
+function isCalibrated(_grade) { return true; }
+
+// ── Accordion helpers ──────────────────────────────────────────────────────────
+function sectionCollapse(sectionId, pillText, onPillClick) {
+  const sec = document.getElementById(sectionId);
+  if (!sec) return;
+  sec.querySelector('.sidebar-section-body').style.display = 'none';
+  let pill = sec.querySelector('.sidebar-pill');
+  if (!pill) {
+    pill = document.createElement('button');
+    pill.className = 'sidebar-pill';
+    sec.appendChild(pill);
+  }
+  pill.textContent = pillText;
+  pill.style.display = '';
+  pill.onclick = onPillClick;
+}
+
+function sectionExpand(sectionId) {
+  const sec = document.getElementById(sectionId);
+  if (!sec) return;
+  sec.querySelector('.sidebar-section-body').style.display = '';
+  const pill = sec.querySelector('.sidebar-pill');
+  if (pill) pill.style.display = 'none';
+}
+
+function goBackToArea() {
+  sectionExpand('area-section');
+  document.getElementById('diff-section').style.display    = 'none';
+  document.getElementById('region-section').style.display  = 'none';
+  document.getElementById('affinity-section').style.display = 'none';
+  document.getElementById('stage-section').style.display   = 'none';
+  clearStageView();
+  selectedDiff = null; selectedRegion = null; selectedGroup = null; currentStageNum = null;
+}
+
+function goBackToDiff() {
+  sectionExpand('diff-section');
+  document.getElementById('stage-section').style.display = 'none';
+  clearStageView();
+}
+
+function goBackToRegion() {
+  sectionExpand('region-section');
+  document.getElementById('diff-section').style.display    = 'none';
+  document.getElementById('affinity-section').style.display = 'none';
+  document.getElementById('stage-section').style.display   = 'none';
+  clearStageView();
+  selectedDiff = null; selectedRegion = null; selectedGroup = null; currentStageNum = null;
+}
+
+// ── Breadcrumb dropdown ───────────────────────────────────────────────────────
+function openBcDropdown(anchorEl, items) {
+  const dd   = document.getElementById('bc-dropdown');
+  const list = document.getElementById('bc-dropdown-list');
+  list.innerHTML = items.map((it, i) =>
+    `<button class="bc-dropdown-item${it.active ? ' active' : ''}" data-idx="${i}">${it.label}</button>`
+  ).join('');
+  list.querySelectorAll('.bc-dropdown-item').forEach(btn =>
+    btn.addEventListener('click', () => {
+      closeBcDropdown();
+      items[+btn.dataset.idx].onSelect();
+    })
+  );
+  const rect = anchorEl.getBoundingClientRect();
+  dd.style.left = rect.left + 'px';
+  dd.style.top  = (rect.bottom + 6) + 'px';
+  dd.style.display = '';
+}
+
+function closeBcDropdown() {
+  document.getElementById('bc-dropdown').style.display = 'none';
+}
+
+// Build region item list for dropdown (handles groups)
+function buildRegionDropdownItems(areaRegions, activeRegionId) {
+  const seen = new Set();
+  const items = [];
+  for (const r of areaRegions) {
+    const groupKey = REGION_TO_GROUP[r.id];
+    if (groupKey) {
+      if (!seen.has(groupKey)) {
+        seen.add(groupKey);
+        // Expand group: add each affinity sub-region
+        for (const gr of REGION_GROUPS[groupKey].regions) {
+          const label = gr.affinity
+            ? `${REGION_GROUPS[groupKey].label} (${gr.affinity})`
+            : (gr.label || REGION_GROUPS[groupKey].label);
+          items.push({ label, active: gr.id === activeRegionId,
+            onSelect: () => bcSelectRegion(gr.id, REGION_GROUPS[groupKey].label) });
+        }
+      }
+    } else {
+      items.push({ label: r.name, active: r.id === activeRegionId,
+        onSelect: () => bcSelectRegion(r.id, r.name) });
+    }
+  }
+  return items;
+}
+
+// Breadcrumb navigation helpers
+function bcSelectArea(areaId, areaName) {
+  sectionCollapse('area-section', areaName, goBackToArea);
+  selectArea(areaId);
+}
+
+function bcSelectRegion(regionId, regionName) {
+  const groupKey  = REGION_TO_GROUP[regionId];
+  const pillLabel = groupKey ? REGION_GROUPS[groupKey].label : regionName;
+
+  sectionCollapse('region-section', pillLabel, goBackToRegion);
+  document.getElementById('affinity-section').style.display = 'none';
+  document.getElementById('diff-section').style.display    = 'none';
+  document.getElementById('stage-section').style.display   = 'none';
+  clearStageView();
+  if (groupKey) selectedGroup = groupKey;
+  selectedRegion = regionId;
+
+  const DLABELS = { 1:'Normal', 2:'Hard', 3:'Brutal', 4:'Nightmare', 9:'Normal' };
+  const diffs = query(
+    `SELECT DISTINCT difficulty, diff_name FROM stages WHERE region_id=? ORDER BY CASE difficulty WHEN 9 THEN 1 ELSE difficulty END`,
+    [regionId]
+  );
+  if (!diffs.length) return;
+
+  if (diffs.length > 1) {
+    document.getElementById('diff-section').style.display = '';
+    renderDiffButtons(diffs, false);
+    const fd = diffs[0];
+    document.querySelectorAll('.diff-btn').forEach(b =>
+      b.classList.toggle('active', +b.dataset.diff === fd.difficulty)
+    );
+    selectedDiff = fd.difficulty;
+    sectionCollapse('diff-section', DLABELS[fd.difficulty] ?? fd.diff_name, goBackToDiff);
+  } else {
+    selectedDiff = diffs[0].difficulty;
+  }
+
+  const firstStage = query(
+    `SELECT id FROM stages WHERE region_id=? AND difficulty=? ORDER BY stage_num LIMIT 1`,
+    [regionId, selectedDiff]
+  )[0];
+  if (firstStage) loadStage(firstStage.id);
+}
+
+function bcSelectDiff(diff, diffName) {
+  sectionCollapse('diff-section', diffName, goBackToDiff);
+  document.getElementById('stage-section').style.display = 'none';
+  clearStageView();
+  selectDiff(diff);
 }
 
 // ── DB helpers ────────────────────────────────────────────────────────────────
@@ -131,6 +254,20 @@ function onDbReady() {
   renderAreaTabs();
   if (window.lucide) lucide.createIcons();
 
+  // Close breadcrumb dropdown on outside click
+  document.addEventListener('click', e => {
+    const dd = document.getElementById('bc-dropdown');
+    if (dd.style.display === 'none') return;
+    if (!dd.contains(e.target) && !e.target.closest('.bc-seg[data-action]')) closeBcDropdown();
+  });
+
+  // View toggle (cards ↔ table)
+  document.getElementById('view-toggle').addEventListener('click', () => {
+    tableView = !tableView;
+    document.getElementById('view-toggle').textContent = tableView ? '⊟ Cards' : '⊞ Table';
+    renderCurrentWaves();
+  });
+
   // Enemy card click → modal (single delegate listener)
   document.getElementById('waves-container').addEventListener('click', e => {
     const card = e.target.closest('.enemy-card');
@@ -155,81 +292,207 @@ function renderAreaTabs() {
     `<button class="area-tab" data-area="${a.id}">${a.name}</button>`
   ).join('');
   el.querySelectorAll('.area-tab').forEach(btn =>
-    btn.addEventListener('click', () => selectArea(+btn.dataset.area))
+    btn.addEventListener('click', () => {
+      const areaName = areas.find(a => a.id === +btn.dataset.area)?.name || '';
+      sectionCollapse('area-section', areaName, goBackToArea);
+      selectArea(+btn.dataset.area);
+    })
   );
   // Auto-select first area
   if (areas.length) selectArea(areas[0].id);
 }
 
 function selectArea(areaId) {
-  selectedArea   = areaId;
-  selectedDiff   = null;
-  selectedRegion = null;
+  selectedArea    = areaId;
+  selectedDiff    = null;
+  selectedRegion  = null;
+  selectedGroup   = null;
+  currentStageNum = null;
 
   document.querySelectorAll('.area-tab').forEach(b =>
     b.classList.toggle('active', +b.dataset.area === areaId)
   );
 
-  // Available difficulties for this area
-  const rows = query(
-    `SELECT DISTINCT difficulty, diff_name FROM stages
-     WHERE area_id=? ORDER BY difficulty`, [areaId]
-  );
-  difficulties = rows;
-  renderDiffButtons(rows);
+  document.getElementById('affinity-section').style.display = 'none';
+  document.getElementById('diff-section').style.display   = 'none';
+  document.getElementById('stage-section').style.display   = 'none';
+  document.getElementById('region-section').style.display  = '';
+  sectionExpand('region-section');
+  renderRegionList();
 }
+
+// Regions grouped under a single button with affinity sub-selection
+const REGION_GROUPS = {
+  potionKeeps: {
+    label: 'Potion Keeps',
+    regions: [
+      { id: 201, affinity: 'Void'   },
+      { id: 202, affinity: 'Spirit' },
+      { id: 203, affinity: 'Magic'  },
+      { id: 204, affinity: 'Force'  },
+      { id: 205, affinity: null, label: 'Arcane' },
+    ]
+  },
+  ironTwins: {
+    label: 'Iron Twins',
+    regions: [
+      { id: 211, affinity: 'Void'   },
+      { id: 212, affinity: 'Spirit' },
+      { id: 213, affinity: 'Magic'  },
+      { id: 214, affinity: 'Force'  },
+    ]
+  }
+};
+const GROUPED_IDS      = new Set(Object.values(REGION_GROUPS).flatMap(g => g.regions.map(r => r.id)));
+const REGION_TO_GROUP  = Object.fromEntries(Object.entries(REGION_GROUPS).flatMap(([k, g]) => g.regions.map(r => [r.id, k])));
+
+// Dungeons that have Normal + Hard
+const MULTI_DIFF_DUNGEONS = new Set([206, 207, 208, 209]);
 
 // ── Difficulty buttons ────────────────────────────────────────────────────────
 const DIFF_COLORS = { 1:'normal', 2:'hard', 3:'brutal', 4:'nightmare' };
 
-function renderDiffButtons(diffs) {
+function renderDiffButtons(diffs, autoSelect = true) {
   const el = document.getElementById('diff-buttons');
   el.innerHTML = diffs.map(d =>
     `<button class="diff-btn diff-${DIFF_COLORS[d.difficulty] ?? 'normal'}"
              data-diff="${d.difficulty}">${d.diff_name}</button>`
   ).join('');
   el.querySelectorAll('.diff-btn').forEach(btn =>
-    btn.addEventListener('click', () => selectDiff(+btn.dataset.diff))
+    btn.addEventListener('click', () => {
+      sectionCollapse('diff-section', btn.textContent.trim(), goBackToDiff);
+      selectDiff(+btn.dataset.diff);
+    })
   );
-  if (diffs.length) selectDiff(diffs[0].difficulty);
+  if (autoSelect && diffs.length) selectDiff(diffs[0].difficulty);
 }
 
 function selectDiff(diff) {
-  selectedDiff   = diff;
-  selectedRegion = null;
+  const prevRegion = selectedRegion;
+  selectedDiff     = diff;
+  selectedRegion   = null;
 
   document.querySelectorAll('.diff-btn').forEach(b =>
     b.classList.toggle('active', +b.dataset.diff === diff)
   );
-  renderRegionList();
+
+  if (prevRegion) {
+    // Region already selected (dungeon flow or re-selecting diff in campaign)
+    selectedRegion = prevRegion;
+    renderStageList(prevRegion);
+  } else {
+    renderRegionList();
+  }
 }
 
 // ── Region list ───────────────────────────────────────────────────────────────
-function renderRegionList() {
+function renderRegionList(autoRegion = null) {
   const areaRegions = regions.filter(r => r.area_id === selectedArea);
   const el = document.getElementById('region-list');
 
-  el.innerHTML = areaRegions.map(r =>
+  // Collect which groups are present in this area
+  const presentGroups = new Set();
+  const regularRegions = [];
+  for (const r of areaRegions) {
+    if (GROUPED_IDS.has(r.id)) presentGroups.add(REGION_TO_GROUP[r.id]);
+    else regularRegions.push(r);
+  }
+
+  let html = regularRegions.map(r =>
     `<button class="region-btn" data-region="${r.id}">${r.name}</button>`
   ).join('');
 
-  el.querySelectorAll('.region-btn').forEach(btn =>
-    btn.addEventListener('click', () => selectRegion(+btn.dataset.region))
+  for (const key of presentGroups) {
+    html += `<button class="region-btn group-btn" data-group="${key}">${REGION_GROUPS[key].label}</button>`;
+  }
+
+  el.innerHTML = html;
+
+  el.querySelectorAll('.region-btn:not(.group-btn)').forEach(btn =>
+    btn.addEventListener('click', () => {
+      sectionCollapse('region-section', btn.textContent.trim(), goBackToRegion);
+      document.getElementById('affinity-section').style.display = 'none';
+      selectRegion(+btn.dataset.region);
+    })
+  );
+  el.querySelectorAll('.group-btn').forEach(btn =>
+    btn.addEventListener('click', () => openGroup(btn.dataset.group))
   );
 
-  // Hide stage panel until region chosen
-  document.getElementById('stage-section').style.display = 'none';
-  clearStageView();
+  // Auto-reselect
+  if (autoRegion && areaRegions.some(r => r.id === autoRegion)) {
+    if (GROUPED_IDS.has(autoRegion)) {
+      const key = REGION_TO_GROUP[autoRegion];
+      el.querySelectorAll('.group-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.group === key)
+      );
+      openGroup(key, autoRegion);
+    } else {
+      selectRegion(autoRegion);
+    }
+  } else {
+    document.getElementById('affinity-section').style.display = 'none';
+    document.getElementById('stage-section').style.display = 'none';
+    clearStageView();
+  }
+}
+
+function openGroup(key, autoSelectId = null) {
+  selectedGroup = key;
+  const group   = REGION_GROUPS[key];
+
+  document.querySelectorAll('.group-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.group === key)
+  );
+
+  const affSection = document.getElementById('affinity-section');
+  document.getElementById('affinity-label').textContent = group.label;
+  const affList = document.getElementById('affinity-list');
+
+  affList.innerHTML = group.regions.map(r => {
+    const aff = r.affinity?.toLowerCase();
+    return `<button class="region-btn${aff ? ` it-btn it-${aff}` : ''}" data-region="${r.id}">
+      ${r.affinity ? `<img src="/tools/champions-index/img/affinity/${r.affinity}.webp" class="it-aff-icon" alt="">` : ''}
+      ${r.affinity || r.label || 'Arcane'}
+    </button>`;
+  }).join('');
+
+  affList.querySelectorAll('.region-btn').forEach(btn =>
+    btn.addEventListener('click', () => {
+      sectionCollapse('region-section', group.label, goBackToRegion);
+      document.getElementById('affinity-section').style.display = 'none';
+      selectRegion(+btn.dataset.region);
+    })
+  );
+
+  affSection.style.display = '';
+
+  if (autoSelectId) selectRegion(autoSelectId);
 }
 
 function selectRegion(regionId) {
   selectedRegion = regionId;
 
-  document.querySelectorAll('.region-btn').forEach(b =>
+  // Highlight in region-list, affinity-list, group-btn
+  document.querySelectorAll('#region-list .region-btn').forEach(b =>
+    b.classList.toggle('active', +b.dataset.region === regionId)
+  );
+  document.querySelectorAll('#affinity-list .region-btn').forEach(b =>
     b.classList.toggle('active', +b.dataset.region === regionId)
   );
 
-  renderStageList(regionId);
+  const diffs = query(
+    `SELECT DISTINCT difficulty, diff_name FROM stages WHERE region_id=? ORDER BY CASE difficulty WHEN 9 THEN 1 ELSE difficulty END`,
+    [regionId]
+  );
+  if (diffs.length > 1) {
+    document.getElementById('diff-section').style.display = '';
+    sectionExpand('diff-section');
+    renderDiffButtons(diffs, false); // user must click diff explicitly
+  } else {
+    document.getElementById('diff-section').style.display = 'none';
+    if (diffs.length) { selectedDiff = diffs[0].difficulty; renderStageList(regionId); }
+  }
 }
 
 // ── Stage list ────────────────────────────────────────────────────────────────
@@ -259,6 +522,10 @@ function renderStageList(regionId) {
   list.querySelectorAll('.stage-btn').forEach(btn =>
     btn.addEventListener('click', () => loadStage(+btn.dataset.stage))
   );
+
+  // Auto-reload same stage number if we had one
+  const target = currentStageNum && stages.find(s => s.stage_num === currentStageNum);
+  if (target) loadStage(target.id);
 }
 
 // ── Stage view ────────────────────────────────────────────────────────────────
@@ -296,16 +563,67 @@ function loadStage(stageId) {
     waveMap[row.wave].push(row);
   }
 
-  // Breadcrumb
-  const diffLabel = { 1:'Normal', 2:'Hard', 3:'Brutal', 4:'Nightmare' };
-  document.getElementById('stage-breadcrumb').textContent =
-    `${stage.area_name}  ›  ${stage.region_name}  ›  ${diffLabel[stage.difficulty] ?? stage.diff_name}  ›  Stage ${stage.stage_num}`;
+  // Breadcrumb — dropdown per segment (Area › Region › [Diff] › Stage)
+  const DIFF_LABELS = { 1:'Normal', 2:'Hard', 3:'Brutal', 4:'Nightmare', 9:'Normal' };
+  const diffName    = DIFF_LABELS[stage.difficulty] ?? stage.diff_name;
+  const diffCount   = query(`SELECT COUNT(DISTINCT difficulty) as n FROM stages WHERE region_id=?`,
+                            [stage.region_id])[0]?.n ?? 1;
+  const segs = [
+    { text: stage.area_name,   action: 'area'   },
+    { text: stage.region_name, action: 'region' },
+  ];
+  if (diffCount > 1) segs.push({ text: diffName, action: 'diff' });
+  segs.push({ text: `Stage ${stage.stage_num}`, action: 'stage' });
 
-  // Render waves
-  const container = document.getElementById('waves-container');
-  container.innerHTML = Object.entries(waveMap).map(([waveNum, enemies]) =>
-    renderWave(+waveNum, enemies)
-  ).join('');
+  const bcEl = document.getElementById('stage-breadcrumb');
+  bcEl.innerHTML = segs.map(s =>
+    `<button class="bc-seg${s.action === 'stage' ? ' bc-current' : ''}" data-action="${s.action}">${s.text}</button>`
+  ).join('<span class="bc-sep"> › </span>');
+
+  bcEl.querySelectorAll('.bc-seg[data-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      closeBcDropdown();
+      const action = btn.dataset.action;
+      if (action === 'area') {
+        const items = areas.map(a => ({
+          label: a.name, active: a.id === stage.area_id,
+          onSelect: () => bcSelectArea(a.id, a.name)
+        }));
+        openBcDropdown(btn, items);
+
+      } else if (action === 'region') {
+        const areaRegions = regions.filter(r => r.area_id === selectedArea);
+        openBcDropdown(btn, buildRegionDropdownItems(areaRegions, stage.region_id));
+
+      } else if (action === 'diff') {
+        const diffs = query(
+          `SELECT DISTINCT difficulty, diff_name FROM stages WHERE region_id=? ORDER BY CASE difficulty WHEN 9 THEN 1 ELSE difficulty END`,
+          [stage.region_id]
+        );
+        const items = diffs.map(d => ({
+          label: DIFF_LABELS[d.difficulty] ?? d.diff_name,
+          active: d.difficulty === stage.difficulty,
+          onSelect: () => bcSelectDiff(d.difficulty, DIFF_LABELS[d.difficulty] ?? d.diff_name)
+        }));
+        openBcDropdown(btn, items);
+
+      } else if (action === 'stage') {
+        const stages = query(
+          `SELECT id, stage_num FROM stages WHERE region_id=? AND difficulty=? ORDER BY stage_num`,
+          [stage.region_id, stage.difficulty]
+        );
+        const items = stages.map(s => ({
+          label: `Stage ${s.stage_num}`, active: s.id === stageId,
+          onSelect: () => loadStage(s.id)
+        }));
+        openBcDropdown(btn, items);
+      }
+    });
+  });
+
+  currentStageNum = stage.stage_num;
+  currentWaveMap  = waveMap;
+  renderCurrentWaves();
 
   document.getElementById('main-placeholder').style.display = 'none';
   document.getElementById('stage-view').style.display       = '';
@@ -313,7 +631,62 @@ function loadStage(stageId) {
   if (window.lucide) lucide.createIcons();
 }
 
+function renderCurrentWaves() {
+  const container = document.getElementById('waves-container');
+  if (!currentWaveMap) return;
+  if (tableView) {
+    container.innerHTML = Object.entries(currentWaveMap).map(([waveNum, enemies]) =>
+      renderWaveTable(+waveNum, enemies)
+    ).join('');
+  } else {
+    container.innerHTML = Object.entries(currentWaveMap).map(([waveNum, enemies]) =>
+      renderWave(+waveNum, enemies)
+    ).join('');
+    if (window.lucide) lucide.createIcons();
+  }
+}
+
 // ── Wave rendering ────────────────────────────────────────────────────────────
+function renderWaveTable(waveNum, enemies) {
+  const rows = enemies.map(e => {
+    if (!e.name) return `
+      <tr class="table-unknown">
+        <td>Wave ${waveNum}</td><td colspan="10">Unknown #${e.hero_id} — Grade ${e.grade} Lv ${e.level}</td>
+      </tr>`;
+    const s = computeStats(e, e.grade, e.level);
+    const rarClass = GRADE_TO_RARITY[e.grade] ?? 'common';
+    return `
+      <tr class="table-row ${rarClass}">
+        <td class="tcell-name">${e.name}</td>
+        <td class="tcell-num">${e.grade}★</td>
+        <td class="tcell-num">${e.level}</td>
+        <td class="tcell-num">${fmt(s.hp)}</td>
+        <td class="tcell-num">${fmt(s.atk)}</td>
+        <td class="tcell-num">${fmt(s.def)}</td>
+        <td class="tcell-num">${s.spd}</td>
+        <td class="tcell-num">${s.crit_rate}%</td>
+        <td class="tcell-num">${s.crit_dmg}%</td>
+        <td class="tcell-num">${s.res}</td>
+        <td class="tcell-num">${s.acc}</td>
+      </tr>`;
+  }).join('');
+
+  return `
+    <div class="wave-block">
+      <div class="wave-label">Wave ${waveNum}</div>
+      <table class="wave-table">
+        <thead>
+          <tr>
+            <th>Name</th><th>Grade</th><th>Lv</th>
+            <th>HP</th><th>ATK</th><th>DEF</th><th>SPD</th>
+            <th>C.Rate</th><th>C.Dmg</th><th>RES</th><th>ACC</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
 function renderWave(waveNum, enemies) {
   const cards = enemies.map(e => renderEnemyCard(e)).join('');
   return `

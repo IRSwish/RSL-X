@@ -1,3 +1,6 @@
+/* ── Page-specific overrides ─────────────────────────────────────────────────── */
+.burger-btn { display: none !important; }
+
 /* ── Layout ─────────────────────────────────────────────────────────────────── */
 .atlas-layout {
   display: flex;
@@ -16,7 +19,6 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  overflow-y: auto;
   position: sticky;
   top: 0;
   height: 100vh;
@@ -59,13 +61,13 @@
 
 /* ── Difficulty buttons ──────────────────────────────────────────────────────── */
 .diff-buttons {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 4px;
 }
 
 .diff-btn {
-  flex: 1 1 auto;
+  flex: unset;
   padding: 5px 6px;
   border-radius: 6px;
   border: 1px solid #333;
@@ -92,8 +94,6 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
-  max-height: 260px;
-  overflow-y: auto;
 }
 
 .region-btn, .stage-btn {
@@ -118,6 +118,25 @@
   color: #d4af37;
 }
 
+/* ── Affinity sub-buttons (Iron Twins / Potion Keeps) ───────────────────────── */
+.it-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+.it-aff-icon { width: 16px; height: 16px; object-fit: contain; }
+
+.it-void   { border-color: #7b5ea7 !important; }
+.it-spirit { border-color: #4caf50 !important; }
+.it-magic  { border-color: #2196f3 !important; }
+.it-force  { border-color: #f44336 !important; }
+
+.it-void.active   { background: rgba(123,94,167,.15) !important; color: #b39ddb !important; border-color: #9575cd !important; }
+.it-spirit.active { background: rgba(76,175,80,.15)  !important; color: #81c784 !important; }
+.it-magic.active  { background: rgba(33,150,243,.15) !important; color: #64b5f6 !important; }
+.it-force.active  { background: rgba(244,67,54,.15)  !important; color: #e57373 !important; }
+
 .stage-section { flex: 1; }
 
 /* ── Main area ───────────────────────────────────────────────────────────────── */
@@ -140,19 +159,122 @@
 .placeholder-icon svg { width: 56px; height: 56px; }
 .placeholder-text { font-size: 15px; text-align: center; }
 
+/* ── Accordion pill ──────────────────────────────────────────────────────────── */
+.sidebar-pill {
+  display: block;
+  width: 100%;
+  background: rgba(212,175,55,.08);
+  border: 1px solid rgba(212,175,55,.25);
+  color: #d4af37;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+  transition: .15s;
+  margin-top: 2px;
+}
+.sidebar-pill:hover {
+  background: rgba(212,175,55,.18);
+  border-color: #d4af37;
+}
+.sidebar-pill::before { content: '‹ '; opacity: .55; }
+
 /* ── Stage header ────────────────────────────────────────────────────────────── */
 .stage-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
   color: #888;
   letter-spacing: .02em;
 }
 
+/* Clickable breadcrumb segments */
+button.bc-seg {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  letter-spacing: .02em;
+  transition: color .15s;
+}
+button.bc-seg:hover { color: #d4af37; }
+span.bc-seg { color: #d4af37; }
+.bc-sep { color: #444; font-size: 13px; }
+
+/* ── Breadcrumb dropdown ─────────────────────────────────────────────────────── */
+.bc-dropdown {
+  position: fixed;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 7px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.7);
+  z-index: 999;
+  min-width: 180px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.bc-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 7px 14px;
+  background: none;
+  border: none;
+  color: #bbb;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: .1s;
+  white-space: nowrap;
+}
+.bc-dropdown-item:hover { background: #262626; color: #fff; }
+.bc-dropdown-item.active { color: #d4af37; }
+
 .stage-header {
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 1px solid #222;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
 }
+
+.view-toggle-btn { display: none; }
+
+/* ── Table view ──────────────────────────────────────────────────────────────── */
+.wave-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.wave-table thead th {
+  text-align: left;
+  padding: 6px 10px;
+  color: #666;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  border-bottom: 1px solid #222;
+}
+.wave-table tbody tr {
+  border-bottom: 1px solid #1a1a1a;
+  transition: background .1s;
+}
+.wave-table tbody tr:hover { background: #1e1e1e; }
+.tcell-name { padding: 7px 10px; font-weight: 600; }
+.tcell-num  { padding: 7px 10px; color: #bbb; text-align: right; font-variant-numeric: tabular-nums; }
+.table-row.common    .tcell-name { color: #9e9e9e; }
+.table-row.uncommon  .tcell-name { color: #4caf50; }
+.table-row.rare      .tcell-name { color: #42a5f5; }
+.table-row.epic      .tcell-name { color: #ab47bc; }
+.table-row.legendary .tcell-name { color: #ffa726; }
+.table-row.mythical  .tcell-name { color: #ef5350; }
+.table-unknown td { padding: 7px 10px; color: #444; font-style: italic; }
 
 /* ── Waves ───────────────────────────────────────────────────────────────────── */
 .waves-container {
@@ -202,21 +324,15 @@
   background: #1a1a1a;
 }
 
-/* Inset gradient — same as champions-index per rarity */
+/* Inset vignette — uniform regardless of rarity */
 .card-portrait::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  box-shadow: inset 0 0 22px rgba(0,0,0,.8);
+  box-shadow: inset 0 -1px 2px 9px rgba(0,0,0,.8);
 }
-.card-portrait.mythical::before   { box-shadow: inset 0 -2px 2px 12px rgba(0,0,0,.8); }
-.card-portrait.legendary::before  { box-shadow: inset 0 -2px 2px 11px rgba(0,0,0,.8); }
-.card-portrait.epic::before       { box-shadow: inset 0 -1px 2px  9px rgba(0,0,0,.8); }
-.card-portrait.rare::before,
-.card-portrait.uncommon::before   { box-shadow: inset 0 -1px 2px  8px rgba(0,0,0,.8); }
-.card-portrait.common::before     { box-shadow: inset 0 0   3px  6px rgba(0,0,0,.8); }
 
 .card-portrait--placeholder { background: #111; }
 

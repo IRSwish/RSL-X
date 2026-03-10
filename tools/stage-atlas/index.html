@@ -42,27 +42,43 @@
     <aside class="atlas-sidebar">
 
       <!-- Area tabs -->
-      <div class="sidebar-section">
+      <div class="sidebar-section" id="area-section">
         <div class="sidebar-label">Content</div>
-        <div id="area-tabs" class="area-tabs"></div>
-      </div>
-
-      <!-- Difficulty -->
-      <div class="sidebar-section">
-        <div class="sidebar-label">Difficulty</div>
-        <div id="diff-buttons" class="diff-buttons"></div>
+        <div class="sidebar-section-body">
+          <div id="area-tabs" class="area-tabs"></div>
+        </div>
       </div>
 
       <!-- Region / Act list -->
-      <div class="sidebar-section">
+      <div class="sidebar-section" id="region-section" style="display:none">
         <div class="sidebar-label">Region</div>
-        <div id="region-list" class="region-list"></div>
+        <div class="sidebar-section-body">
+          <div id="region-list" class="region-list"></div>
+        </div>
+      </div>
+
+      <!-- Affinity sub-selector (Potion Keeps / Iron Twins) -->
+      <div class="sidebar-section" id="affinity-section" style="display:none">
+        <div class="sidebar-label" id="affinity-label"></div>
+        <div class="sidebar-section-body">
+          <div id="affinity-list" class="region-list"></div>
+        </div>
+      </div>
+
+      <!-- Difficulty -->
+      <div class="sidebar-section" id="diff-section" style="display:none">
+        <div class="sidebar-label">Difficulty</div>
+        <div class="sidebar-section-body">
+          <div id="diff-buttons" class="diff-buttons"></div>
+        </div>
       </div>
 
       <!-- Stage list -->
       <div class="sidebar-section stage-section" id="stage-section" style="display:none">
         <div class="sidebar-label" id="stage-section-label">Stages</div>
-        <div id="stage-list" class="stage-list"></div>
+        <div class="sidebar-section-body">
+          <div id="stage-list" class="stage-list"></div>
+        </div>
       </div>
 
     </aside>
@@ -76,6 +92,7 @@
       <div id="stage-view" style="display:none">
         <div class="stage-header">
           <span id="stage-breadcrumb" class="stage-breadcrumb"></span>
+          <button id="view-toggle" class="view-toggle-btn" title="Switch view">⊞ Table</button>
         </div>
         <div id="waves-container" class="waves-container"></div>
       </div>
@@ -119,6 +136,11 @@
       <div class="em-separator"></div>
       <div id="em-skills" class="em-skills"></div>
     </div>
+  </div>
+
+  <!-- Breadcrumb dropdown -->
+  <div id="bc-dropdown" class="bc-dropdown" style="display:none">
+    <div id="bc-dropdown-list"></div>
   </div>
 
   <script src="/tools/stage-atlas/script.js"></script>

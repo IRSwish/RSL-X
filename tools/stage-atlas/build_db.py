@@ -68,8 +68,8 @@ def get_hero_info(hero_id: int) -> dict | None:
         'atk':       round(bs.get('Attack',           0) / FP),
         'def':       round(bs.get('Defence',          0) / FP),
         'spd':       round(bs.get('Speed',            0) / FP),
-        'crit_rate': round(bs.get('CriticalChance',   0) / FP * 100),
-        'crit_dmg':  round(bs.get('CriticalDamage',   0) / FP * 100),
+        'crit_rate': round(bs.get('CriticalChance',   0) / FP),
+        'crit_dmg':  round(bs.get('CriticalDamage',   0) / FP),
         'res':       round(bs.get('Resistance',       0) / FP),
         'acc':       round(bs.get('Accuracy',         0) / FP),
         'affinity':  ELEMENT_TO_AFFINITY.get(elem, ''),
@@ -84,7 +84,7 @@ def get_base_stats(hero_id): return get_hero_info(hero_id)
 # ---------------------------------------------------------------------------
 stages_by_id = {s['Id']: s for s in data['StageData']['Stages']}
 
-DIFFICULTIES = {1: 'Normal', 2: 'Hard', 3: 'Brutal', 4: 'Nightmare'}
+DIFFICULTIES = {1: 'Normal', 2: 'Hard', 3: 'Brutal', 4: 'Nightmare', 9: 'Normal'}
 
 # Display names for areas and regions
 AREA_NAMES = {
@@ -104,16 +104,25 @@ SKIP_AREAS = {3, 6, 9, 11}  # Arena, Tag Team Arena, Live Arena, Siege
 
 REGION_NAMES = {
     # Campaign Acts
-    101: 'Act 1',  102: 'Act 2',  103: 'Act 3',  104: 'Act 4',
-    105: 'Act 5',  106: 'Act 6',  107: 'Act 7',  108: 'Act 8',
-    109: 'Act 9',  110: 'Act 10', 111: 'Act 11', 112: 'Act 12',
+    101: 'Act 1 – Kaerok Castle',
+    102: 'Act 2 – Sewers of Arnoc',
+    103: 'Act 3 – Catacombs of Narbuk',
+    104: 'Act 4 – Durham Forest',
+    105: 'Act 5 – Felwin\'s Gate',
+    106: 'Act 6 – Palace of Aravia',
+    107: 'Act 7 – Tilshire',
+    108: 'Act 8 – Valdemar Strait',
+    109: 'Act 9 – The Deadlands',
+    110: 'Act 10 – Godfrey\'s Crossing',
+    111: 'Act 11 – Hallowed Halls',
+    112: 'Act 12 – Brimstone Path',
     # Dungeons
     201: 'Void Keep',         202: 'Spirit Keep',       203: 'Magic Keep',
     204: 'Force Keep',        205: 'Arcane Keep',
     206: "Dragon's Lair",     207: "Ice Golem's Peak",
     208: "Fire Knight's Castle", 209: "Spider's Den",   210: "Minotaur's Labyrinth",
-    211: 'Void Keep (DA)',    212: 'Spirit Keep (DA)',  213: 'Magic Keep (DA)',
-    214: 'Force Keep (DA)',   216: 'Artifact Dungeon',  217: 'Accessory Dungeon',
+    211: 'Iron Twins (Void)',  212: 'Iron Twins (Spirit)', 213: 'Iron Twins (Magic)',
+    214: 'Iron Twins (Force)', 216: "Sand Devil's Necropolis", 217: "Phantom Shogun's Grove",
     218: 'Event Dungeon',
     # Faction Wars
     501: 'Banner Lords',      502: 'High Elves',        503: 'Sacred Order',
