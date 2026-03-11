@@ -467,7 +467,9 @@ span.bc-seg { color: #d4af37; }
   font-weight: 600;
 }
 
-.stat-value.hp { color: #81c784; }
+.stat-value.hp      { color: #81c784; }
+.stat-value.stat-res { color: #64b5f6; cursor: help; }
+.stat-value.stat-acc { color: #ffb74d; cursor: help; }
 
 /* ── Scrollbar ───────────────────────────────────────────────────────────────── */
 .atlas-sidebar::-webkit-scrollbar,
@@ -587,7 +589,9 @@ span.bc-seg { color: #d4af37; }
 }
 .em-stat-label { color: #666; }
 .em-stat-value { color: #d0c8e8; font-weight: 600; }
-.em-hp { color: #81c784; }
+.em-hp  { color: #81c784; }
+.em-res { color: #64b5f6; cursor: help; }
+.em-acc { color: #ffb74d; cursor: help; }
 
 .em-separator {
   height: 1px;

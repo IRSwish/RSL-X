@@ -16,6 +16,17 @@ DAT_FILE = r'C:\Users\total\OneDrive\Desktop\rsl11.30.0.dat'
 DB_OUT   = Path(__file__).parent / 'stages.db'
 FP       = 4294967296  # 2^32 fixed-point
 
+# Stat formula: converted = base * MULTI1[grade] * MULTI2[grade]^((level-1)/(10*grade-1))
+# HP = Round(converted) * 15 ; ATK/DEF = Round(converted)
+_GM1 = {1: 1.0, 2: 1.60000002, 3: 2.43199992, 4: 3.5020796, 5: 4.76282883, 6: 6.47744703}
+_GM2 = {1: 2.0, 2: 1.89999998, 3: 1.79999995, 4: 1.70000005, 5: 1.70000005, 6: 1.70000005}
+
+def _conv(base, grade, level):
+    m1 = _GM1.get(grade, 1.0)
+    m2 = _GM2.get(grade, 2.0)
+    exp = (level - 1) / max(10 * grade - 1, 1)
+    return round(base * m1 * (m2 ** exp))
+
 # ---------------------------------------------------------------------------
 # Load
 # ---------------------------------------------------------------------------
@@ -96,7 +107,7 @@ AREA_NAMES = {
     8:  'Hydra Clan Boss',
     10: 'Cursed City',
     13: 'Chimera',
-    14: 'Foggy Forest',
+    14: 'Grim Forest',
 }
 
 # Areas to skip entirely (no meaningful stage data)
@@ -149,10 +160,10 @@ REGION_NAMES = {
     # Siege
     1101: 'Siege',
     # Chimera
-    1301: 'Chimera 1', 1302: 'Chimera 2', 1303: 'Chimera 3', 1304: 'Chimera 4',
-    # Foggy Forest
-    1401: 'Foggy Forest 1', 1402: 'Foggy Forest 2',
-    1403: 'Foggy Forest 3', 1404: 'Foggy Forest 4',
+    1301: 'Rotation 1', 1302: 'Rotation 2', 1303: 'Rotation 3', 1304: 'Rotation 4',
+    # Grim Forest
+    1401: 'Rotation 1', 1402: 'Rotation 2',
+    1403: 'Rotation 3', 1404: 'Rotation 4',
 }
 
 def resolve_name(obj, fallback: str) -> str:
@@ -191,7 +202,12 @@ cur.executescript("""
         slot      INTEGER,
         hero_id   INTEGER,
         grade     INTEGER,
-        level     INTEGER
+        level     INTEGER,
+        eff_hp    INTEGER,
+        eff_atk   INTEGER,
+        eff_def   INTEGER,
+        eff_res   INTEGER,
+        eff_acc   INTEGER
     );
 
     CREATE TABLE heroes (
@@ -255,6 +271,23 @@ for area in data['StageData']['Areas']:
                 for formation in stage.get('Formations', []):
                     all_slots.extend(formation.get('HeroSlotsSetup', []))
 
+                # Parse stage modifiers: {(wave, boss_only): {kind_id: [(value, is_abs)]}}
+                stage_mods = {}
+                for mod in stage.get('Modifiers', []):
+                    key = (mod.get('Round', 0), bool(mod.get('BossOnly', 0)))
+                    kind_id = mod['KindId']
+                    stage_mods.setdefault(key, {}).setdefault(kind_id, []).append(
+                        (mod['Value'], bool(mod.get('IsAbsolute', 0)))
+                    )
+
+                # Identify boss slot: sole hero in the last (highest) wave
+                wave_slot_counts = {}
+                for sl in all_slots:
+                    w = sl.get('Round', 1)
+                    wave_slot_counts[w] = wave_slot_counts.get(w, 0) + 1
+                boss_wave = max(wave_slot_counts) if wave_slot_counts else None
+                boss_is_single = boss_wave is not None and wave_slot_counts[boss_wave] == 1
+
                 for slot in all_slots:
                     hero_id = slot.get('HeroTypeId', 0)
                     if not hero_id:
@@ -263,15 +296,55 @@ for area in data['StageData']['Areas']:
                     level    = slot.get('Level', 1)
                     wave_idx = slot.get('Round', 1)
                     slot_idx = slot.get('Slot', 1)
+                    is_boss  = boss_is_single and wave_idx == boss_wave
+
+                    # Compute effective stats with stage modifiers applied
+                    info = get_hero_info(hero_id)
+                    if info and grade > 0:
+                        eff_hp  = _conv(info['hp'],  grade, level) * 15
+                        eff_atk = _conv(info['atk'], grade, level)
+                        eff_def = _conv(info['def'], grade, level)
+                        eff_res = info['res']
+                        eff_acc = info['acc']
+
+                        # Collect applicable mods for this hero (boss overrides non-boss)
+                        applied = {}
+                        for (w, boss_only), kinds in stage_mods.items():
+                            if w != wave_idx:
+                                continue
+                            if boss_only and not is_boss:
+                                continue
+                            for kk, mods in kinds.items():
+                                if boss_only:
+                                    applied[kk] = mods  # boss-specific overrides
+                                elif kk not in applied:
+                                    applied[kk] = mods
+
+                        for kk, mods in applied.items():
+                            for val, is_abs in mods:
+                                if kk == 1:   # HP
+                                    eff_hp  = round(val) if is_abs else round(eff_hp  * (1 + val))
+                                elif kk == 2: # ATK
+                                    eff_atk = round(val) if is_abs else round(eff_atk * (1 + val))
+                                elif kk == 3: # DEF
+                                    eff_def = round(val) if is_abs else round(eff_def * (1 + val))
+                                elif kk == 5: # RES (absolute = add to base)
+                                    eff_res = (eff_res + round(val)) if is_abs else round(eff_res * (1 + val))
+                                elif kk == 6: # ACC (absolute = add to base)
+                                    eff_acc = (eff_acc + round(val)) if is_abs else round(eff_acc * (1 + val))
+                    else:
+                        eff_hp = eff_atk = eff_def = eff_res = eff_acc = None
+
                     wave_rows.append(
-                        (stage_id, wave_idx, slot_idx, hero_id, grade, level)
+                        (stage_id, wave_idx, slot_idx, hero_id, grade, level,
+                         eff_hp, eff_atk, eff_def, eff_res, eff_acc)
                     )
                     hero_ids_seen.add(hero_id)
 
 cur.executemany(
     "INSERT OR IGNORE INTO stages VALUES (?,?,?,?,?,?,?,?)", stage_rows)
 cur.executemany(
-    "INSERT INTO waves (stage_id,wave,slot,hero_id,grade,level) VALUES (?,?,?,?,?,?)",
+    "INSERT INTO waves (stage_id,wave,slot,hero_id,grade,level,eff_hp,eff_atk,eff_def,eff_res,eff_acc) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
     wave_rows)
 
 print(f"  {len(stage_rows)} stages | {len(wave_rows)} wave slots | {len(hero_ids_seen)} unique heroes")

@@ -31,6 +31,19 @@ function convertedStat(baseStat, level, grade) {
 }
 
 function computeStats(hero, grade, level) {
+  // Use pre-computed effective stats from DB when available (includes stage modifiers)
+  if (hero.eff_hp != null) {
+    return {
+      hp:        hero.eff_hp,
+      atk:       hero.eff_atk,
+      def:       hero.eff_def,
+      spd:       hero.spd,
+      crit_rate: hero.crit_rate,
+      crit_dmg:  hero.crit_dmg,
+      res:       hero.eff_res,
+      acc:       hero.eff_acc,
+    };
+  }
   return {
     hp:        Math.round(convertedStat(hero.base_hp,  level, grade)) * 15,
     atk:       Math.round(convertedStat(hero.base_atk, level, grade)),
@@ -356,7 +369,16 @@ const MULTI_DIFF_DUNGEONS = new Set([206, 207, 208, 209]);
 const HERO_NAME_OVERRIDES = {
   1060: 'Rockbeast',
   1066: 'Rockbeast',
+  6550: 'Aleksandr the Sharpshooter',
+  7366: 'Ronda',
+  6553: 'Aleksandr the Sharpshooter',
+  6555: 'Aleksandr the Sharpshooter',
+  6556: 'Aleksandr the Sharpshooter',
+  6981: 'Cagebound',
   8686: 'Acelin the Stalwart',
+  2580: 'Jotunn',
+  2585: 'Jotunn',
+  2586: 'Jotunn',
   25310: 'The Disruptor Minion',
   25320: 'The Disruptor Minion',
   25330: 'The Mirrorer Minion',
@@ -373,8 +395,16 @@ const HERO_NAME_OVERRIDES = {
   25710: 'Tainted Mirrorer Minion',
   25720: 'Tainted Incinerator Minion',
   25730: 'Tainted Incinerator Minion',
+  22840: 'Klyssus Minion',
+  22850: 'Klyssus Minion',
   25210: 'Klyssus Minion',
   25220: 'Klyssus Minion',
+  22770: 'Tainted Klyssus Minion',
+  22780: 'Tainted Klyssus Minion',
+  23030: 'Tainted Klyssus Minion',
+  23040: 'Tainted Klyssus Minion',
+  23220: 'Tainted Klyssus Minion',
+  23230: 'Tainted Klyssus Minion',
   25640: 'Tainted Klyssus Minion',
   25650: 'Tainted Klyssus Minion',
   25270: 'Small Minotaur',
@@ -759,6 +789,7 @@ function loadStage(stageId) {
   // Wave data with hero info
   const waveRows = query(
     `SELECT w.wave, w.slot, w.hero_id, w.grade, w.level,
+            w.eff_hp, w.eff_atk, w.eff_def, w.eff_res, w.eff_acc,
             h.name, h.base_hp, h.base_atk, h.base_def,
             h.spd, h.crit_rate, h.crit_dmg, h.res, h.acc,
             h.affinity, h.rarity
@@ -986,8 +1017,8 @@ function renderEnemyCard(e) {
           <div class="stat-row"><span class="stat-label">SPD</span><span class="stat-value">${fmt(s.spd)}</span></div>
           <div class="stat-row"><span class="stat-label">C.Rate</span><span class="stat-value">${s.crit_rate}%</span></div>
           <div class="stat-row"><span class="stat-label">C.Dmg</span><span class="stat-value">${s.crit_dmg}%</span></div>
-          <div class="stat-row"><span class="stat-label">RES</span><span class="stat-value">${fmt(s.res)}</span></div>
-          <div class="stat-row"><span class="stat-label">ACC</span><span class="stat-value">${fmt(s.acc)}</span></div>
+          <div class="stat-row"><span class="stat-label">RES</span><span class="stat-value stat-res" title="Need ${s.res + 25} Accuracy for 95% debuff chance">${fmt(s.res)}</span></div>
+          <div class="stat-row"><span class="stat-label">ACC</span><span class="stat-value stat-acc" title="Need ${s.acc + 105} Resistance to resist 90% of debuffs">${fmt(s.acc)}</span></div>
         </div>
       </div>
 
@@ -1057,8 +1088,12 @@ function openEnemyModal(ds) {
   document.getElementById('em-spd').textContent   = (+ds.spd).toLocaleString();
   document.getElementById('em-crate').textContent = ds.critRate + '%';
   document.getElementById('em-cdmg').textContent  = ds.critDmg + '%';
-  document.getElementById('em-res').textContent   = (+ds.res).toLocaleString();
-  document.getElementById('em-acc').textContent   = (+ds.acc).toLocaleString();
+  const emRes = document.getElementById('em-res');
+  emRes.textContent = (+ds.res).toLocaleString();
+  emRes.title = `Need ${+ds.res + 25} Accuracy for 95% debuff chance`;
+  const emAcc = document.getElementById('em-acc');
+  emAcc.textContent = (+ds.acc).toLocaleString();
+  emAcc.title = `Need ${+ds.acc + 105} Resistance to resist 90% of debuffs`;
 
   // Skills (champ already fetched above)
   renderEnemyModalSkills(champ);
