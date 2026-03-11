@@ -13,7 +13,9 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:api.github.com)",
       "WebSearch",
-      "Bash(python -c \":*)"
+      "Bash(python -c \":*)",
+      "Bash(python3 -c \"print\\(''trying py''\\)\")",
+      "Bash(\"C:\\\\Users\\\\total\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python311\\\\python.exe\" \"C:\\\\Users\\\\total\\\\OneDrive\\\\Desktop\\\\RSL-X\\\\tools\\\\stage-atlas\\\\build_db.py\")"
     ],
     "deny": [],
     "ask": []

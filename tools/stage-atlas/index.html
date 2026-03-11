@@ -36,69 +36,59 @@
   </script>
 
   <!-- ── Layout ────────────────────────────────────────────────────────── -->
-  <div class="atlas-layout">
+  <div id="atlas-wrapper">
 
-    <!-- Sidebar -->
-    <aside class="atlas-sidebar">
+    <!-- Zone nav (big cards → compact strip on first click) -->
+    <div id="zone-nav" class="zone-nav"></div>
 
-      <!-- Area tabs -->
-      <div class="sidebar-section" id="area-section">
-        <div class="sidebar-label">Content</div>
-        <div class="sidebar-section-body">
-          <div id="area-tabs" class="area-tabs"></div>
-        </div>
+    <!-- Navigation strips (slide in as you drill down) -->
+    <div class="nav-strips">
+
+      <!-- Sub-area: Clan Boss / Hydra / Chimera -->
+      <div class="nav-strip" id="sub-area-section">
+        <span class="nav-strip-label" id="sub-area-label">Boss Type</span>
+        <div id="sub-area-list" class="strip-list"></div>
       </div>
 
-      <!-- Region / Act list -->
-      <div class="sidebar-section" id="region-section" style="display:none">
-        <div class="sidebar-label">Region</div>
-        <div class="sidebar-section-body">
-          <div id="region-list" class="region-list"></div>
-        </div>
+      <!-- Region / Chapter -->
+      <div class="nav-strip" id="region-section">
+        <span class="nav-strip-label">Region</span>
+        <div id="region-list" class="strip-list"></div>
       </div>
 
-      <!-- Affinity sub-selector (Potion Keeps / Iron Twins) -->
-      <div class="sidebar-section" id="affinity-section" style="display:none">
-        <div class="sidebar-label" id="affinity-label"></div>
-        <div class="sidebar-section-body">
-          <div id="affinity-list" class="region-list"></div>
-        </div>
+      <!-- Affinity (Iron Twins / Potion Keeps) -->
+      <div class="nav-strip" id="affinity-section">
+        <span class="nav-strip-label" id="affinity-label">Affinity</span>
+        <div id="affinity-list" class="strip-list"></div>
       </div>
 
       <!-- Difficulty -->
-      <div class="sidebar-section" id="diff-section" style="display:none">
-        <div class="sidebar-label">Difficulty</div>
-        <div class="sidebar-section-body">
-          <div id="diff-buttons" class="diff-buttons"></div>
-        </div>
+      <div class="nav-strip" id="diff-section">
+        <span class="nav-strip-label">Difficulty</span>
+        <div id="diff-buttons" class="strip-list diff-buttons"></div>
       </div>
 
-      <!-- Stage list -->
-      <div class="sidebar-section stage-section" id="stage-section" style="display:none">
-        <div class="sidebar-label" id="stage-section-label">Stages</div>
-        <div class="sidebar-section-body">
-          <div id="stage-list" class="stage-list"></div>
-        </div>
+      <!-- Stages -->
+      <div class="nav-strip nav-strip--stages" id="stage-section">
+        <span class="nav-strip-label" id="stage-section-label">Stages</span>
+        <div id="stage-list" class="strip-list stage-list"></div>
       </div>
 
-    </aside>
+    </div>
 
-    <!-- Main content -->
+    <!-- Main content (full width) -->
     <main class="atlas-main">
       <div id="main-placeholder" class="main-placeholder">
         <div class="placeholder-icon"><i data-lucide="map"></i></div>
         <div class="placeholder-text">Select a stage to view enemy data</div>
       </div>
       <div id="stage-view" style="display:none">
-        <div class="stage-header">
-          <span id="stage-breadcrumb" class="stage-breadcrumb"></span>
-          <button id="view-toggle" class="view-toggle-btn" title="Switch view">⊞ Table</button>
-        </div>
+        <div id="stage-req" class="stage-req"></div>
         <div id="waves-container" class="waves-container"></div>
       </div>
     </main>
 
-  </div>
+  </div><!-- /atlas-wrapper -->
 
   <!-- ── Enemy Modal ──────────────────────────────────────────────────── -->
   <div id="enemy-modal" class="enemy-modal-overlay">
@@ -138,11 +128,6 @@
     </div>
   </div>
 
-  <!-- Breadcrumb dropdown -->
-  <div id="bc-dropdown" class="bc-dropdown" style="display:none">
-    <div id="bc-dropdown-list"></div>
-  </div>
-
-  <script src="/tools/stage-atlas/script.js"></script>
+<script src="/tools/stage-atlas/script.js"></script>
 </body>
 </html>

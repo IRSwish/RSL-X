@@ -206,6 +206,7 @@ cur.executescript("""
         eff_hp    INTEGER,
         eff_atk   INTEGER,
         eff_def   INTEGER,
+        eff_spd   INTEGER,
         eff_res   INTEGER,
         eff_acc   INTEGER
     );
@@ -225,8 +226,23 @@ cur.executescript("""
         rarity    TEXT
     );
 
+    DROP TABLE IF EXISTS skills;
+
+    CREATE TABLE skills (
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        skill_id    INTEGER,
+        hero_id     INTEGER,
+        name        TEXT,
+        description TEXT,
+        multiplier  TEXT,
+        cooldown    INTEGER,
+        is_passive  INTEGER,
+        sort_order  INTEGER
+    );
+
     CREATE INDEX IF NOT EXISTS idx_waves_stage   ON waves(stage_id);
     CREATE INDEX IF NOT EXISTS idx_stages_region ON stages(region_id, difficulty);
+    CREATE INDEX IF NOT EXISTS idx_skills_hero   ON skills(hero_id);
 """)
 
 hero_ids_seen: set[int] = set()
@@ -304,6 +320,7 @@ for area in data['StageData']['Areas']:
                         eff_hp  = _conv(info['hp'],  grade, level) * 15
                         eff_atk = _conv(info['atk'], grade, level)
                         eff_def = _conv(info['def'], grade, level)
+                        eff_spd = info['spd']
                         eff_res = info['res']
                         eff_acc = info['acc']
 
@@ -328,23 +345,25 @@ for area in data['StageData']['Areas']:
                                     eff_atk = round(val) if is_abs else round(eff_atk * (1 + val))
                                 elif kk == 3: # DEF
                                     eff_def = round(val) if is_abs else round(eff_def * (1 + val))
+                                elif kk == 4: # SPD (absolute = add to base)
+                                    eff_spd = (eff_spd + round(val)) if is_abs else round(eff_spd * (1 + val))
                                 elif kk == 5: # RES (absolute = add to base)
                                     eff_res = (eff_res + round(val)) if is_abs else round(eff_res * (1 + val))
                                 elif kk == 6: # ACC (absolute = add to base)
                                     eff_acc = (eff_acc + round(val)) if is_abs else round(eff_acc * (1 + val))
                     else:
-                        eff_hp = eff_atk = eff_def = eff_res = eff_acc = None
+                        eff_hp = eff_atk = eff_def = eff_spd = eff_res = eff_acc = None
 
                     wave_rows.append(
                         (stage_id, wave_idx, slot_idx, hero_id, grade, level,
-                         eff_hp, eff_atk, eff_def, eff_res, eff_acc)
+                         eff_hp, eff_atk, eff_def, eff_spd, eff_res, eff_acc)
                     )
                     hero_ids_seen.add(hero_id)
 
 cur.executemany(
     "INSERT OR IGNORE INTO stages VALUES (?,?,?,?,?,?,?,?)", stage_rows)
 cur.executemany(
-    "INSERT INTO waves (stage_id,wave,slot,hero_id,grade,level,eff_hp,eff_atk,eff_def,eff_res,eff_acc) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+    "INSERT INTO waves (stage_id,wave,slot,hero_id,grade,level,eff_hp,eff_atk,eff_def,eff_spd,eff_res,eff_acc) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
     wave_rows)
 
 print(f"  {len(stage_rows)} stages | {len(wave_rows)} wave slots | {len(hero_ids_seen)} unique heroes")
@@ -378,6 +397,52 @@ cur.executemany("INSERT OR IGNORE INTO heroes VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
 
 if missing:
     print(f"  WARNING: {missing} hero IDs not found in HeroData")
+
+# ---------------------------------------------------------------------------
+# Skills
+# ---------------------------------------------------------------------------
+print("Processing skill data...")
+skills_by_id = {s['Id']: s for s in data['SkillData']['SkillTypes']}
+skill_rows   = []
+
+def _skill_str(obj) -> str:
+    if isinstance(obj, dict):
+        return obj.get('DefaultValue') or obj.get('En') or ''
+    return obj or ''
+
+def _is_placeholder(name: str, sid: int) -> bool:
+    return name == f'Skill {sid} name' or name.startswith('Skill ') and name[6:].isdigit()
+
+for hero_id in hero_ids_seen:
+    h = heroes_by_id.get(hero_id)
+    if not h or not h.get('Forms'):
+        continue
+    skill_ids = h['Forms'][0].get('SkillTypeIds', [])
+    for order, sid in enumerate(skill_ids):
+        sk = skills_by_id.get(sid)
+        if not sk:
+            continue
+        name_str = _skill_str(sk.get('Name', ''))
+        desc_str = _skill_str(sk.get('Description', ''))
+        if _is_placeholder(name_str, sid):
+            continue
+        # Filter placeholder descriptions
+        if _is_placeholder(desc_str, sid) or desc_str.startswith(f'Skill {sid}'):
+            desc_str = ''
+        # Extract first damage multiplier formula
+        mult_str = ''
+        for eff in sk.get('Effects', []):
+            if eff.get('KindId') == 6000:
+                mf = eff.get('MultiplierFormula', '')
+                if mf:
+                    mult_str = mf
+                    break
+        is_passive = 1 if sk.get('Group', 0) == 1 else 0
+        cooldown   = sk.get('Cooldown', 0)
+        skill_rows.append((sid, hero_id, name_str, desc_str, mult_str, cooldown, is_passive, order))
+
+cur.executemany("INSERT INTO skills (skill_id,hero_id,name,description,multiplier,cooldown,is_passive,sort_order) VALUES (?,?,?,?,?,?,?,?)", skill_rows)
+print(f"  {len(skill_rows)} skills for {len({r[1] for r in skill_rows})} heroes")
 
 conn.commit()
 conn.close()
