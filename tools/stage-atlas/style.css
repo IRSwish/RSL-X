@@ -337,11 +337,9 @@ html, body { overflow: hidden; height: 100%; }
 .req-pill.req-res .req-value { color: #ffb74d; }
 
 /* ── Stat row tooltip (RES / ACC on enemy cards) ─────────────────────────────── */
-.stat-raw {
-  font-size: 9px;
-  font-weight: 400;
-  color: #555;
-}
+.stat-raw { font-size: inherit; font-weight: inherit; }
+.stat-res .stat-raw { color: #ffb74d; } /* ACC color — needed to debuff */
+.stat-acc .stat-raw { color: #64b5f6; } /* RES color — needed to resist */
 .stat-row[title] { cursor: help; }
 
 

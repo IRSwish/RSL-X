@@ -829,11 +829,11 @@ function loadStage(stageId) {
   document.getElementById('stage-req').innerHTML =
     `<div class="req-pill req-acc" title="Enemy max RES: ${maxRes}">
        <span class="req-label">ACC for 95% debuff</span>
-       <span class="req-value">${maxRes + 25} <span class="req-raw">(${maxRes})</span></span>
+       <span class="req-value">${maxRes + 25}</span>
      </div>
      <div class="req-pill req-res" title="Enemy max ACC: ${maxAcc}">
        <span class="req-label">RES for 90% resist</span>
-       <span class="req-value">${maxAcc + 105} <span class="req-raw">(${maxAcc})</span></span>
+       <span class="req-value">${maxAcc + 105}</span>
      </div>`;
 
   currentStageNum = stage.stage_num;
