@@ -179,7 +179,7 @@ html, body { overflow: hidden; height: 100%; }
   top: 0; left: 0;
   box-sizing: border-box;
   pointer-events: none;
-  border-radius: 6px;
+  border-radius: 5px;
   border: 1px solid transparent;
   background: transparent;
   transition:
@@ -235,6 +235,8 @@ html, body { overflow: hidden; height: 100%; }
   gap: 4px;
   width: 100%;
   overflow-x: auto;
+  overflow-y: clip;
+  padding-bottom: 2px;
   scrollbar-width: none;
 }
 .strip-stage-row::-webkit-scrollbar { display: none; }
@@ -337,11 +339,13 @@ html, body { overflow: hidden; height: 100%; }
 .it-spirit { border-color: #4caf50 !important; }
 .it-magic  { border-color: #2196f3 !important; }
 .it-force  { border-color: #f44336 !important; }
+.it-arcane { border-color: #f5c518 !important; }
 
 .it-void.active   { color: #b39ddb !important; }
 .it-spirit.active { color: #81c784 !important; }
 .it-magic.active  { color: #64b5f6 !important; }
 .it-force.active  { color: #e57373 !important; }
+.it-arcane.active { color: #ffe082 !important; }
 
 /* ── Main area ───────────────────────────────────────────────────────────────── */
 .atlas-main {

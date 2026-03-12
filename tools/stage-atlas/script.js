@@ -338,16 +338,21 @@ function selectArea(areaId) {
   renderRegionList();
 }
 
+// Dungeon regular regions in game order
+const DUNGEON_ORDER = [210, 207, 209, 206, 208, 216, 217];
+
 // Regions grouped under a single button with affinity sub-selection
 const REGION_GROUPS = {
   potionKeeps: {
     label: 'Potion Keeps',
+    noIcon: true,
+    stayVisible: true,
     regions: [
-      { id: 201, affinity: 'Void'   },
       { id: 202, affinity: 'Spirit' },
+      { id: 205, affinity: 'Arcane' },
       { id: 203, affinity: 'Magic'  },
+      { id: 201, affinity: 'Void'   },
       { id: 204, affinity: 'Force'  },
-      { id: 205, affinity: null, label: 'Arcane' },
     ]
   },
   ironTwins: {
@@ -360,6 +365,8 @@ const REGION_GROUPS = {
     ]
   }
 };
+
+
 const GROUPED_IDS      = new Set(Object.values(REGION_GROUPS).flatMap(g => g.regions.map(r => r.id)));
 const REGION_TO_GROUP  = Object.fromEntries(Object.entries(REGION_GROUPS).flatMap(([k, g]) => g.regions.map(r => [r.id, k])));
 
@@ -433,6 +440,9 @@ const HERO_NAME_OVERRIDES = {
 };
 
 const REGION_NAME_OVERRIDES = {
+  // Dungeons
+  206: 'Dragon',      207: 'Ice Golem', 208: 'Fire Knight',
+  209: 'Spider',      210: 'Minotaur',  216: 'Sand Devil',  217: 'Shogun',
   // Clan Boss
   401: 'Demon Lord',
   // Doom Tower rotations
@@ -611,14 +621,21 @@ function renderRegionList(autoRegion = null) {
       return `<button class="region-btn region-btn--numbered" data-region="${r.id}" data-name="${subName}">${i + 1}</button>`;
     }).join('');
     document.getElementById('region-name-display').textContent = '';
+  } else if (selectedZoneKey === 'Dungeons') {
+    // Iron Twins → Potion Keeps (group btns) → dungeons in game order
+    html  = `<button class="region-btn group-btn" data-group="ironTwins">${REGION_GROUPS.ironTwins.label}</button>`;
+    html += `<button class="region-btn group-btn" data-group="potionKeeps">${REGION_GROUPS.potionKeeps.label}</button>`;
+    html += DUNGEON_ORDER.map(id => {
+      const r = regularRegions.find(rr => rr.id === id);
+      return r ? `<button class="region-btn" data-region="${r.id}">${r.name}</button>` : '';
+    }).join('');
   } else {
     html = regularRegions.map(r =>
       `<button class="region-btn" data-region="${r.id}">${r.name}</button>`
     ).join('');
-  }
-
-  for (const key of presentGroups) {
-    html += `<button class="region-btn group-btn" data-group="${key}">${REGION_GROUPS[key].label}</button>`;
+    for (const key of presentGroups) {
+      html += `<button class="region-btn group-btn" data-group="${key}">${REGION_GROUPS[key].label}</button>`;
+    }
   }
 
   el.innerHTML = html;
@@ -672,15 +689,15 @@ function openGroup(key, autoSelectId = null) {
 
   affList.innerHTML = group.regions.map(r => {
     const aff = r.affinity?.toLowerCase();
-    return `<button class="region-btn${aff ? ` it-btn it-${aff}` : ''}" data-region="${r.id}">
-      ${r.affinity ? `<img src="/tools/champions-index/img/affinity/${r.affinity}.webp" class="it-aff-icon" alt="">` : ''}
-      ${r.affinity || r.label || 'Arcane'}
-    </button>`;
+    const icon = (!group.noIcon && r.affinity)
+      ? `<img src="/tools/champions-index/img/affinity/${r.affinity}.webp" class="it-aff-icon" alt="">`
+      : '';
+    return `<button class="region-btn${aff ? ` it-btn it-${aff}` : ''}" data-region="${r.id}">${icon}${r.affinity || r.label || 'Arcane'}</button>`;
   }).join('');
 
   affList.querySelectorAll('.region-btn').forEach(btn =>
     btn.addEventListener('click', () => {
-      hideStrip('affinity-section');
+      if (!group.stayVisible) hideStrip('affinity-section');
       selectRegion(+btn.dataset.region);
     })
   );
@@ -701,7 +718,12 @@ function selectRegion(regionId) {
   );
   const activeRegionBtn = document.querySelector('#region-list .region-btn.active')
                        || document.querySelector('#affinity-list .region-btn.active');
-  if (activeRegionBtn) slideIndicator(activeRegionBtn.closest('.strip-list'), activeRegionBtn, '#d4af37', 'rgba(212,175,55,.1)');
+  if (activeRegionBtn) {
+    const affCls = [...activeRegionBtn.classList].find(c => /^it-/.test(c));
+    const border = affCls ? null : '#d4af37';
+    const bg     = affCls ? 'rgba(212,175,55,.08)' : 'rgba(212,175,55,.1)';
+    slideIndicator(activeRegionBtn.closest('.strip-list'), activeRegionBtn, border, bg);
+  }
 
   const diffs = query(
     `SELECT DISTINCT difficulty, diff_name FROM stages WHERE region_id=? ORDER BY CASE difficulty WHEN 9 THEN 1 ELSE difficulty END`,
