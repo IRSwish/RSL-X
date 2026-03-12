@@ -211,12 +211,25 @@ function onDbReady() {
     }
   }
 
+  // Remove "Act " prefix from Campaign region names
+  const campaignZone = ZONE_CARDS.find(z => z.key === 'Campaign');
+  if (campaignZone) {
+    for (const r of regions.filter(r => campaignZone.areaIds.includes(r.area_id))) {
+      r.name = r.name.replace(/^Act\s+/i, '').trim();
+    }
+  }
+
   renderZoneNav();
   if (window.lucide) lucide.createIcons();
 
 
-  // Enemy card click → modal (single delegate listener)
+  // Enemy card click → modal; wave label click → collapse
   document.getElementById('waves-container').addEventListener('click', e => {
+    const toggle = e.target.closest('.wave-toggle, .wave-label');
+    if (toggle) {
+      toggle.closest('.wave-block').classList.toggle('collapsed');
+      return;
+    }
     const card = e.target.closest('.enemy-card');
     if (!card || !card.dataset.heroId) return;
     openEnemyModal(card.dataset);
@@ -270,6 +283,9 @@ function selectZone(key) {
   selectedGroup   = null;
   currentStageNum = null;
 
+  const nameDisplay = document.getElementById('region-name-display');
+  if (nameDisplay) nameDisplay.textContent = '';
+
   document.querySelectorAll('.zone-card').forEach(b =>
     b.classList.toggle('active', b.dataset.zone === key)
   );
@@ -300,7 +316,11 @@ function renderSubAreaSection(zone) {
     `<button class="region-btn sub-area-btn" data-area="${a.id}">${AREA_DISPLAY_NAMES[a.name] ?? a.name}</button>`
   ).join('');
   el.querySelectorAll('.sub-area-btn').forEach(btn =>
-    btn.addEventListener('click', () => selectArea(+btn.dataset.area))
+    btn.addEventListener('click', () => {
+      el.querySelectorAll('.sub-area-btn').forEach(b => b.classList.toggle('active', b === btn));
+      slideIndicator(el, btn, '#d4af37', 'rgba(212,175,55,.1)');
+      selectArea(+btn.dataset.area);
+    })
   );
 }
 
@@ -434,6 +454,9 @@ const REGION_NAME_OVERRIDES = {
 const CB_VOID_STAGES = new Map([
   [1,'Easy'], [5,'Normal'], [9,'Hard'], [13,'Brutal'], [17,'Nightmare'], [21,'Ultra-Nightmare'],
 ]);
+const CB_DIFF_CLASS     = { 1:'easy', 5:'normal', 9:'hard', 13:'brutal', 17:'nightmare', 21:'nightmare' };
+const HYDRA_DIFF_CLASS  = { 1:'normal', 2:'hard', 3:'brutal', 4:'nightmare' };
+const CHIMERA_DIFF_CLASS = { 1:'easy', 2:'normal', 3:'hard', 4:'brutal', 5:'nightmare', 6:'nightmare' };
 
 // Hydra: 4 stages = difficulties
 const HYDRA_REGIONS      = new Set([801, 802, 803, 804, 805, 806]);
@@ -450,11 +473,11 @@ const DT_REGIONS = new Set([701, 702, 703]);
 const FW_REGIONS = new Set([501,502,503,505,506,507,508,509,510,511,512,513,514,515,516]);
 
 function stageLabel(stageNum, regionId) {
-  if (regionId === 401)           return CB_VOID_STAGES.get(stageNum)        ?? `Stage ${stageNum}`;
-  if (HYDRA_REGIONS.has(regionId))   return HYDRA_STAGE_LABELS[stageNum]   ?? `Stage ${stageNum}`;
-  if (CHIMERA_REGIONS.has(regionId)) return CHIMERA_STAGE_LABELS[stageNum] ?? `Stage ${stageNum}`;
+  if (regionId === 401)           return CB_VOID_STAGES.get(stageNum)        ?? `${stageNum}`;
+  if (HYDRA_REGIONS.has(regionId))   return HYDRA_STAGE_LABELS[stageNum]   ?? `${stageNum}`;
+  if (CHIMERA_REGIONS.has(regionId)) return CHIMERA_STAGE_LABELS[stageNum] ?? `${stageNum}`;
   if (DT_REGIONS.has(regionId))   return stageNum >= 121 ? `SR ${stageNum - 120}` : `Floor ${stageNum}`;
-  return `Stage ${stageNum}`;
+  return `${stageNum}`;
 }
 
 // ── Generic collapsible stage group renderer ──────────────────────────────────
@@ -467,7 +490,7 @@ function renderGroupedStages(allStages, list, groupSize) {
     groups.get(key).push(s);
   }
   renderHorizontalGroups(groups, list,
-    (_key, s) => `Stage ${s.stage_num}`,
+    (_key, s) => `${s.stage_num}`,
     (key)    => `${key}–${key + groupSize - 1}`
   );
 }
@@ -482,6 +505,8 @@ function renderHorizontalGroups(groups, list, stageLabel, groupLabel) {
     groupRow.querySelectorAll('.stage-group-btn').forEach(b =>
       b.classList.toggle('active', +b.dataset.key === key)
     );
+    const activeGroupBtn = groupRow.querySelector('.stage-group-btn.active');
+    if (activeGroupBtn) slideIndicator(groupRow, activeGroupBtn, '#d4af37', 'rgba(212,175,55,.1)');
     stageRow.innerHTML = (groups.get(key) || []).map(s =>
       `<button class="stage-btn" data-stage="${s.id}">${stageLabel(key, s)}</button>`
     ).join('');
@@ -508,6 +533,14 @@ function renderHorizontalGroups(groups, list, stageLabel, groupLabel) {
 
 // ── Difficulty buttons ────────────────────────────────────────────────────────
 const DIFF_COLORS = { 1:'normal', 2:'hard', 3:'brutal', 4:'nightmare' };
+// Diff pill: background only (no border — button already has its own colored border)
+const DIFF_IND = {
+  easy:      { bg: 'rgba(158,158,158,.18)' },
+  normal:    { bg: 'rgba(76,175,80,.18)'   },
+  hard:      { bg: 'rgba(33,150,243,.18)'  },
+  brutal:    { bg: 'rgba(255,152,0,.18)'   },
+  nightmare: { bg: 'rgba(244,67,54,.18)'   },
+};
 
 function renderDiffButtons(diffs, autoSelect = true) {
   const el = document.getElementById('diff-buttons');
@@ -528,10 +561,15 @@ function selectDiff(diff) {
   const prevRegion = selectedRegion;
   selectedDiff     = diff;
   selectedRegion   = null;
-
   document.querySelectorAll('.diff-btn').forEach(b =>
     b.classList.toggle('active', +b.dataset.diff === diff)
   );
+  const activeDiffBtn = document.querySelector('.diff-btn.active');
+  if (activeDiffBtn) {
+    const cls = [...activeDiffBtn.classList].find(c => c.startsWith('diff-') && c !== 'diff-btn');
+    const ind = DIFF_IND[cls?.replace('diff-', '')] ?? { bg: 'rgba(212,175,55,.15)' };
+    slideIndicator(document.getElementById('diff-buttons'), activeDiffBtn, null, ind.bg);
+  }
 
   if (prevRegion) {
     // Region already selected (dungeon flow or re-selecting diff in campaign)
@@ -555,6 +593,7 @@ function renderRegionList(autoRegion = null) {
   }
 
   const el = document.getElementById('region-list');
+  const isCampaign = selectedZoneKey === 'Campaign';
 
   // Collect which groups are present in this area
   const presentGroups = new Set();
@@ -564,9 +603,19 @@ function renderRegionList(autoRegion = null) {
     else regularRegions.push(r);
   }
 
-  let html = regularRegions.map(r =>
-    `<button class="region-btn" data-region="${r.id}">${r.name}</button>`
-  ).join('');
+  let html;
+  if (isCampaign) {
+    // Numbered buttons — name shown in display below, not inside button (avoids width-change bug)
+    html = regularRegions.map((r, i) => {
+      const subName = r.name.replace(/^\d+\s*[-–\.]\s*/, '').trim() || r.name;
+      return `<button class="region-btn region-btn--numbered" data-region="${r.id}" data-name="${subName}">${i + 1}</button>`;
+    }).join('');
+    document.getElementById('region-name-display').textContent = '';
+  } else {
+    html = regularRegions.map(r =>
+      `<button class="region-btn" data-region="${r.id}">${r.name}</button>`
+    ).join('');
+  }
 
   for (const key of presentGroups) {
     html += `<button class="region-btn group-btn" data-group="${key}">${REGION_GROUPS[key].label}</button>`;
@@ -578,6 +627,9 @@ function renderRegionList(autoRegion = null) {
   el.querySelectorAll('.region-btn:not(.group-btn)').forEach(btn =>
     btn.addEventListener('click', () => {
       hideStrip('affinity-section');
+      if (isCampaign && btn.dataset.name) {
+        document.getElementById('region-name-display').textContent = btn.dataset.name;
+      }
       selectRegion(+btn.dataset.region);
     })
   );
@@ -594,6 +646,10 @@ function renderRegionList(autoRegion = null) {
       );
       openGroup(key, autoRegion);
     } else {
+      if (isCampaign) {
+        const btn = el.querySelector(`[data-region="${autoRegion}"]`);
+        if (btn?.dataset.name) document.getElementById('region-name-display').textContent = btn.dataset.name;
+      }
       selectRegion(autoRegion);
     }
   } else {
@@ -643,6 +699,9 @@ function selectRegion(regionId) {
   document.querySelectorAll('#affinity-list .region-btn').forEach(b =>
     b.classList.toggle('active', +b.dataset.region === regionId)
   );
+  const activeRegionBtn = document.querySelector('#region-list .region-btn.active')
+                       || document.querySelector('#affinity-list .region-btn.active');
+  if (activeRegionBtn) slideIndicator(activeRegionBtn.closest('.strip-list'), activeRegionBtn, '#d4af37', 'rgba(212,175,55,.1)');
 
   const diffs = query(
     `SELECT DISTINCT difficulty, diff_name FROM stages WHERE region_id=? ORDER BY CASE difficulty WHEN 9 THEN 1 ELSE difficulty END`,
@@ -676,6 +735,12 @@ function selectRegion(regionId) {
     document.querySelectorAll('.diff-btn').forEach(b =>
       b.classList.toggle('active', +b.dataset.diff === selectedDiff)
     );
+    const activeDiffBtn = document.querySelector('.diff-btn.active');
+    if (activeDiffBtn) {
+      const cls = [...activeDiffBtn.classList].find(c => c.startsWith('diff-') && c !== 'diff-btn');
+      const ind = DIFF_IND[cls?.replace('diff-', '')] ?? { border: '#d4af37', bg: 'rgba(212,175,55,.1)' };
+      slideIndicator(document.getElementById('diff-buttons'), activeDiffBtn, ind.border, ind.bg);
+    }
   } else {
     hideStrip('diff-section');
     selectedDiff = diffs[0].difficulty;
@@ -697,15 +762,17 @@ function renderStageList(regionId) {
 
   if (!allStages.length) { hideStrip('stage-section'); return; }
   showStrip('stage-section');
+  list.classList.remove('diff-mode', 'fw-list');
 
   // ── Clan Boss: Void stages only ───────────────────────────────────────────
   if (regionId === 401) {
     const stages = allStages.filter(s => CB_VOID_STAGES.has(s.stage_num));
     label.textContent = 'Difficulty';
+    list.classList.add('diff-mode');
     list.innerHTML = stages.map(s =>
-      `<button class="stage-btn" data-stage="${s.id}">${CB_VOID_STAGES.get(s.stage_num)}</button>`
+      `<button class="diff-btn diff-${CB_DIFF_CLASS[s.stage_num] ?? 'normal'}" data-stage="${s.id}">${CB_VOID_STAGES.get(s.stage_num)}</button>`
     ).join('');
-    list.querySelectorAll('.stage-btn').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
+    list.querySelectorAll('[data-stage]').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
     const target = currentStageNum && stages.find(s => s.stage_num === currentStageNum);
     if (target) loadStage(target.id); else clearStageView();
     return;
@@ -714,10 +781,11 @@ function renderStageList(regionId) {
   // ── Hydra ─────────────────────────────────────────────────────────────────
   if (HYDRA_REGIONS.has(regionId)) {
     label.textContent = 'Difficulty';
+    list.classList.add('diff-mode');
     list.innerHTML = allStages.map(s =>
-      `<button class="stage-btn" data-stage="${s.id}">${HYDRA_STAGE_LABELS[s.stage_num] ?? `Stage ${s.stage_num}`}</button>`
+      `<button class="diff-btn diff-${HYDRA_DIFF_CLASS[s.stage_num] ?? 'normal'}" data-stage="${s.id}">${HYDRA_STAGE_LABELS[s.stage_num] ?? s.stage_num}</button>`
     ).join('');
-    list.querySelectorAll('.stage-btn').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
+    list.querySelectorAll('[data-stage]').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
     const target = currentStageNum && allStages.find(s => s.stage_num === currentStageNum);
     if (target) loadStage(target.id); else clearStageView();
     return;
@@ -726,25 +794,26 @@ function renderStageList(regionId) {
   // ── Chimera ───────────────────────────────────────────────────────────────
   if (CHIMERA_REGIONS.has(regionId)) {
     label.textContent = 'Difficulty';
+    list.classList.add('diff-mode');
     list.innerHTML = allStages.map(s =>
-      `<button class="stage-btn" data-stage="${s.id}">${CHIMERA_STAGE_LABELS[s.stage_num] ?? `Stage ${s.stage_num}`}</button>`
+      `<button class="diff-btn diff-${CHIMERA_DIFF_CLASS[s.stage_num] ?? 'normal'}" data-stage="${s.id}">${CHIMERA_STAGE_LABELS[s.stage_num] ?? s.stage_num}</button>`
     ).join('');
-    list.querySelectorAll('.stage-btn').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
+    list.querySelectorAll('[data-stage]').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
     const target = currentStageNum && allStages.find(s => s.stage_num === currentStageNum);
     if (target) loadStage(target.id); else clearStageView();
     return;
   }
 
-  // ── Faction Wars: horizontal 2-row groups of 7 ───────────────────────────
+  // ── Faction Wars: flat list (no wrapping – scroll horizontally) ──────────
   if (FW_REGIONS.has(regionId)) {
-    label.textContent = `Stages`;
-    renderGroupedStages(allStages, list, 7);
+    list.classList.add('fw-list');
+    label.textContent = `Stages (${allStages.length})`;
+    list.innerHTML = allStages.map(s =>
+      `<button class="stage-btn" data-stage="${s.id}">${s.stage_num}</button>`
+    ).join('');
+    list.querySelectorAll('.stage-btn').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
     const target = currentStageNum && allStages.find(s => s.stage_num === currentStageNum);
-    if (target) {
-      const key = Math.floor((target.stage_num - 1) / 7) * 7 + 1;
-      list.querySelector(`.stage-group-btn[data-key="${key}"]`)?.click();
-      loadStage(target.id);
-    } else clearStageView();
+    if (target) loadStage(target.id); else clearStageView();
     return;
   }
 
@@ -757,9 +826,9 @@ function renderStageList(regionId) {
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(s);
     }
-    renderHorizontalGroups(groups, list, (key, s) =>
-      key === 121 ? `SR ${s.stage_num - 120}` : `Floor ${s.stage_num}`,
-      (key) => key === 121 ? 'SR' : `${key}–${key + 9}`
+    renderHorizontalGroups(groups, list,
+      (key, s) => key === 121 ? `${s.stage_num - 120}` : `${s.stage_num}`,
+      (key)    => key === 121 ? 'Secret Rooms' : `${key}–${key + 9}`
     );
     const target = currentStageNum && allStages.find(s => s.stage_num === currentStageNum);
     if (target) {
@@ -773,11 +842,48 @@ function renderStageList(regionId) {
   // ── Default ───────────────────────────────────────────────────────────────
   label.textContent = `Stages (${allStages.length})`;
   list.innerHTML = allStages.map(s =>
-    `<button class="stage-btn" data-stage="${s.id}">Stage ${s.stage_num}</button>`
+    `<button class="stage-btn" data-stage="${s.id}">${s.stage_num}</button>`
   ).join('');
   list.querySelectorAll('.stage-btn').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
   const target = currentStageNum && allStages.find(s => s.stage_num === currentStageNum);
   if (target) loadStage(target.id); else clearStageView();
+}
+
+// ── Sliding button indicator ───────────────────────────────────────────────────
+function slideIndicator(container, activeBtn, borderColor, bgColor) {
+  if (!container || !activeBtn) return;
+  // Defer so rects are valid after strip becomes visible (double-rAF like showStrip)
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    let pill = container.querySelector(':scope > .btn-indicator');
+    const isNew = !pill;
+    if (isNew) {
+      pill = document.createElement('div');
+      pill.className = 'btn-indicator';
+      pill.style.transition = 'none';
+      container.appendChild(pill);
+    }
+    const cr = container.getBoundingClientRect();
+    const br = activeBtn.getBoundingClientRect();
+    pill.style.width     = br.width  + 'px';
+    pill.style.height    = br.height + 'px';
+    pill.style.top       = (br.top  - cr.top  + container.scrollTop)  + 'px';
+    pill.style.transform = `translateX(${br.left - cr.left + container.scrollLeft}px)`;
+    pill.style.borderColor = borderColor || 'transparent';
+    pill.style.background  = bgColor     || 'transparent';
+    if (isNew) requestAnimationFrame(() => { pill.style.transition = ''; });
+  }));
+}
+
+// ── Stage view transitions ─────────────────────────────────────────────────────
+function animateStageView(dir) {
+  const cls = dir === 'right' ? 'sv-from-right' : dir === 'left' ? 'sv-from-left' : 'sv-fade';
+  for (const id of ['stage-req', 'waves-container']) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    el.classList.remove('sv-from-left', 'sv-from-right', 'sv-fade');
+    void el.offsetWidth;
+    el.classList.add(cls);
+  }
 }
 
 // ── Stage view ────────────────────────────────────────────────────────────────
@@ -787,9 +893,25 @@ function clearStageView() {
 }
 
 function loadStage(stageId) {
-  document.querySelectorAll('.stage-btn').forEach(b =>
+  // Determine slide direction before clearing active states
+  const oldBtn = document.querySelector('[data-stage].active');
+  const newBtn = document.querySelector(`[data-stage="${stageId}"]`);
+  let dir = 'fade';
+  if (oldBtn && newBtn && oldBtn !== newBtn) {
+    dir = newBtn.getBoundingClientRect().left > oldBtn.getBoundingClientRect().left ? 'right' : 'left';
+  }
+
+  document.querySelectorAll('[data-stage]').forEach(b =>
     b.classList.toggle('active', +b.dataset.stage === stageId)
   );
+  const activeStageBtn = document.querySelector('[data-stage].active');
+  if (activeStageBtn) {
+    const isDiff = activeStageBtn.classList.contains('diff-btn');
+    const cls    = isDiff && [...activeStageBtn.classList].find(c => c.startsWith('diff-') && c !== 'diff-btn');
+    const bg     = isDiff ? (DIFF_IND[cls?.replace('diff-', '')]?.bg ?? 'rgba(212,175,55,.15)') : 'rgba(212,175,55,.1)';
+    slideIndicator(activeStageBtn.closest('.strip-list, .strip-stage-row, .diff-buttons'), activeStageBtn,
+      isDiff ? null : '#d4af37', bg);
+  }
 
   // Stage meta
   const [stage] = query('SELECT * FROM stages WHERE id=?', [stageId]);
@@ -842,6 +964,7 @@ function loadStage(stageId) {
 
   document.getElementById('main-placeholder').style.display = 'none';
   document.getElementById('stage-view').style.display       = '';
+  animateStageView(dir);
 
   if (window.lucide) lucide.createIcons();
 }
@@ -906,7 +1029,10 @@ function renderWave(waveNum, enemies) {
   const cards = enemies.map(e => renderEnemyCard(e)).join('');
   return `
     <div class="wave-block">
-      <div class="wave-label">Wave ${waveNum}</div>
+      <div class="wave-label">
+        Wave ${waveNum}
+        <button class="wave-toggle" aria-label="Toggle wave"><i data-lucide="chevron-down"></i></button>
+      </div>
       <div class="wave-cards">${cards}</div>
     </div>`;
 }
