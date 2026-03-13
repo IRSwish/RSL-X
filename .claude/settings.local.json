@@ -16,7 +16,13 @@
       "Bash(python -c \":*)",
       "Bash(python3 -c \"print\\(''trying py''\\)\")",
       "Bash(\"C:\\\\Users\\\\total\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python311\\\\python.exe\" \"C:\\\\Users\\\\total\\\\OneDrive\\\\Desktop\\\\RSL-X\\\\tools\\\\stage-atlas\\\\build_db.py\")",
-      "Bash(/c/Users/total/AppData/Roaming/Elgato/StreamDeck/NodeJS/20.20.0/node.exe -e \":*)"
+      "Bash(/c/Users/total/AppData/Roaming/Elgato/StreamDeck/NodeJS/20.20.0/node.exe -e \":*)",
+      "Bash(where python:*)",
+      "Bash(where py:*)",
+      "Bash(ls /c/Python*/python.exe)",
+      "Read(//usr/**)",
+      "Bash(grep -o [0-9]+[.]*[0-9]*[[:space:]]*[Mm] C:Userstotal.claudeprojectsc--Users-total-OneDrive-Desktop-RSL-X4f42656c-2590-4eb4-8fd6-dea824b665cc.jsonl)",
+      "Bash(python3 -c \"import sys; line=sys.stdin.read\\(\\); print\\(line[:3000]\\)\")"
     ],
     "deny": [],
     "ask": []

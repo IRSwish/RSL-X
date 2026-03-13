@@ -12,6 +12,7 @@ let selectedDiff    = null;
 let selectedRegion  = null;
 let selectedGroup   = null;
 let currentStageNum = null;
+let currentStage    = null;
 let tableView      = false;
 let currentWaveMap = null;
 let champDb        = null;
@@ -243,6 +244,40 @@ function onDbReady() {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeEnemyModal();
   });
+
+  // Drag-to-scroll for horizontal nav strips (works on dynamically created rows too)
+  {
+    const DRAG_SELECTOR = '.strip-list, .strip-group-row, .strip-stage-row, #zone-nav';
+    let dragEl = null, startX = 0, startScroll = 0, hasDragged = false;
+
+    // Use capture so we intercept mousedown before buttons handle it
+    document.addEventListener('mousedown', e => {
+      if (e.button !== 0) return;
+      const target = e.target.closest(DRAG_SELECTOR);
+      if (!target) return;
+      dragEl      = target;
+      startX      = e.pageX;
+      startScroll = dragEl.scrollLeft;
+      hasDragged  = false;
+      dragEl.style.userSelect = 'none';
+    }, true);
+
+    document.addEventListener('mousemove', e => {
+      if (!dragEl) return;
+      const dx = e.pageX - startX;
+      if (Math.abs(dx) > 4) hasDragged = true;
+      if (hasDragged) dragEl.scrollLeft = startScroll - dx;
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (dragEl) { dragEl.style.userSelect = ''; dragEl = null; }
+    });
+
+    // Swallow click after a drag so buttons don't fire
+    document.addEventListener('click', e => {
+      if (hasDragged) { e.stopPropagation(); e.preventDefault(); hasDragged = false; }
+    }, true);
+  }
 }
 
 // ── Area tabs ─────────────────────────────────────────────────────────────────
@@ -357,6 +392,7 @@ const REGION_GROUPS = {
   },
   ironTwins: {
     label: 'Iron Twins',
+    noIcon: true,
     regions: [
       { id: 211, affinity: 'Void'   },
       { id: 212, affinity: 'Spirit' },
@@ -472,9 +508,173 @@ const CHIMERA_DIFF_CLASS = { 1:'easy', 2:'normal', 3:'hard', 4:'brutal', 5:'nigh
 const HYDRA_REGIONS      = new Set([801, 802, 803, 804, 805, 806]);
 const HYDRA_STAGE_LABELS = { 1:'Normal', 2:'Hard', 3:'Brutal', 4:'Nightmare' };
 
-// Chimera: 6 stages = difficulties
+// Chimera: 6 stages = difficulties, 4 rotations = region_ids
 const CHIMERA_REGIONS      = new Set([1301, 1302, 1303, 1304]);
 const CHIMERA_STAGE_LABELS = { 1:'Easy', 2:'Normal', 3:'Hard', 4:'Brutal', 5:'Nightmare', 6:'Ultra-Nightmare' };
+// Per-rotation affinities: { ultimate, forms (Ram/Lion/Viper share same aff) }
+const CHIMERA_ROTATIONS = {
+  1301: { ultimate:'void',   forms:'force'  },
+  1302: { ultimate:'force',  forms:'magic'  },
+  1303: { ultimate:'magic',  forms:'spirit' },
+  1304: { ultimate:'spirit', forms:'void'   },
+};
+
+const HYDRA_STATS = {
+  1: [
+    {name:'Head of Decay',    hp:1010467, atk:5589,  def:2528,  spd:190, res:120, acc:190, cr:15, cd:50},
+    {name:'Head of Torment',  hp:686120,  atk:7685,  def:1597,  spd:160, res:80,  acc:150, cr:15, cd:50},
+    {name:'Head of Mischief', hp:611270,  atk:6786,  def:1464,  spd:210, res:60,  acc:250, cr:15, cd:50},
+    {name:'Head of Wrath',    hp:923143,  atk:5389,  def:2195,  spd:140, res:110, acc:210, cr:15, cd:50},
+    {name:'Head of Suffering',hp:1372239, atk:4691,  def:6853,  spd:100, res:140, acc:90,  cr:15, cd:50},
+    {name:'Head of Blight',   hp:848293,  atk:6387,  def:1996,  spd:180, res:100, acc:220, cr:15, cd:50},
+  ],
+  2: [
+    {name:'Head of Decay',    hp:2030922, atk:6690,  def:3743,  spd:200, res:170, acc:220, cr:15, cd:50},
+    {name:'Head of Torment',  hp:1493325, atk:9199,  def:2150,  spd:170, res:130, acc:180, cr:15, cd:50},
+    {name:'Head of Mischief', hp:1194660, atk:8124,  def:2071,  spd:220, res:110, acc:310, cr:15, cd:50},
+    {name:'Head of Wrath',    hp:1836790, atk:6451,  def:3186,  spd:150, res:160, acc:240, cr:15, cd:50},
+    {name:'Head of Suffering',hp:2717852, atk:5615,  def:8442,  spd:110, res:190, acc:120, cr:15, cd:50},
+    {name:'Head of Blight',   hp:1687457, atk:7646,  def:2787,  spd:190, res:150, acc:250, cr:15, cd:50},
+  ],
+  3: [
+    {name:'Head of Decay',    hp:3059128, atk:7520,  def:4649,  spd:210, res:235, acc:265, cr:15, cd:50},
+    {name:'Head of Torment',  hp:2255893, atk:10527, def:3099,  spd:180, res:195, acc:225, cr:15, cd:50},
+    {name:'Head of Mischief', hp:1845731, atk:9297,  def:2735,  spd:230, res:175, acc:345, cr:15, cd:50},
+    {name:'Head of Wrath',    hp:2734416, atk:7383,  def:4011,  spd:160, res:225, acc:285, cr:15, cd:50},
+    {name:'Head of Suffering',hp:4152894, atk:6426,  def:9571,  spd:120, res:255, acc:165, cr:15, cd:50},
+    {name:'Head of Blight',   hp:2546425, atk:8750,  def:3828,  spd:200, res:215, acc:295, cr:15, cd:50},
+  ],
+  4: [
+    {name:'Head of Decay',    hp:3813873, atk:8606,  def:6259,  spd:220, res:315, acc:300, cr:15, cd:50},
+    {name:'Head of Torment',  hp:2992428, atk:11892, def:3964,  spd:190, res:275, acc:255, cr:15, cd:50},
+    {name:'Head of Mischief', hp:2483910, atk:10640, def:3547,  spd:250, res:255, acc:350, cr:15, cd:50},
+    {name:'Head of Wrath',    hp:3579178, atk:8449,  def:5007,  spd:170, res:305, acc:320, cr:15, cd:50},
+    {name:'Head of Suffering',hp:5143846, atk:7354,  def:11057, spd:140, res:335, acc:200, cr:15, cd:50},
+    {name:'Head of Blight',   hp:3481386, atk:10014, def:5320,  spd:210, res:295, acc:330, cr:15, cd:50},
+  ],
+};
+
+const HYDRA_ROTATIONS = {
+  801: [
+    {name:'Head of Decay',    aff:'force'},
+    {name:'Head of Torment',  aff:'magic'},
+    {name:'Head of Suffering',aff:'spirit'},
+    {name:'Head of Mischief', aff:'spirit'},
+    {name:'Head of Blight',   aff:'magic',  extra:true},
+    {name:'Head of Wrath',    aff:'force',  extra:true},
+  ],
+  802: [
+    {name:'Head of Blight',   aff:'force'},
+    {name:'Head of Torment',  aff:'spirit'},
+    {name:'Head of Mischief', aff:'force'},
+    {name:'Head of Wrath',    aff:'magic'},
+    {name:'Head of Decay',    aff:'magic',  extra:true},
+    {name:'Head of Suffering',aff:'force',  extra:true},
+  ],
+  803: [
+    {name:'Head of Decay',    aff:'spirit'},
+    {name:'Head of Blight',   aff:'magic'},
+    {name:'Head of Suffering',aff:'magic'},
+    {name:'Head of Wrath',    aff:'spirit'},
+    {name:'Head of Torment',  aff:'force',  extra:true},
+    {name:'Head of Mischief', aff:'force',  extra:true},
+  ],
+  804: [
+    {name:'Head of Decay',    aff:'force'},
+    {name:'Head of Blight',   aff:'magic'},
+    {name:'Head of Mischief', aff:'spirit'},
+    {name:'Head of Wrath',    aff:'magic'},
+    {name:'Head of Torment',  aff:'spirit', extra:true},
+    {name:'Head of Suffering',aff:'force',  extra:true},
+  ],
+  805: [
+    {name:'Head of Decay',    aff:'magic'},
+    {name:'Head of Blight',   aff:'force'},
+    {name:'Head of Suffering',aff:'force'},
+    {name:'Head of Mischief', aff:'spirit'},
+    {name:'Head of Torment',  aff:'magic',  extra:true},
+    {name:'Head of Wrath',    aff:'spirit', extra:true},
+  ],
+  806: [
+    {name:'Head of Decay',    aff:'spirit'},
+    {name:'Head of Torment',  aff:'force'},
+    {name:'Head of Mischief', aff:'magic'},
+    {name:'Head of Wrath',    aff:'force'},
+    {name:'Head of Suffering',aff:'spirit', extra:true},
+    {name:'Head of Blight',   aff:'magic',  extra:true},
+  ],
+};
+
+const CHIMERA_FORMS = {
+  1: {
+    ultimate: {atk:1578,  def:1216, res:100, acc:100},
+    ram:      {atk:1894,  def:1475, res:150, acc:200},
+    lion:     {atk:3156,  def:868,  cr:45,   res:100, acc:125},
+    viper:    {atk:2210,  def:1042, res:125, acc:150},
+  },
+  2: {
+    ultimate: {atk:2474,  def:1905, res:150, acc:150},
+    ram:      {atk:2968,  def:2313, res:200, acc:250},
+    lion:     {atk:4948,  def:1361, cr:45,   res:150, acc:175},
+    viper:    {atk:3464,  def:1632, res:175, acc:200},
+  },
+  3: {
+    ultimate: {atk:3878,  def:2987, res:200, acc:200},
+    ram:      {atk:4654,  def:3627, res:250, acc:300},
+    lion:     {atk:7758,  def:2133, cr:45,   res:200, acc:225},
+    viper:    {atk:5430,  def:2560, res:225, acc:250},
+  },
+  4: {
+    ultimate: {atk:6082,  def:4683, res:250, acc:250},
+    ram:      {atk:7298,  def:5686, res:300, acc:350},
+    lion:     {atk:12162, def:3345, cr:45,   res:250, acc:275},
+    viper:    {atk:8514,  def:4014, res:275, acc:300},
+  },
+  5: {
+    ultimate: {atk:8960,  def:6411, res:350, acc:350},
+    ram:      {atk:10753, def:7786, res:400, acc:450},
+    lion:     {atk:17919, def:4579, cr:45,   res:350, acc:375},
+    viper:    {atk:12544, def:5496, res:375, acc:400},
+  },
+  6: {
+    ultimate: {atk:11918, def:8009, res:400, acc:400},
+    ram:      {atk:14300, def:9725, res:450, acc:500},
+    lion:     {atk:23835, def:5720, cr:45,   res:400, acc:425},
+    viper:    {atk:16685, def:6864, res:425, acc:450},
+  },
+};
+
+const CLAN_BOSS_STATS = {
+  1:  {asc:'0/2', lvl:60,  hp:19021215,   atk:1350, def:294,  spd:90,  res:30,  acc:0},
+  5:  {asc:'1/3', lvl:90,  hp:60616860,   atk:1699, def:369,  spd:120, res:50,  acc:30},
+  9:  {asc:'2/4', lvl:120, hp:194130195,  atk:2033, def:442,  spd:140, res:75,  acc:40},
+  13: {asc:'3/5', lvl:150, hp:361551060,  atk:2750, def:598,  spd:160, res:100, acc:75},
+  17: {asc:'6/6', lvl:185, hp:652752210,  atk:3898, def:847,  spd:170, res:150, acc:150},
+  21: {asc:'6/6', lvl:250, hp:1171204605, atk:6993, def:1520, spd:190, res:225, acc:225},
+};
+
+const CB_REWARDS = {
+  1:  [{tier:'Novice',      range:'286K – 381K'},    {tier:'Novice',      range:'381K – 761K'},    {tier:'Adept',        range:'761K – 1.15M'},    {tier:'Warrior',      range:'Over 1.15M'}],
+  5:  [{tier:'Adept',       range:'810K – 1.22M'},   {tier:'Adept',       range:'1.22M – 2.43M'},  {tier:'Warrior',      range:'2.43M – 3.64M'},   {tier:'Knight',       range:'Over 3.64M'}],
+  9:  [{tier:'Warrior',     range:'2.92M – 3.89M'},  {tier:'Warrior',     range:'3.89M – 7.77M'},  {tier:'Knight',       range:'7.77M – 11.65M'},  {tier:'Guardian',     range:'Over 11.65M'}],
+  13: [{tier:'Knight',      range:'5.43M – 7.24M'},  {tier:'Guardian',    range:'7.24M – 14.47M'}, {tier:'Master',       range:'14.47M – 21.70M'}, {tier:'Grandmaster',  range:'Over 21.70M'}],
+  17: [{tier:'Guardian',    range:'9.80M – 13.06M'}, {tier:'Master',      range:'13.06M – 26.12M'},{tier:'Grandmaster',  range:'26.12M – 39.17M'},{tier:'Ultimate',     range:'Over 39.17M'}],
+  21: [{tier:'Mythical',    range:'17.57M – 23.43M'},{tier:'Divine',      range:'23.43M – 46.85M'},{tier:'Celestial',    range:'46.85M – 70.28M'},{tier:'Transcendent', range:'Over 70.28M'}],
+};
+const HYDRA_REWARDS = {
+  1: [{tier:'Novice',   range:'1.67M – 2.22M'},{tier:'Novice',  range:'2.22M – 4.44M'},{tier:'Adept',    range:'4.44M – 6.66M'},{tier:'Warrior',      range:'6.66M+'}],
+  2: [{tier:'Adept',    range:'5.10M – 6.80M'},{tier:'Adept',   range:'6.80M – 13.60M'},{tier:'Warrior', range:'13.60M – 20.40M'},{tier:'Knight',      range:'20.40M+'}],
+  3: [{tier:'Warrior',  range:'7.35M – 9.80M'},{tier:'Warrior', range:'9.80M – 19.60M'},{tier:'Knight',  range:'19.60M – 29.40M'},{tier:'Guardian',    range:'29.40M+'}],
+  4: [{tier:'Knight',   range:'9.15M – 12.20M'},{tier:'Guardian',range:'12.20M – 24.40M'},{tier:'Master',range:'24.40M – 36.60M'},{tier:'Grandmaster', range:'36.60M+'}],
+};
+const CHIMERA_REWARDS = {
+  1: [{tier:'Novice',   range:'900K – 1.50M'},  {tier:'Novice',  range:'1.50M – 3.00M'}, {tier:'Adept',    range:'3.00M – 4.15M'},    {tier:'Warrior',      range:'4.15M+'}],
+  2: [{tier:'Adept',    range:'2.10M – 3.50M'}, {tier:'Adept',   range:'3.50M – 7.00M'}, {tier:'Warrior',  range:'7.00M – 9.75M'},    {tier:'Knight',       range:'9.75M+'}],
+  3: [{tier:'Warrior',  range:'4.40M – 7.25M'}, {tier:'Warrior', range:'7.25M – 14.60M'},{tier:'Knight',   range:'14.60M – 20.50M'},{tier:'Guardian',     range:'20.50M+'}],
+  4: [{tier:'Knight',   range:'7.70M – 12.80M'},{tier:'Knight',  range:'12.80M – 25.65M'},{tier:'Guardian',range:'25.65M – 36.00M'},{tier:'Master',       range:'36.00M+'}],
+  5: [{tier:'Knight',   range:'18.00M – 30.00M'},{tier:'Guardian',range:'30.00M – 60.00M'},{tier:'Master', range:'60.00M – 84.00M'},{tier:'Grandmaster',  range:'84.00M+'}],
+  6: [{tier:'Guardian', range:'24.10M – 40.00M'},{tier:'Master', range:'40.00M – 80.40M'},{tier:'Grandmaster',range:'80.40M – 112.50M'},{tier:'Ultimate',  range:'112.50M+'}],
+};
 
 // Doom Tower: collapsible groups of 10 + Secret Rooms (121-132)
 const DT_REGIONS = new Set([701, 702, 703]);
@@ -882,17 +1082,20 @@ function slideIndicator(container, activeBtn, borderColor, bgColor) {
       pill = document.createElement('div');
       pill.className = 'btn-indicator';
       pill.style.transition = 'none';
-      container.appendChild(pill);
+      container.prepend(pill);
     }
     const cr = container.getBoundingClientRect();
     const br = activeBtn.getBoundingClientRect();
-    pill.style.width     = br.width  + 'px';
-    pill.style.height    = br.height + 'px';
-    pill.style.top       = (br.top  - cr.top  + container.scrollTop)  + 'px';
-    pill.style.transform = `translateX(${br.left - cr.left + container.scrollLeft}px)`;
+    pill.style.width       = br.width  + 'px';
+    pill.style.height      = br.height + 'px';
+    pill.style.top         = (br.top  - cr.top  + container.scrollTop)  + 'px';
+    pill.style.transform   = `translateX(${br.left - cr.left + container.scrollLeft}px)`;
     pill.style.borderColor = borderColor || 'transparent';
     pill.style.background  = bgColor     || 'transparent';
-    if (isNew) requestAnimationFrame(() => { pill.style.transition = ''; });
+    if (isNew) {
+      void pill.offsetWidth; // force reflow: commit position before re-enabling transition
+      pill.style.transition = '';
+    }
   }));
 }
 
@@ -938,6 +1141,26 @@ function loadStage(stageId) {
   // Stage meta
   const [stage] = query('SELECT * FROM stages WHERE id=?', [stageId]);
   if (!stage) return;
+  currentStage    = stage;
+  currentStageNum = stage.stage_num;
+
+  // For Hydra and Chimera: render custom views (stats are hard-coded, not from DB)
+  if (HYDRA_REGIONS.has(stage.region_id)) {
+    renderHydraView(stage);
+    document.getElementById('main-placeholder').style.display = 'none';
+    document.getElementById('stage-view').style.display = '';
+    animateStageView(dir);
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+  if (CHIMERA_REGIONS.has(stage.region_id)) {
+    renderChimeraView(stage);
+    document.getElementById('main-placeholder').style.display = 'none';
+    document.getElementById('stage-view').style.display = '';
+    animateStageView(dir);
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
 
   // Wave data with hero info
   const waveRows = query(
@@ -963,12 +1186,13 @@ function loadStage(stageId) {
     waveMap[row.wave].push(row);
   }
 
-  // Stage requirements bar — max RES & ACC across all enemies
-  let maxRes = 0, maxAcc = 0;
+  // Stage requirements bar — max RES, ACC & SPD across all enemies
+  let maxRes = 0, maxAcc = 0, maxSpd = 0;
   for (const row of waveRows) {
     const s = computeStats(row, row.grade, row.level);
     if (s.res > maxRes) maxRes = s.res;
     if (s.acc > maxAcc) maxAcc = s.acc;
+    if (s.spd > maxSpd) maxSpd = s.spd;
   }
   document.getElementById('stage-req').innerHTML =
     `<div class="req-pill req-acc" title="Enemy max RES: ${maxRes}">
@@ -978,17 +1202,157 @@ function loadStage(stageId) {
      <div class="req-pill req-res" title="Enemy max ACC: ${maxAcc}">
        <span class="req-label">RES for 90% resist</span>
        <span class="req-value">${maxAcc + 105}</span>
+     </div>
+     <div class="req-pill req-spd" title="Enemy max SPD: ${maxSpd}">
+       <span class="req-label">SPD to go first</span>
+       <span class="req-value">${maxSpd + 1}</span>
      </div>`;
 
-  currentStageNum = stage.stage_num;
+  // For Clan Boss: override req bar with real stats
+  if (stage.region_id === 401) {
+    const cbStat = CLAN_BOSS_STATS[stage.stage_num];
+    if (cbStat) {
+      document.getElementById('stage-req').innerHTML = `
+        <div class="req-pill req-acc" title="RES ${cbStat.res}">
+          <span class="req-label">ACC for 95% debuff</span>
+          <span class="req-value">${cbStat.res + 25}</span>
+        </div>
+        <div class="req-pill req-res" title="ACC ${cbStat.acc}">
+          <span class="req-label">RES for 90% resist</span>
+          <span class="req-value">${cbStat.acc + 105}</span>
+        </div>
+        <div class="req-pill req-spd" title="SPD ${cbStat.spd}">
+          <span class="req-label">SPD to go first</span>
+          <span class="req-value">${cbStat.spd + 1}</span>
+        </div>`;
+    }
+  }
+
   currentWaveMap  = waveMap;
   renderCurrentWaves();
+
+  // Prepend rewards section for CB (before wave blocks)
+  if (stage.region_id === 401 && CB_REWARDS[stage.stage_num]) {
+    document.getElementById('waves-container').insertAdjacentHTML('afterbegin',
+      renderRewardsSection(CB_REWARDS[stage.stage_num]));
+  }
 
   document.getElementById('main-placeholder').style.display = 'none';
   document.getElementById('stage-view').style.display       = '';
   animateStageView(dir);
 
   if (window.lucide) lucide.createIcons();
+}
+
+function renderRewardsSection(tiers) {
+  const tiersHtml = tiers.map(t =>
+    `<div class="reward-tier"><span class="reward-tier-name">${t.tier}</span><span class="reward-tier-range">${t.range}</span></div>`
+  ).join('');
+  return `
+    <div class="wave-block collapsed">
+      <div class="wave-label">
+        Chest Rewards
+        <button class="wave-toggle" aria-label="Toggle rewards"><i data-lucide="chevron-down"></i></button>
+      </div>
+      <div class="wave-cards"><div class="rewards-tiers">${tiersHtml}</div></div>
+    </div>`;
+}
+
+function renderHydraView(stage) {
+  const diffNum = stage.stage_num;
+  const heads = HYDRA_STATS[diffNum] ?? HYDRA_STATS[1];
+  const rotation = HYDRA_ROTATIONS[stage.region_id];
+
+  const maxRes = Math.max(...heads.map(h => h.res));
+  const maxAcc = Math.max(...heads.map(h => h.acc));
+  const maxSpd = Math.max(...heads.map(h => h.spd));
+  document.getElementById('stage-req').innerHTML = `
+    <div class="req-pill req-acc"><span class="req-label">ACC for 95% debuff</span><span class="req-value">${maxRes + 25}</span></div>
+    <div class="req-pill req-res"><span class="req-label">RES for 90% resist</span><span class="req-value">${maxAcc + 105}</span></div>
+    <div class="req-pill req-spd"><span class="req-label">SPD to go first</span><span class="req-value">${maxSpd + 1}</span></div>`;
+
+  const [dbWave] = query(`SELECT w.level FROM waves w WHERE w.stage_id=? LIMIT 1`, [stage.id]);
+  const level = dbWave?.level ?? 1;
+
+  const statByName = Object.fromEntries(heads.map(h => [h.name, h]));
+  const orderedHeads = rotation
+    ? rotation.map(r => ({ ...statByName[r.name], extra: r.extra, aff: r.aff }))
+    : heads.map(h => ({ ...h, extra: false, aff: 'void' }));
+
+  const initialHeads     = orderedHeads.filter(h => !h.extra);
+  const replacementHeads = orderedHeads.filter(h =>  h.extra);
+
+  function makeHeadEntity(h) {
+    return {
+      name: h.name, hero_id: 0, grade: 6, level,
+      rarity: 'Legendary', affinity: h.aff || 'void',
+      eff_hp: h.hp, eff_atk: h.atk, eff_def: h.def,
+      eff_spd: h.spd, eff_res: h.res, eff_acc: h.acc,
+      crit_rate: h.cr, crit_dmg: h.cd,
+    };
+  }
+
+  const initialCards     = initialHeads.map(h => renderEnemyCard(makeHeadEntity(h))).join('');
+  const replacementCards = replacementHeads.map(h => renderEnemyCard(makeHeadEntity(h))).join('');
+
+  const rewards = HYDRA_REWARDS[diffNum];
+  document.getElementById('waves-container').innerHTML = `
+    ${rewards ? renderRewardsSection(rewards) : ''}
+    <div class="wave-block">
+      <div class="wave-label">Initial Heads <button class="wave-toggle" aria-label="Toggle"><i data-lucide="chevron-down"></i></button></div>
+      <div class="wave-cards">${initialCards}</div>
+    </div>
+    <div class="wave-block">
+      <div class="wave-label">Replacement Heads <button class="wave-toggle" aria-label="Toggle"><i data-lucide="chevron-down"></i></button></div>
+      <div class="wave-cards">${replacementCards}</div>
+    </div>`;
+}
+
+function renderChimeraView(stage) {
+  const diffNum = stage.stage_num;
+  const forms = CHIMERA_FORMS[diffNum];
+  if (!forms) return;
+
+  const [dbStage] = query(`SELECT w.eff_hp, w.eff_spd, w.level FROM waves w WHERE w.stage_id=? LIMIT 1`, [stage.id]);
+  const hp    = dbStage?.eff_hp  ?? 0;
+  const spd   = dbStage?.eff_spd ?? 0;
+  const level = dbStage?.level   ?? 1;
+
+  const maxRes = Math.max(forms.ultimate.res, forms.ram.res, forms.lion.res, forms.viper.res);
+  const maxAcc = Math.max(forms.ultimate.acc, forms.ram.acc, forms.lion.acc, forms.viper.acc);
+  document.getElementById('stage-req').innerHTML = `
+    <div class="req-pill req-acc"><span class="req-label">ACC for 95% debuff</span><span class="req-value">${maxRes + 25}</span></div>
+    <div class="req-pill req-res"><span class="req-label">RES for 90% resist</span><span class="req-value">${maxAcc + 105}</span></div>
+    <div class="req-pill req-spd"><span class="req-label">SPD to go first</span><span class="req-value">${spd + 1}</span></div>`;
+
+  const rotation = CHIMERA_ROTATIONS[stage.region_id] ?? { ultimate:'void', forms:'void' };
+
+  const formDefs = [
+    {key:'ultimate', name:'Ultimate', image:'Chimera',      aff: rotation.ultimate},
+    {key:'ram',      name:'Ram',      image:'ChimeraRam',   aff: rotation.forms},
+    {key:'lion',     name:'Lion',     image:'ChimeraLion',  aff: rotation.forms},
+    {key:'viper',    name:'Viper',    image:'ChimeraViper', aff: rotation.forms},
+  ];
+
+  const formCards = formDefs.map(fd => {
+    const f = forms[fd.key];
+    const entity = {
+      name: fd.name, image: fd.image, hero_id: 0, grade: 6, level,
+      rarity: 'Legendary', affinity: fd.aff,
+      eff_hp: hp, eff_atk: f.atk, eff_def: f.def,
+      eff_spd: spd, eff_res: f.res, eff_acc: f.acc,
+      crit_rate: f.cr ?? 15, crit_dmg: 50,
+    };
+    return renderEnemyCard(entity);
+  }).join('');
+
+  const rewards = CHIMERA_REWARDS[diffNum];
+  document.getElementById('waves-container').innerHTML = `
+    ${rewards ? renderRewardsSection(rewards) : ''}
+    <div class="wave-block">
+      <div class="wave-label">Forms <button class="wave-toggle" aria-label="Toggle"><i data-lucide="chevron-down"></i></button></div>
+      <div class="wave-cards">${formCards}</div>
+    </div>`;
 }
 
 function renderCurrentWaves() {
@@ -1089,7 +1453,7 @@ function renderEnemyCard(e) {
   const rarClass   = GRADE_TO_RARITY[e.grade] ?? 'common';
   const rarity     = e.rarity || rarClass.charAt(0).toUpperCase() + rarClass.slice(1);
   const affinity   = e.affinity || '';
-  const imgFile    = queryChamp(e.hero_id, e.name)?.image || e.name.replace(/\s+/g, '');
+  const imgFile    = e.image || queryChamp(e.hero_id, e.name)?.image || e.name.replace(/\s+/g, '');
   const imgSrc     = `/tools/champions-index/img/champions/${imgFile}.webp`;
   const frameSrc   = `/tools/champions-index/img/rarity/${rarity}.webp`;
   const affSrc     = affinity ? `/tools/champions-index/img/affinity/${affinity}.webp` : '';
