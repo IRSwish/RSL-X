@@ -679,8 +679,451 @@ const CHIMERA_REWARDS = {
 // Doom Tower: collapsible groups of 10 + Secret Rooms (121-132)
 const DT_REGIONS = new Set([701, 702, 703]);
 
+// Secret Room champion conditions: [regionId][difficulty 1=Normal 2=Hard][SR index 0–11]
+const DT_SR_CONDITIONS = {
+  701: { // Rotation 1
+    1: [ // Normal
+      'Rare Champions',
+      'Banner Lords',
+      'Attack Champions',
+      'Magic Affinity',
+      'Epic Champions',
+      'Spirit Affinity',
+      'Skinwalkers',
+      'HP Champions',
+      'Dwarves',
+      'Force Affinity',
+      'Sacred Order',
+      'Void Affinity',
+    ],
+    2: [ // Hard
+      'Epic Champions',
+      'Dark Elves',
+      'Defense Champions',
+      'Epic Lizardmen',
+      'Rare Attack',
+      'Support Champions',
+      'High Elves',
+      'Epic Spirit Champions',
+      'Demonspawn',
+      'HP Champions',
+      'Epic Undead Hordes',
+      'Void Affinity',
+    ],
+  },
+  702: { // Rotation 2
+    1: [ // Normal
+      'Rare Champions',
+      'Force Affinity',
+      'Attack Champions',
+      'Barbarians',
+      'Rare Void Affinity',
+      'Defense Champions',
+      'Epic Champions',
+      'Epic Orcs',
+      'Epic Spirit Affinity',
+      'Support Champions',
+      'Void Affinity',
+      'Epic Magic',
+    ],
+    2: [ // Hard
+      'Epic Champions',
+      'HP Champions',
+      'Force Attack Champions',
+      'Rare Spirit Affinity',
+      'Ogryn Tribes',
+      'Epic Void Affinity',
+      'Magic Affinity Support',
+      'Epic Defense Champions',
+      'Rare Attack Champions',
+      'Epic Knights Revenant',
+      '6 Star Void Affinity',
+      'Rare Magic Champions',
+    ],
+  },
+  703: { // Rotation 3
+    1: [ // Normal
+      'Rare Champions',
+      'HP Champions',
+      'Spirit Affinity',
+      'Telerian Factions',
+      'Defense Champions',
+      'Magic Champions',
+      'Epic Attack Champions',
+      'Force Champions',
+      'Gaellen Pact Factions',
+      'Support Champions',
+      '6 Star Champions',
+      'Rare Void Champions',
+    ],
+    2: [ // Hard
+      'Epic Champions',
+      '6 Star Attack Champions',
+      'Epic Spirit Affinity',
+      'Corrupted Factions',
+      'Force Defense Champions',
+      'Magic Support Champions',
+      'Rare HP Champions',
+      'Force HP Champions',
+      'Void Support Champions',
+      'Nyseran Union Factions',
+      'Epic Magic Affinity',
+      '6 Star Void Attack Champions',
+    ],
+  },
+};
+
 // Faction Wars: collapsible groups of 7 (boss on stage 7/14/21)
 const FW_REGIONS = new Set([501,502,503,505,506,507,508,509,510,511,512,513,514,515,516]);
+
+// Hard 3★ challenge per stage (index 0 = stage 1), keyed by region_id
+const FW_HARD_3STAR = {
+  501: [ // Banner Lords
+    'Reduce 6+ enemies\' HP by 50% with one skill',
+    'Place 10+ Provoke debuffs',
+    'Place 10+ Stun debuffs',
+    'Manipulate buff or debuff duration 20+ times',
+    'Land 40+ hits on enemies while they are under Leech debuffs',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Reduce 9+ enemies\' HP by 50% with one skill',
+    'Place 15+ Provoke debuffs',
+    'Use at least 3 Epic Champions',
+    'Defeat all enemies when they have no buffs on them',
+    'Place 15+ Stun debuffs',
+    'Do not receive more than 10 debuffs',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Defeat 3+ enemies using Ally Attack skills or counterattacks',
+    'Don\'t land any weak hits',
+    'Defeat 4+ enemies before they take a turn',
+    'Get an Extra Turn 5+ times',
+    'Keep all your Champion\'s HP above 75%',
+    'Clear the Stage in 200 turns',
+  ],
+  502: [ // High Elves
+    'Heal your Champions\' HP by 500,000+',
+    'Place 10+ Freeze debuffs',
+    'Place 10+ Stun debuffs',
+    'Reduce 6+ enemies\' HP by 50% with one skill',
+    'Manipulate buff or debuff duration 20+ times',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Heal your Champions\' HP by 1,000,000+',
+    'Place 15+ Freeze debuffs',
+    'Use at least 3 Epic Champions',
+    'Place 15+ Stun debuffs',
+    'Defeat all enemies when they have no buffs on them',
+    'Reduce 9+ enemies\' HP by 50% with one skill',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Get an Extra Turn 5+ times',
+    'Don\'t land any weak hits',
+    'Defeat 4+ enemies before they take a turn',
+    'Defeat 3+ enemies using Ally Attack skills or counterattacks',
+    'Defeat 3+ enemies while your Champions are under 7 or more buffs',
+    'Clear the Stage in 200 turns',
+  ],
+  503: [ // Sacred Order
+    'Place 10+ Provoke debuffs',
+    'Place 20+ Poison debuffs',
+    'Place 10+ Stun debuffs',
+    'Reduce 6+ enemies\' HP by 50% with one skill',
+    'Place 10+ HP Burn debuffs',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Place 15+ Provoke debuffs',
+    'Defeat 3+ enemies using Ally Attack skills or counterattacks',
+    'Use at least 3 Epic Champions',
+    'Reduce 9+ enemies\' HP by 50% with one skill',
+    'Defeat all enemies when they have no buffs on them',
+    'Place 15+ HP Burn debuffs',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Get an Extra Turn 5+ times',
+    'Don\'t land any weak hits',
+    'Defeat 4+ enemies before they take a turn',
+    'Defeat 3+ enemies while they\'re under 10 debuffs',
+    'Keep all your Champion\'s HP above 75%',
+    'Clear the Stage in 200 turns',
+  ],
+  505: [ // Ogryn Tribes
+    'Place 20+ Poison debuffs',
+    'Place 10+ Stun debuffs',
+    'Place 10+ Provoke debuffs',
+    'Manipulate buff or debuff duration 20+ times',
+    'Land 40+ hits on enemies while they are under Leech debuffs',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Place 15+ Stun debuffs',
+    'Place 15+ Provoke debuffs',
+    'Use at least 3 Epic Champions',
+    'Defeat 10+ enemies using Bomb debuffs',
+    'Place 15+ HP Burn debuffs',
+    'Defeat all enemies when they have no buffs on them',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Get an Extra Turn 5+ times',
+    'Don\'t land any weak hits',
+    'Defeat 3+ enemies while your Champions are under 7 or more buffs',
+    'Defeat 3+ enemies while they\'re under 10 debuffs',
+    'Keep all your Champion\'s HP above 75%',
+    'Clear the Stage in 200 turns',
+  ],
+  506: [ // Lizardmen
+    'Heal your Champions\' HP by 500,000+',
+    'Place 10+ Stun debuffs',
+    'Place 20+ Poison debuffs',
+    'Place 10+ Provoke debuffs',
+    'Reduce 6+ enemies\' HP by 50% with one skill',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Heal your Champions\' HP by 1,000,000+',
+    'Place 15+ Stun debuffs',
+    'Use at least 3 Epic Champions',
+    'Place 15+ Provoke debuffs',
+    'Defeat all enemies when they have no buffs on them',
+    'Reduce 9+ enemies\' HP by 50% with one skill',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Get an Extra Turn 5+ times',
+    'Don\'t land any weak hits',
+    'Defeat 4+ enemies before they take a turn',
+    'Defeat 3+ enemies while they\'re under 10 debuffs',
+    'Keep all your Champion\'s HP above 75%',
+    'Clear the Stage in 200 turns',
+  ],
+  507: [ // Skinwalkers
+    'Place 20+ Poison debuffs',
+    'Place 10+ Stun debuffs',
+    'Manipulate buff or debuff duration 20+ times',
+    'Place 10+ Provoke debuffs',
+    'Reduce 6+ enemies\' HP by 50% with one skill',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Place 15+ Stun debuffs',
+    'Place 15+ Provoke debuffs',
+    'Use at least 3 Epic Champions',
+    'Manipulate buff or debuff duration 30+ times',
+    'Defeat all enemies when they have no buffs on them',
+    'Defeat 3+ enemies using Ally Attack skills or counterattacks',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Get an Extra Turn 5+ times',
+    'Don\'t land any weak hits',
+    'Defeat 3+ enemies while your Champions are under 7 or more buffs',
+    'Don\'t let your enemies use any active skills',
+    'Defeat 3+ enemies while they\'re under 10 debuffs',
+    'Clear the Stage in 200 turns',
+  ],
+  508: [ // Orcs
+    'Place 10+ Provoke debuffs',
+    'Place 10+ Stun debuffs',
+    'Reduce 6+ enemies\' HP by 50% with one skill',
+    'Manipulate skill cooldowns 10+ times',
+    'Place 10+ HP Burn debuffs',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Place 15+ Provoke debuffs',
+    'Place 15+ Stun debuffs',
+    'Use at least 3 Epic Champions',
+    'Defeat all enemies when they have no buffs on them',
+    'Manipulate buff or debuff duration 30+ times',
+    'Defeat 3+ enemies using Ally Attack skills or counterattacks',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Defeat 4+ enemies before they take a turn',
+    'Don\'t land any weak hits',
+    'Defeat 3+ enemies while your Champions are under 7 or more buffs',
+    'Don\'t let your enemies use any active skills',
+    'Keep all your Champion\'s HP above 75%',
+    'Clear the Stage in 200 turns',
+  ],
+  509: [ // Demonspawn
+    'Place 10+ HP Burn debuffs',
+    'Place 10+ Provoke debuffs',
+    'Place 20+ Poison debuffs',
+    'Defeat 5+ enemies using Bomb debuffs',
+    'Place 10+ Stun debuffs',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Place 15+ HP Burn debuffs',
+    'Defeat 10+ enemies using Bomb debuffs',
+    'Use at least 3 Epic Champions',
+    'Defeat all enemies when they have no buffs on them',
+    'Place 15+ Provoke debuffs',
+    'Place 15+ Stun debuffs',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Don\'t let your enemies use any active skills',
+    'Don\'t land any weak hits',
+    'Defeat 10+ enemies while your Champions are under Perfect Veil',
+    'Place 10+ Block Revive debuffs',
+    'Defeat 4+ enemies before they take a turn',
+    'Clear the Stage in 200 turns',
+  ],
+  510: [ // Undead Hordes
+    'Place 20+ Poison debuffs',
+    'Land 40+ hits on enemies while they are under Leech debuffs',
+    'Place 10+ Stun debuffs',
+    'Place 10+ Provoke debuffs',
+    'Place 10+ Sleep debuffs',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Land 60+ hits on enemies while they are under Leech debuffs',
+    'Defeat all enemies when they have no buffs on them',
+    'Use at least 3 Epic Champions',
+    'Place 15+ Stun debuffs',
+    'Place 15+ Provoke debuffs',
+    'Place 15+ Sleep debuffs',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Defeat 3+ enemies using Ally Attack skills or counterattacks',
+    'Don\'t land any weak hits',
+    'Defeat 10+ enemies while they are under Fear/True Fear debuffs',
+    'Don\'t let your enemies use any active skills',
+    'Don\'t let your enemies heal',
+    'Clear the Stage in 200 turns',
+  ],
+  511: [ // Dark Elves
+    'Place 20+ Poison debuffs',
+    'Place 10+ Freeze debuffs',
+    'Place 10+ Provoke debuffs',
+    'Place 10+ Sleep debuffs',
+    'Defeat 6+ enemies while they\'re under Hex debuffs',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Defeat all enemies when they have no buffs on them',
+    'Place 15+ Freeze debuffs',
+    'Use at least 3 Epic Champions',
+    'Place 15+ Provoke debuffs',
+    'Manipulate skill cooldowns 15+ times',
+    'Do not receive more than 10 debuffs',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Place 10+ Block Revive debuffs',
+    'Don\'t land any weak hits',
+    'Defeat 10+ enemies while your Champions are under Perfect Veil',
+    'Defeat 3+ enemies while they\'re under 10 debuffs',
+    'Don\'t let your enemies heal',
+    'Clear the Stage in 200 turns',
+  ],
+  512: [ // Knights Revenant
+    'Place 20+ Poison debuffs',
+    'Place 10+ Stun debuffs',
+    'Place 10+ Provoke debuffs',
+    'Manipulate skill cooldowns 10+ times',
+    'Defeat 6+ enemies while they\'re under Hex debuffs',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Place 15+ Provoke debuffs',
+    'Manipulate skill cooldowns 15+ times',
+    'Use at least 3 Epic Champions',
+    'Defeat all enemies when they have no buffs on them',
+    'Place 15+ Stun debuffs',
+    'Manipulate buff or debuff duration 30+ times',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Defeat 10+ enemies while they are under Fear/True Fear debuffs',
+    'Don\'t land any weak hits',
+    'Defeat 3+ enemies while they\'re under 10 debuffs',
+    'Get an Extra Turn 5+ times',
+    'Defeat 4+ enemies before they take a turn',
+    'Clear the Stage in 200 turns',
+  ],
+  513: [ // Barbarians
+    'Place 10+ Stun debuffs',
+    'Place 10+ Provoke debuffs',
+    'Place 10+ Freeze debuffs',
+    'Place 5+ HP Burn debuffs',
+    'Manipulate skill cooldowns 10+ times',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Place 10+ HP Burn debuffs',
+    'Place 15+ Stun debuffs',
+    'Use at least 3 Epic Champions',
+    'Place 15+ Provoke debuffs',
+    'Defeat 3+ enemies using Ally Attack skills or counterattacks',
+    'Do not receive more than 10 debuffs',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Don\'t let your enemies use any active skills',
+    'Don\'t land any weak hits',
+    'Get an Extra Turn 5+ times',
+    'Defeat 4+ enemies before they take a turn',
+    'Keep all your Champion\'s HP above 75%',
+    'Clear the Stage in 200 turns',
+  ],
+  514: [ // Sylvan Watchers
+    'Heal your Champions\' HP by 500,000+',
+    'Place 10+ Freeze debuffs',
+    'Place 10+ Decrease SPD debuffs',
+    'Manipulate buff or debuff duration 20+ times',
+    'Manipulate skill cooldowns 10+ times',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Heal your Champions\' HP by 1,000,000+',
+    'Place 15+ Freeze debuffs',
+    'Use at least 3 Epic Champions',
+    'Manipulate Turn Meters 60+ times',
+    'Manipulate skill cooldowns 15+ times',
+    'Manipulate buff or debuff duration 30+ times',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Defeat 3+ enemies using Ally Attack skills or counterattacks',
+    'Don\'t land any weak hits',
+    'Place 4+ Taunt buffs',
+    'Defeat 3+ enemies while your Champions are under 7 or more buffs',
+    'Keep all your Champion\'s HP above 75%',
+    'Clear the Stage in 200 turns',
+  ],
+  515: [ // Shadowkin
+    'Place 10+ Stun debuffs',
+    'Place 10+ Provoke debuffs',
+    'Place 10+ HP Burn debuffs',
+    'Manipulate skill cooldowns 10+ times',
+    'Land 40+ hits on enemies while they are under Leech debuffs',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Place 15+ Stun debuffs',
+    'Place 15+ Provoke debuffs',
+    'Use at least 3 Epic Champions',
+    'Land 60+ hits on enemies while they are under Leech debuffs',
+    'Manipulate skill cooldowns 15+ times',
+    'Defeat all enemies when they have no buffs on them',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Defeat 10+ enemies while your Champions are under Perfect Veil',
+    'Don\'t land any weak hits',
+    'Defeat 4+ enemies before they take a turn',
+    'Defeat 3+ enemies while they\'re under 10 debuffs',
+    'Don\'t let your enemies use any active skills',
+    'Clear the Stage in 200 turns',
+  ],
+  516: [ // Dwarves
+    'Place 10+ HP Burn debuffs',
+    'Place 10+ Stun debuffs',
+    'Place 10+ Provoke debuffs',
+    'Place 10+ Freeze debuffs',
+    'Reduce 6+ enemies\' HP by 50% with one skill',
+    'Manipulate Turn Meters 40+ times',
+    'Clear the Stage in 100 turns',
+    'Place 15+ HP Burn debuffs',
+    'Place 15+ Stun debuffs',
+    'Use at least 3 Epic Champions',
+    'Place 15+ Provoke debuffs',
+    'Defeat all enemies when they have no buffs on them',
+    'Manipulate skill cooldowns 15+ times',
+    'Clear the Stage in 150 turns',
+    'Beat the Stage with all Champions alive at all times',
+    'Defeat 3+ enemies using Ally Attack skills or counterattacks',
+    'Don\'t land any weak hits',
+    'Get an Extra Turn 5+ times',
+    'Defeat 3+ enemies while your Champions are under 7 or more buffs',
+    'Keep all your Champion\'s HP above 75%',
+    'Clear the Stage in 200 turns',
+  ],
+};
 
 function stageLabel(stageNum, regionId) {
   if (regionId === 401)           return CB_VOID_STAGES.get(stageNum)        ?? `${stageNum}`;
@@ -1237,6 +1680,18 @@ function loadStage(stageId) {
       renderRewardsSection(CB_REWARDS[stage.stage_num]));
   }
 
+  // Prepend star conditions for Faction Wars
+  if (FW_REGIONS.has(stage.region_id)) {
+    document.getElementById('waves-container').insertAdjacentHTML('afterbegin',
+      renderStarConditions(stage.stage_num, stage.region_id, stage.difficulty));
+  }
+
+  // Prepend champion conditions for DT Secret Rooms (stage_num >= 121)
+  if (DT_REGIONS.has(stage.region_id) && stage.stage_num >= 121) {
+    document.getElementById('waves-container').insertAdjacentHTML('afterbegin',
+      renderChampionsConditions(stage.stage_num, stage.region_id, stage.difficulty));
+  }
+
   document.getElementById('main-placeholder').style.display = 'none';
   document.getElementById('stage-view').style.display       = '';
   animateStageView(dir);
@@ -1255,6 +1710,48 @@ function renderRewardsSection(tiers) {
         <button class="wave-toggle" aria-label="Toggle rewards"><i data-lucide="chevron-down"></i></button>
       </div>
       <div class="wave-cards"><div class="rewards-tiers">${tiersHtml}</div></div>
+    </div>`;
+}
+
+function renderStarConditions(stageNum, regionId, difficulty) {
+  // difficulty: 9 = Normal, 2 = Hard
+  const isHard = difficulty === 2;
+  const hard3star = isHard ? (FW_HARD_3STAR[regionId]?.[stageNum - 1] ?? null) : null;
+
+  const star2 = isHard ? '5 Champions, no losses' : '3-4 Champions, no losses';
+  const star3 = isHard ? (hard3star ?? '5 Champions, no losses') : '5 Champions, no losses';
+
+  return `
+    <div class="wave-block collapsed">
+      <div class="wave-label">
+        Stars Conditions
+        <button class="wave-toggle" aria-label="Toggle star conditions"><i data-lucide="chevron-down"></i></button>
+      </div>
+      <div class="wave-cards">
+        <div class="star-conditions">
+          <div class="star-row"><span class="star-icons">★</span><span class="star-text">Beat the Stage</span></div>
+          <div class="star-row"><span class="star-icons">★★</span><span class="star-text">${star2}</span></div>
+          <div class="star-row"><span class="star-icons">★★★</span><span class="star-text">${star3}</span></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderChampionsConditions(stageNum, regionId, difficulty) {
+  const srIndex = stageNum - 121; // 0–11
+  const condition = DT_SR_CONDITIONS[regionId]?.[difficulty]?.[srIndex] ?? null;
+  if (!condition) return '';
+  return `
+    <div class="wave-block collapsed">
+      <div class="wave-label">
+        Champions Conditions
+        <button class="wave-toggle" aria-label="Toggle champion conditions"><i data-lucide="chevron-down"></i></button>
+      </div>
+      <div class="wave-cards">
+        <div class="star-conditions">
+          <div class="star-row"><span class="star-text">${condition}</span></div>
+        </div>
+      </div>
     </div>`;
 }
 
@@ -1489,8 +1986,8 @@ function renderEnemyCard(e) {
           <div class="stat-row"><span class="stat-label">ATK</span><span class="stat-value">${fmt(s.atk)}</span></div>
           <div class="stat-row"><span class="stat-label">DEF</span><span class="stat-value">${fmt(s.def)}</span></div>
           <div class="stat-row"><span class="stat-label">SPD</span><span class="stat-value">${fmt(s.spd)}</span></div>
-          <div class="stat-row"><span class="stat-label">C.Rate</span><span class="stat-value">${s.crit_rate}%</span></div>
-          <div class="stat-row"><span class="stat-label">C.Dmg</span><span class="stat-value">${s.crit_dmg}%</span></div>
+          <div class="stat-row"><span class="stat-label">C.RATE</span><span class="stat-value">${s.crit_rate}%</span></div>
+          <div class="stat-row"><span class="stat-label">C.DMG</span><span class="stat-value">${s.crit_dmg}%</span></div>
           <div class="stat-row" title="${s.res + 25} ACC needed to land debuffs at a 95% success rate"><span class="stat-label">RES</span><span class="stat-value stat-res">${fmt(s.res)} <span class="stat-raw">(${s.res + 25})</span></span></div>
           <div class="stat-row" title="${s.acc + 105} RES needed to resist debuffs at a 90% rate"><span class="stat-label">ACC</span><span class="stat-value stat-acc">${fmt(s.acc)} <span class="stat-raw">(${s.acc + 105})</span></span></div>
         </div>

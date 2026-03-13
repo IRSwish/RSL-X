@@ -1,12 +1,21 @@
 /* ── Page-specific overrides ─────────────────────────────────────────────────── */
 .burger-btn { display: none !important; }
-html, body { overflow: hidden; height: 100%; }
+/* Stick the ad banner to the bottom of the viewport */
+.ad-banner-footer {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 200 !important;
+  margin-top: 0 !important;
+}
 
 /* ── Layout ─────────────────────────────────────────────────────────────────── */
 #atlas-wrapper {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 60px);
+  min-height: calc(100vh - 60px);
+  padding-bottom: 90px; /* clear space for fixed ad banner */
   font-family: 'Inter', sans-serif;
   color: #fcf6ff;
 }
@@ -216,7 +225,7 @@ html, body { overflow: hidden; height: 100%; }
 /* Faction Wars: single scrollable row, no wrapping */
 .stage-list.fw-list {
   flex-wrap: nowrap;
-  justify-content: flex-start;
+  justify-content: center;
   overflow-x: auto;
 }
 /* When stage-list shows difficulty buttons, keep them in one row */
@@ -308,6 +317,7 @@ html, body { overflow: hidden; height: 100%; }
 .region-btn:hover, .stage-btn:hover { color: #fff; }
 .region-btn.active, .stage-btn.active {
   color: #d4af37;
+  border-color: rgba(212,175,55,.35);
 }
 
 /* Campaign numbered region buttons */
@@ -364,10 +374,7 @@ html, body { overflow: hidden; height: 100%; }
 /* ── Main area ───────────────────────────────────────────────────────────────── */
 .atlas-main {
   flex: 1;
-  min-height: 0;
   padding: 0 24px 24px;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 /* ── Stage view transitions ──────────────────────────────────────────────────── */
@@ -661,10 +668,10 @@ html, body { overflow: hidden; height: 100%; }
 .stat-row {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 12px;
 }
 
-.stat-label { color: #555; }
+.stat-label { color: #888; }
 
 .stat-value {
   color: #d0c8e8;
@@ -1053,6 +1060,29 @@ html, body { overflow: hidden; height: 100%; }
 .reward-tier:last-child { border-bottom: none; }
 .reward-tier-name { color: #d4af37; font-weight: 600; white-space: nowrap; }
 .reward-tier-range { color: #aaa; white-space: nowrap; }
+
+/* ── Star conditions ─────────────────────────────────────────────────────────── */
+.star-conditions {
+  display: inline-flex;
+  flex-direction: column;
+  width: fit-content;
+  padding: 6px 10px;
+  margin: 4px auto 0;
+  background: rgba(212,175,55,.04);
+  border: 1px solid rgba(212,175,55,.15);
+  border-radius: 8px;
+}
+.star-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  font-size: 12px;
+}
+.star-row:last-child { border-bottom: none; }
+.star-icons { color: #d4af37; font-weight: 700; white-space: nowrap; min-width: 36px; text-align: right; }
+.star-text { color: #ccc; line-height: 1.4; }
 
 /* ── Responsive ──────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
