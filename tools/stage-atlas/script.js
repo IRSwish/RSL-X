@@ -1428,6 +1428,8 @@ function renderStageList(regionId) {
   if (!allStages.length) { hideStrip('stage-section'); return; }
   showStrip('stage-section');
   list.classList.remove('diff-mode', 'fw-list');
+  list.style.gridAutoColumns = '';
+  list.style.width = '';
 
   // ── Clan Boss: Void stages only ───────────────────────────────────────────
   if (regionId === 401) {
@@ -1438,6 +1440,7 @@ function renderStageList(regionId) {
       `<button class="diff-btn diff-${CB_DIFF_CLASS[s.stage_num] ?? 'normal'}" data-stage="${s.id}">${CB_VOID_STAGES.get(s.stage_num)}</button>`
     ).join('');
     list.querySelectorAll('[data-stage]').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
+    fitDiffModeButtons(list);
     const target = currentStageNum && stages.find(s => s.stage_num === currentStageNum);
     if (target) loadStage(target.id); else clearStageView();
     return;
@@ -1451,6 +1454,7 @@ function renderStageList(regionId) {
       `<button class="diff-btn diff-${HYDRA_DIFF_CLASS[s.stage_num] ?? 'normal'}" data-stage="${s.id}">${HYDRA_STAGE_LABELS[s.stage_num] ?? s.stage_num}</button>`
     ).join('');
     list.querySelectorAll('[data-stage]').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
+    fitDiffModeButtons(list);
     const target = currentStageNum && allStages.find(s => s.stage_num === currentStageNum);
     if (target) loadStage(target.id); else clearStageView();
     return;
@@ -1464,6 +1468,7 @@ function renderStageList(regionId) {
       `<button class="diff-btn diff-${CHIMERA_DIFF_CLASS[s.stage_num] ?? 'normal'}" data-stage="${s.id}">${CHIMERA_STAGE_LABELS[s.stage_num] ?? s.stage_num}</button>`
     ).join('');
     list.querySelectorAll('[data-stage]').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
+    fitDiffModeButtons(list);
     const target = currentStageNum && allStages.find(s => s.stage_num === currentStageNum);
     if (target) loadStage(target.id); else clearStageView();
     return;
@@ -1512,6 +1517,20 @@ function renderStageList(regionId) {
   list.querySelectorAll('.stage-btn').forEach(b => b.addEventListener('click', () => loadStage(+b.dataset.stage)));
   const target = currentStageNum && allStages.find(s => s.stage_num === currentStageNum);
   if (target) loadStage(target.id); else clearStageView();
+}
+
+// Make all diff-mode buttons the same width (= widest button), shrink container
+function fitDiffModeButtons(list) {
+  // Set to max-content immediately so buttons render at their natural size
+  list.style.gridAutoColumns = 'max-content';
+  list.style.width = 'max-content';
+  // Then measure and equalize after render
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const btns = [...list.querySelectorAll('.diff-btn')];
+    if (!btns.length) return;
+    const maxW = Math.ceil(Math.max(...btns.map(b => b.getBoundingClientRect().width)));
+    list.style.gridAutoColumns = maxW + 'px';
+  }));
 }
 
 // ── Sliding button indicator ───────────────────────────────────────────────────
