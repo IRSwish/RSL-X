@@ -1084,6 +1084,22 @@
 .star-icons { color: #d4af37; font-weight: 700; white-space: nowrap; min-width: 36px; text-align: right; }
 .star-text { color: #ccc; line-height: 1.4; }
 
+/* ── Champions conditions (DT secret rooms, inline) ─────────────────────────── */
+.champ-condition-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  margin: 4px auto 0;
+  width: fit-content;
+  background: rgba(212,175,55,.04);
+  border: 1px solid rgba(212,175,55,.15);
+  border-radius: 8px;
+  font-size: 12px;
+}
+.champ-condition-label { color: #888; white-space: nowrap; }
+.champ-condition-value { color: #d4af37; font-weight: 600; }
+
 /* ── Responsive ──────────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   /* Zone nav: single scrollable row */

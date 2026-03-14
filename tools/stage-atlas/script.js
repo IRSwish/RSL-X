@@ -1761,16 +1761,9 @@ function renderChampionsConditions(stageNum, regionId, difficulty) {
   const condition = DT_SR_CONDITIONS[regionId]?.[difficulty]?.[srIndex] ?? null;
   if (!condition) return '';
   return `
-    <div class="wave-block collapsed">
-      <div class="wave-label">
-        Champions Conditions
-        <button class="wave-toggle" aria-label="Toggle champion conditions"><i data-lucide="chevron-down"></i></button>
-      </div>
-      <div class="wave-cards">
-        <div class="star-conditions">
-          <div class="star-row"><span class="star-text">${condition}</span></div>
-        </div>
-      </div>
+    <div class="champ-condition-bar">
+      <span class="champ-condition-label">Champions Conditions :</span>
+      <span class="champ-condition-value">${condition}</span>
     </div>`;
 }
 
