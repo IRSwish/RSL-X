@@ -221,7 +221,9 @@ function onDbReady() {
   }
 
   renderZoneNav();
+  updateFavCount();
   if (window.lucide) lucide.createIcons();
+  restoreFromUrl();
 
 
   // Enemy card click → modal; wave label click → collapse
@@ -279,6 +281,196 @@ function onDbReady() {
     }, true);
   }
 }
+
+// ── URL state (deep linking) ──────────────────────────────────────────────────
+function updateUrl(stageId) {
+  const url = new URL(location.href);
+  url.searchParams.set('stage', stageId);
+  history.replaceState(null, '', url);
+}
+
+function groupForRegion(regionId) {
+  for (const [key, g] of Object.entries(REGION_GROUPS)) {
+    if (g.regions.some(r => r.id === regionId)) return key;
+  }
+  return null;
+}
+
+function restoreFromUrl() {
+  const stageId = +new URL(location.href).searchParams.get('stage');
+  if (stageId) restoreStage(stageId);
+}
+
+function restoreStage(stageId) {
+  const [stage] = query('SELECT * FROM stages WHERE id=?', [stageId]);
+  if (!stage) return;
+
+  const { region_id, difficulty, area_id } = stage;
+  const zone = ZONE_CARDS.find(z => z.areaIds.includes(area_id));
+  if (!zone) return;
+
+  // 1. Activate zone button visually
+  document.querySelectorAll('.zone-card').forEach(b =>
+    b.classList.toggle('active', b.dataset.zone === zone.key)
+  );
+  selectedZoneKey = zone.key;
+  selectedArea = null; selectedDiff = null; selectedRegion = null;
+  selectedGroup = null; currentStageNum = null;
+  hideStrip('diff-section'); hideStrip('affinity-section');
+  hideStrip('stage-section'); clearStageView();
+
+  // 2. Multi-area zones (Clan Bosses): render sub-area strip and activate
+  if (zone.areaIds.length > 1) {
+    renderSubAreaSection(zone);
+    showStrip('sub-area-section');
+    const subBtn = document.querySelector(`.sub-area-btn[data-area="${area_id}"]`);
+    if (subBtn) {
+      document.querySelectorAll('.sub-area-btn').forEach(b => b.classList.toggle('active', b === subBtn));
+      slideIndicator(document.getElementById('sub-area-list'), subBtn, '#d4af37', 'rgba(212,175,55,.1)');
+    }
+  } else {
+    hideStrip('sub-area-section');
+  }
+
+  // 3. Select area (renders region list, resets diff — we'll set it after)
+  selectedArea = area_id;
+  renderRegionList();
+
+  // 4. Handle affinity groups (Iron Twins, Potion Keeps)
+  const groupKey = groupForRegion(region_id);
+  if (groupKey) openGroup(groupKey);
+
+  // 5–7. Suppress animations during restore, then select region + load stage
+  document.body.classList.add('no-anim');
+  selectedDiff = difficulty;
+  selectRegion(region_id);
+  loadStage(stageId);
+  // slideIndicator uses double-rAF internally → need triple-rAF to remove no-anim after pills are placed
+  requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.body.classList.remove('no-anim');
+  })));
+}
+
+// ── Share button ──────────────────────────────────────────────────────────────
+document.getElementById('share-btn').addEventListener('click', () => {
+  navigator.clipboard.writeText(location.href).then(() => {
+    const btn = document.getElementById('share-btn');
+    btn.querySelector('.action-label').textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.querySelector('.action-label').textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
+  });
+});
+
+// ── Favorites ─────────────────────────────────────────────────────────────────
+const FAV_KEY = 'rsl-atlas-favorites';
+
+function getFavorites() {
+  try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch { return []; }
+}
+function saveFavorites(favs) {
+  localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+}
+function isFavorite(stageId) {
+  return getFavorites().some(f => f.id === stageId);
+}
+function toggleFavorite(stageId) {
+  const favs = getFavorites();
+  const idx  = favs.findIndex(f => f.id === stageId);
+  if (idx >= 0) {
+    favs.splice(idx, 1);
+  } else {
+    favs.unshift({ id: stageId, label: buildFavLabel(stageId), ts: Date.now() });
+  }
+  saveFavorites(favs);
+  updateFavUI(stageId);
+}
+function buildFavLabel(stageId) {
+  const [s] = query('SELECT region_id, difficulty, diff_name, stage_num, area_id FROM stages WHERE id=?', [stageId]);
+  if (!s) return `#${stageId}`;
+  const zone   = ZONE_CARDS.find(z => z.areaIds.includes(s.area_id));
+  const region = regions.find(r => r.id === s.region_id);
+  let zonePart = zone?.key || '';
+  let regionPart = region?.name || '';
+  if (s.region_id === 401)                   { zonePart = 'Clan Bosses'; regionPart = 'Demon Lord'; }
+  else if (HYDRA_REGIONS.has(s.region_id))   { zonePart = 'Hydra';   regionPart = `Rotation ${s.region_id - 800}`; }
+  else if (CHIMERA_REGIONS.has(s.region_id)) { zonePart = 'Chimera'; regionPart = `Rotation ${s.region_id - 1300}`; }
+  // CB encodes difficulty in stage_num (Easy/Normal/Hard/…) — diff_name is the same for all CB stages
+  const diffPart  = s.region_id === 401 ? '' : (s.diff_name || '');
+  const lbl       = stageLabel(s.stage_num, s.region_id);
+  // Hydra/Chimera: rotation already in regionPart, nothing to add; CB: stageLabel = difficulty name
+  const noStage   = HYDRA_REGIONS.has(s.region_id) || CHIMERA_REGIONS.has(s.region_id);
+  const stagePart = noStage ? '' : (/^\d+$/.test(lbl) ? `Stage ${lbl}` : lbl);
+  return [zonePart, regionPart, diffPart, stagePart].filter(Boolean).join(' · ');
+}
+function updateFavUI(stageId) {
+  const active = isFavorite(stageId);
+  const btn    = document.getElementById('fav-stage-btn');
+  if (btn) {
+    btn.classList.toggle('fav-active', active);
+    btn.querySelector('.action-label').textContent = active ? 'Saved' : 'Add to favorites';
+  }
+  updateFavCount();
+  if (document.getElementById('fav-modal').style.display !== 'none') renderFavList();
+}
+function updateFavCount() {
+  const n    = getFavorites().length;
+  const el   = document.getElementById('fav-count');
+  el.textContent    = n;
+  el.style.display  = n ? '' : 'none';
+}
+function openFavModal() {
+  renderFavList();
+  document.getElementById('fav-modal').style.display = '';
+  if (window.lucide) lucide.createIcons();
+}
+function closeFavModal() {
+  document.getElementById('fav-modal').style.display = 'none';
+}
+function renderFavList() {
+  const favs = getFavorites();
+  const list = document.getElementById('fav-list');
+  if (!favs.length) {
+    list.innerHTML = '<div class="fav-empty">No favorites yet.<br>Browse a stage and click the ★ to save it.</div>';
+    return;
+  }
+  list.innerHTML = favs.map(f => `
+    <div class="fav-item" data-id="${f.id}">
+      <span class="fav-item-star"><i data-lucide="star"></i></span>
+      <span class="fav-item-label">${f.label}</span>
+      <button class="fav-item-remove" data-remove="${f.id}" title="Remove"><i data-lucide="x"></i></button>
+    </div>`).join('');
+  if (window.lucide) lucide.createIcons({ nodes: [list] });
+}
+
+// Favorites event listeners
+document.getElementById('fav-fab').addEventListener('click', openFavModal);
+document.getElementById('fav-modal-close').addEventListener('click', closeFavModal);
+document.getElementById('fav-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeFavModal();
+  const removeBtn = e.target.closest('[data-remove]');
+  if (removeBtn) {
+    e.stopPropagation();
+    const id = +removeBtn.dataset.remove;
+    const favs = getFavorites().filter(f => f.id !== id);
+    saveFavorites(favs);
+    updateFavUI(id);
+    renderFavList();
+    if (window.lucide) lucide.createIcons();
+    return;
+  }
+  const item = e.target.closest('.fav-item');
+  if (item && !e.target.closest('[data-remove]')) {
+    const id = +item.dataset.id;
+    closeFavModal();
+    restoreStage(id);
+  }
+});
+document.getElementById('fav-stage-btn').addEventListener('click', () => {
+  if (currentStage) toggleFavorite(currentStage.id);
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('fav-modal').style.display !== 'none') closeFavModal();
+});
 
 // ── Area tabs ─────────────────────────────────────────────────────────────────
 function renderZoneNav() {
@@ -1612,6 +1804,7 @@ function loadStage(stageId) {
     document.getElementById('main-placeholder').style.display = 'none';
     document.getElementById('stage-view').style.display = '';
     animateStageView(dir);
+    updateUrl(stageId); updateFavUI(stageId);
     if (window.lucide) lucide.createIcons();
     return;
   }
@@ -1620,6 +1813,7 @@ function loadStage(stageId) {
     document.getElementById('main-placeholder').style.display = 'none';
     document.getElementById('stage-view').style.display = '';
     animateStageView(dir);
+    updateUrl(stageId); updateFavUI(stageId);
     if (window.lucide) lucide.createIcons();
     return;
   }
@@ -1714,6 +1908,8 @@ function loadStage(stageId) {
   document.getElementById('main-placeholder').style.display = 'none';
   document.getElementById('stage-view').style.display       = '';
   animateStageView(dir);
+  updateUrl(stageId);
+  updateFavUI(stageId);
 
   if (window.lucide) lucide.createIcons();
 }
@@ -1962,10 +2158,11 @@ function renderEnemyCard(e) {
   const rarClass   = GRADE_TO_RARITY[e.grade] ?? 'common';
   const rarity     = e.rarity || rarClass.charAt(0).toUpperCase() + rarClass.slice(1);
   const affinity   = e.affinity || '';
+  const affKey     = affinity ? affinity.charAt(0).toUpperCase() + affinity.slice(1).toLowerCase() : '';
   const imgFile    = e.image || queryChamp(e.hero_id, e.name)?.image || e.name.replace(/\s+/g, '');
   const imgSrc     = `/tools/champions-index/img/champions/${imgFile}.webp`;
   const frameSrc   = `/tools/champions-index/img/rarity/${rarity}.webp`;
-  const affSrc     = affinity ? `/tools/champions-index/img/affinity/${affinity}.webp` : '';
+  const affSrc     = affKey ? `/tools/champions-index/img/affinity/${affKey}.webp` : '';
 
   return `
     <div class="enemy-card ${calibrated ? '' : 'estimated'}"
@@ -2049,7 +2246,8 @@ function openEnemyModal(ds) {
 
   const affEl = document.getElementById('em-affinity');
   if (affinity) {
-    affEl.src = `/tools/champions-index/img/affinity/${affinity}.webp`;
+    const affKeyModal = affinity.charAt(0).toUpperCase() + affinity.slice(1).toLowerCase();
+    affEl.src = `/tools/champions-index/img/affinity/${affKeyModal}.webp`;
     affEl.style.display = '';
   } else {
     affEl.style.display = 'none';

@@ -14,7 +14,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
-  <script src="https://unpkg.com/lucide@latest" defer></script>
+  <script src="https://unpkg.com/lucide@latest" defer onload="lucide.createIcons()"></script>
 
   <script src="/config/site-config.js"></script>
   <script src="/config/ad-banner.js" defer></script>
@@ -84,12 +84,42 @@
         <div class="placeholder-text">Select a stage to view enemy data</div>
       </div>
       <div id="stage-view" style="display:none">
+        <div class="stage-actions">
+          <button id="share-btn" class="action-btn" title="Copy link">
+            <i data-lucide="link"></i><span class="action-label">Copy link</span>
+          </button>
+          <button id="fav-stage-btn" class="action-btn" title="Add to favorites">
+            <i data-lucide="star"></i><span class="action-label">Add to favorites</span>
+          </button>
+        </div>
         <div id="stage-req" class="stage-req"></div>
         <div id="waves-container" class="waves-container"></div>
       </div>
     </main>
 
   </div><!-- /atlas-wrapper -->
+
+  <!-- ── Favorites FAB ─────────────────────────────────────────────────── -->
+  <button id="fav-fab" class="fav-fab" title="Favorites">
+    <i data-lucide="star"></i>
+    <span id="fav-count" class="fav-count" style="display:none"></span>
+  </button>
+
+  <!-- ── Favorites Modal ───────────────────────────────────────────────── -->
+  <div id="fav-modal" class="fav-modal-overlay" style="display:none">
+    <div class="fav-modal">
+      <div class="fav-modal-head">
+        <span class="fav-modal-title">Favorites</span>
+        <button id="fav-modal-close" class="fav-modal-close"><i data-lucide="x"></i></button>
+      </div>
+      <div id="fav-list" class="fav-list">
+        <div class="fav-empty">No favorites yet.<br>Browse a stage and click the ★ to save it.</div>
+      </div>
+      <div class="fav-modal-footer">
+        <em>Your favorites are stored locally in your browser — clearing your cache will reset them.</em>
+      </div>
+    </div>
+  </div>
 
   <!-- ── Enemy Modal ──────────────────────────────────────────────────── -->
   <div id="enemy-modal" class="enemy-modal-overlay">
