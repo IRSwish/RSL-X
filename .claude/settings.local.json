@@ -22,7 +22,17 @@
       "Bash(ls /c/Python*/python.exe)",
       "Read(//usr/**)",
       "Bash(grep -o [0-9]+[.]*[0-9]*[[:space:]]*[Mm] C:Userstotal.claudeprojectsc--Users-total-OneDrive-Desktop-RSL-X4f42656c-2590-4eb4-8fd6-dea824b665cc.jsonl)",
-      "Bash(python3 -c \"import sys; line=sys.stdin.read\\(\\); print\\(line[:3000]\\)\")"
+      "Bash(python3 -c \"import sys; line=sys.stdin.read\\(\\); print\\(line[:3000]\\)\")",
+      "Bash(where python3.exe)",
+      "Bash(where python.exe)",
+      "Bash(where py.exe)",
+      "Bash(python3.exe -c \":*)",
+      "Bash(py -3 -c \":*)",
+      "Bash(python3 -c \"import sqlite3; conn = sqlite3.connect\\(''/c/Users/total/OneDrive/Desktop/RSL-X/tools/champions-index/champions.db''\\); cursor = conn.cursor\\(\\); cursor.execute\\(''SELECT name FROM sqlite_master WHERE type=\"\"table\"\";''\\); print\\([row[0] for row in cursor.fetchall\\(\\)]\\)\")",
+      "Bash(/c/Users/total/AppData/Local/Programs/Python/Python313/python.exe -c \"import sqlite3; conn = sqlite3.connect\\(''/c/Users/total/OneDrive/Desktop/RSL-X/tools/champions-index/champions.db''\\); cursor = conn.cursor\\(\\); cursor.execute\\(''SELECT name FROM sqlite_master WHERE type=\"\"table\"\";''\\); tables = [row[0] for row in cursor.fetchall\\(\\)]; print\\(''Tables:'', tables\\); cursor.execute\\(''SELECT name, section, rarity, image FROM blessings ORDER BY section, rarity, name;''\\); blessings = cursor.fetchall\\(\\); print\\(''\\\\nBlessings \\(first 35\\):''\\); [print\\(f''{b[0]:30} | {b[1]:10} | {b[2]:10} | {b[3]}''\\) for b in blessings[:35]]\")",
+      "Bash(/c/Users/total/AppData/Local/Programs/Python/Python313/python.exe:*)",
+      "Bash(grep -r blessing /c/Users/total/OneDrive/Desktop/RSL-X --include=*.json --include=*.html)",
+      "Bash(/c/Users/total/AppData/Local/Programs/Python/Python311/python -c \":*)"
     ],
     "deny": [],
     "ask": []

@@ -181,6 +181,9 @@
 .strip-group-row,
 .strip-stage-row,
 #zone-nav { cursor: grab; }
+.strip-list,
+.strip-group-row,
+.strip-stage-row { touch-action: pan-x; }
 .strip-list:active,
 .strip-group-row:active,
 .strip-stage-row:active,
@@ -235,6 +238,9 @@
   flex-wrap: nowrap;
   justify-content: center;
   overflow-x: auto;
+}
+@media (max-width: 640px) {
+  .stage-list.fw-list { justify-content: flex-start; }
 }
 /* When stage-list shows difficulty buttons, keep them in one row */
 .stage-list.diff-mode {
@@ -321,6 +327,9 @@
   flex-shrink: 0;
   transition: .12s;
   text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .region-btn:hover, .stage-btn:hover { color: #fff; }
 .region-btn.active, .stage-btn.active {
@@ -359,6 +368,9 @@
   white-space: nowrap;
   flex-shrink: 0;
   text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .stage-group-btn:hover  { color: #fff; }
 .stage-group-btn.active { color: #d4af37; }
@@ -1211,10 +1223,22 @@ body.no-anim * { transition: none !important; animation: none !important; }
   .zone-card { width: 80px; height: 80px; flex-shrink: 0; }
   .zone-nav.compact .zone-card { flex-shrink: 0; }
 
-  /* Nav strips: align left so overflow scrolls from start */
+  /* Nav strips: flex-start by default so overflow scrolls from left edge */
   .strip-list,
   .strip-group-row,
   .strip-stage-row { justify-content: flex-start; }
+
+  /* safe center: auto-centers short strips, falls back to flex-start when overflowing */
+  @supports (justify-content: safe center) {
+    .strip-list,
+    .strip-group-row,
+    .strip-stage-row { justify-content: safe center; }
+    /* FW always overflows → must start from left for full scroll access */
+    .stage-list.fw-list { justify-content: flex-start; }
+  }
+
+  /* Fallback for browsers without safe-center: center explicitly short stage lists */
+  .stage-list--center { justify-content: center; }
 
   /* Group row: enable horizontal scroll */
   .strip-group-row {
@@ -1227,6 +1251,10 @@ body.no-anim * { transition: none !important; animation: none !important; }
   /* Stage list: single scrollable row instead of wrapping */
   .stage-list { flex-wrap: nowrap; }
   .nav-strip--stages.strip-visible { max-height: 52px; }
+
+  /* Grouped stage lists (DT): two rows stacked */
+  .stage-list.stage-list--grouped { flex-direction: column; flex-wrap: nowrap; }
+  #stage-section.strip--grouped.strip-visible { max-height: 90px; }
 
   .atlas-main { padding: 12px; }
 }

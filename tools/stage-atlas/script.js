@@ -585,6 +585,7 @@ const REGION_GROUPS = {
   ironTwins: {
     label: 'Iron Twins',
     noIcon: true,
+    stayVisible: true,
     regions: [
       { id: 211, affinity: 'Void'   },
       { id: 212, affinity: 'Spirit' },
@@ -1341,6 +1342,8 @@ function renderGroupedStages(allStages, list, groupSize) {
 }
 
 function renderHorizontalGroups(groups, list, stageLabel, groupLabel) {
+  list.classList.add('stage-list--grouped');
+  document.getElementById('stage-section')?.classList.add('strip--grouped');
   const groupRow = document.createElement('div');
   groupRow.className = 'strip-group-row';
   const stageRow = document.createElement('div');
@@ -1371,9 +1374,15 @@ function renderHorizontalGroups(groups, list, stageLabel, groupLabel) {
   list.appendChild(groupRow);
   list.appendChild(stageRow);
 
-  // Auto-show first group
+  // Auto-show first group — suppress indicator animation during initial render
   const firstKey = [...groups.keys()][0];
-  if (firstKey !== undefined) showGroup(firstKey);
+  if (firstKey !== undefined) {
+    document.body.classList.add('no-anim');
+    showGroup(firstKey);
+    requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.body.classList.remove('no-anim');
+    })));
+  }
 }
 
 // ── Difficulty buttons ────────────────────────────────────────────────────────
@@ -1619,7 +1628,8 @@ function renderStageList(regionId) {
 
   if (!allStages.length) { hideStrip('stage-section'); return; }
   showStrip('stage-section');
-  list.classList.remove('diff-mode', 'fw-list');
+  list.classList.remove('diff-mode', 'fw-list', 'stage-list--center', 'stage-list--grouped');
+  document.getElementById('stage-section')?.classList.remove('strip--grouped');
   list.style.gridAutoColumns = '';
   list.style.width = '';
 
@@ -1703,6 +1713,7 @@ function renderStageList(regionId) {
 
   // ── Default ───────────────────────────────────────────────────────────────
   label.textContent = `Stages (${allStages.length})`;
+  if (allStages.length <= 10) list.classList.add('stage-list--center');
   list.innerHTML = allStages.map(s =>
     `<button class="stage-btn" data-stage="${s.id}">${s.stage_num}</button>`
   ).join('');
@@ -1715,7 +1726,7 @@ function renderStageList(regionId) {
 function fitDiffModeButtons(list) {
   // Set to max-content immediately so buttons render at their natural size
   list.style.gridAutoColumns = 'max-content';
-  list.style.width = 'max-content';
+  list.style.width = '';         // stay at 100% so parent doesn't clip
   // Then measure and equalize after render
   requestAnimationFrame(() => requestAnimationFrame(() => {
     const btns = [...list.querySelectorAll('.diff-btn')];
