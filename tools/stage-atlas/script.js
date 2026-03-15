@@ -162,7 +162,7 @@ initSqlJs({
           const c = Object.fromEntries(cols.map((k, i) => [k, row[i]]));
           const hid = parseInt(c.IGid);
           if (hid && !champByIdMap.has(hid)) champByIdMap.set(hid, c);
-          if (c.name) champByNameMap.set(c.name.toLowerCase(), c);
+          if (c.name) champByNameMap.set(c.name.toLowerCase().replace(/[\u2018\u2019]/g, "'"), c);
         }
       }
     })
@@ -2291,7 +2291,7 @@ function renderEnemyCard(e) {
 // ── Enemy Modal ────────────────────────────────────────────────────────────────
 function queryChamp(heroId, name) {
   return champByIdMap.get(heroId)
-      || (name && champByNameMap.get(name.toLowerCase()))
+      || (name && champByNameMap.get(name.toLowerCase().replace(/[\u2018\u2019]/g, "'")))
       || null;
 }
 

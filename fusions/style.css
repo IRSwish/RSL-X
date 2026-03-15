@@ -308,8 +308,8 @@
   position: relative;
   filter: grayscale(0);
   opacity: 1;
-  border: 2px solid rgba(255, 9, 9, 0.25);
-  box-shadow: none;
+  border: 2px solid rgba(255, 50, 50, 0.4);
+  box-shadow: 0 0 10px rgba(255, 50, 50, 0.2);
 }
 
 /* Pattern de hachures pour les events terminés */
@@ -319,8 +319,8 @@
   inset: 0;
   background: repeating-linear-gradient(
     135deg,
-    rgba(245, 37, 37, 0.1) 0px,
-    rgba(245, 37, 37, 0.1) 4px,
+    rgba(245, 37, 37, 0.12) 0px,
+    rgba(245, 37, 37, 0.12) 4px,
     rgba(75, 75, 75, 0.1) 4px,
     rgba(75, 75, 75, 0.1) 8px
   );
@@ -330,7 +330,7 @@
 }
 
 .event-block.event-ended .event-name {
-  color: rgb(163, 1, 1);
+  color: rgba(255, 80, 80, 0.9);
   position: relative;
   z-index: 2;
 }
@@ -368,26 +368,25 @@
   text-shadow: 0 0 8px rgba(0, 255, 150, 0.4);
 }
 
-/* Event Partial */
+/* Partial = même style que rouge (ni tout validé, ni skippé complètement) */
 .event-block.event-ended.partial {
-  border: 2px solid rgba(255, 165, 0, 0.5);
-  box-shadow: 0 0 8px rgba(255, 165, 0, 0.25);
-  opacity: 1;
+  border: 2px solid rgba(255, 50, 50, 0.4);
+  box-shadow: 0 0 10px rgba(255, 50, 50, 0.2);
 }
 
 .event-block.event-ended.partial::before {
   background: repeating-linear-gradient(
     135deg,
-    rgba(255, 165, 0, 0.08) 0px,
-    rgba(255, 165, 0, 0.08) 4px,
-    rgba(75, 75, 75, 0.08) 4px,
-    rgba(75, 75, 75, 0.08) 8px
+    rgba(245, 37, 37, 0.12) 0px,
+    rgba(245, 37, 37, 0.12) 4px,
+    rgba(75, 75, 75, 0.1) 4px,
+    rgba(75, 75, 75, 0.1) 8px
   );
 }
 
 .event-block.event-ended.partial .event-name {
-  color: rgba(255, 180, 0, 0.8);
-  text-shadow: 0 0 6px rgba(255, 180, 0, 0.3);
+  color: rgba(255, 80, 80, 0.9);
+  text-shadow: none;
 }
 
 /* Reset Buttons */

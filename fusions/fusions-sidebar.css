@@ -667,3 +667,83 @@
   color: rgba(60, 170, 100, 0.7);
   border: 1px solid rgba(60, 170, 100, 0.25);
 }
+
+/* ——— Potion Keep pills ——— */
+.keep-pill {
+  display: block;
+  width: 70%;
+  height: 8px;
+  border-radius: 4px;
+  margin: 5px auto 0;
+  position: relative;
+  z-index: 1;
+  cursor: default;
+}
+.keep-spirit { background: rgba(76, 155, 80, 0.45); }
+.keep-force  { background: rgba(180, 50, 50, 0.45); }
+.keep-magic  { background: rgba(40, 120, 190, 0.45); }
+.keep-void   { background: rgba(110, 55, 145, 0.45); }
+
+/* ——— Events terminés : override des couleurs type-tournament/type-event ——— */
+.event-block.event-ended,
+.event-block.event-ended.type-tournament,
+.event-block.event-ended.type-event {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(245, 37, 37, 0.12) 0px,
+    rgba(245, 37, 37, 0.12) 4px,
+    rgba(75, 75, 75, 0.1) 4px,
+    rgba(75, 75, 75, 0.1) 8px
+  );
+  border-color: rgba(255, 50, 50, 0.4);
+  box-shadow: 0 0 10px rgba(255, 50, 50, 0.2);
+}
+
+.event-block.event-ended .event-name,
+.event-block.event-ended.type-tournament .event-name,
+.event-block.event-ended.type-event .event-name {
+  color: rgba(255, 80, 80, 0.9);
+  text-shadow: none;
+}
+
+.event-block.event-ended.validated,
+.event-block.event-ended.validated.type-tournament,
+.event-block.event-ended.validated.type-event {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(37, 245, 37, 0.1) 0px,
+    rgba(37, 245, 37, 0.1) 4px,
+    rgba(75, 75, 75, 0.1) 4px,
+    rgba(75, 75, 75, 0.1) 8px
+  );
+  border-color: rgba(0, 201, 27, 0.4);
+  box-shadow: 0 0 10px rgba(0, 201, 27, 0.2);
+}
+
+.event-block.event-ended.validated .event-name,
+.event-block.event-ended.validated.type-tournament .event-name,
+.event-block.event-ended.validated.type-event .event-name {
+  color: rgba(5, 136, 1, 0.85);
+  text-shadow: 0 0 8px rgba(0, 255, 150, 0.4);
+}
+
+.event-block.event-ended.partial,
+.event-block.event-ended.partial.type-tournament,
+.event-block.event-ended.partial.type-event {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(245, 37, 37, 0.12) 0px,
+    rgba(245, 37, 37, 0.12) 4px,
+    rgba(75, 75, 75, 0.1) 4px,
+    rgba(75, 75, 75, 0.1) 8px
+  );
+  border-color: rgba(255, 50, 50, 0.4);
+  box-shadow: 0 0 10px rgba(255, 50, 50, 0.2);
+}
+
+.event-block.event-ended.partial .event-name,
+.event-block.event-ended.partial.type-tournament .event-name,
+.event-block.event-ended.partial.type-event .event-name {
+  color: rgba(255, 80, 80, 0.9);
+  text-shadow: none;
+}

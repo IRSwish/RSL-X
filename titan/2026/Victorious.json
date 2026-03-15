@@ -1,0 +1,13 @@
+{
+  "title": "VICTORIOUS TITAN EVENT",
+  "points":"anniversary",
+  "events": [
+    {
+      "name": "Dragon Turn Attack",
+      "type": "Tournament",
+      "start_date": "2026-01-22",
+      "end_date": "2026-01-24",
+      "points": [40]
+    }
+  ]
+}

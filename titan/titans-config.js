@@ -1,5 +1,9 @@
 // fusions-config.js
 window.fusions = {
+  "Victorious": {
+    name: "Victorious Titan Event",
+    json: "2026/Victorious.json"
+  },
   "Odyssey": {
     name: "Odyssey Titan Event",
     json: "2026/Odyssey.json"

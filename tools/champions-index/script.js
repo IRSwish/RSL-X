@@ -9,6 +9,7 @@ let currentForms = null;
 let currentFormIndex = 0;
 let selectedAuraStats = [];
 let selectedAuraZones = [];
+let auraSort = null; // null | "desc" | "asc"
 
 // Effets sélectionnés par l'utilisateur
 let activeEffects = {
@@ -35,6 +36,7 @@ const invocableCheckbox = document.getElementById('invocableOnly');
 const countDisplay = document.getElementById('championCount');
 const auraStatButtons = document.querySelectorAll(".aura-stat-btn");
 const auraAreaButtons = document.querySelectorAll(".aura-area-btn");
+const auraSortBtn = document.getElementById("auraSortBtn");
 
 let selectedFactions = [];
 let selectedRarities = [];
@@ -310,6 +312,13 @@ function toggleSelection(array, value) {
   return array.includes(value) ? array.filter(v => v !== value) : [...array, value];
 }
 
+function parseAuraValue(auraText) {
+  if (!auraText) return 0;
+  // Match "by 33%" or "by 45" (RES/ACC have no %)
+  const match = auraText.match(/by\s+(\d+(?:\.\d+)?)%?/i);
+  return match ? parseFloat(match[1]) : 0;
+}
+
 searchInput.addEventListener('input', displayChampions);
 invocableCheckbox.addEventListener('change', displayChampions);
 
@@ -353,6 +362,24 @@ auraStatButtons.forEach(btn => {
       selectedAuraStats = [btn.dataset.aurastat];
     }
 
+    // === Show/hide aura sort button ===
+    if (selectedAuraStats.length > 0) {
+      auraSortBtn.classList.remove("hiding");
+      auraSortBtn.classList.add("visible");
+      lucide.createIcons();
+    } else {
+      // Reset sort state and animate out
+      auraSort = null;
+      auraSortBtn.classList.remove("active", "visible");
+      auraSortBtn.classList.add("hiding");
+      auraSortBtn.addEventListener("animationend", () => {
+        auraSortBtn.classList.remove("hiding");
+      }, { once: true });
+      const dirIcon = auraSortBtn.querySelector(".aura-sort-direction-icon");
+      if (dirIcon) dirIcon.setAttribute("data-lucide", "arrows-up-down");
+      lucide.createIcons();
+    }
+
     displayChampions();
   });
 });
@@ -375,6 +402,27 @@ auraAreaButtons.forEach(btn => {
   });
 });
 
+
+// === AURA SORT BUTTON ===
+auraSortBtn.addEventListener("click", () => {
+  const dirIcon = auraSortBtn.querySelector(".aura-sort-direction-icon");
+
+  if (auraSort === null) {
+    auraSort = "desc";
+    auraSortBtn.classList.add("active");
+    if (dirIcon) dirIcon.setAttribute("data-lucide", "arrow-down-wide-narrow");
+  } else if (auraSort === "desc") {
+    auraSort = "asc";
+    if (dirIcon) dirIcon.setAttribute("data-lucide", "arrow-up-wide-narrow");
+  } else {
+    auraSort = null;
+    auraSortBtn.classList.remove("active");
+    if (dirIcon) dirIcon.setAttribute("data-lucide", "arrows-up-down");
+  }
+
+  lucide.createIcons();
+  displayChampions();
+});
 
 document.getElementById("resetFilters").addEventListener("click", resetAllFilters);
 
@@ -579,7 +627,7 @@ function displayChampions() {
   window.__latestFinalFiltered = finalFiltered;
   grid.innerHTML = "";
 
-  // === TRI ===
+  // === TRI PAR STAT ===
   if (currentSort.stat) {
     finalFiltered.sort((a, b) => {
       const valA = Number(a[currentSort.stat]) || 0;
@@ -588,6 +636,15 @@ function displayChampions() {
       return currentSort.order === "asc"
         ? valA - valB
         : valB - valA;
+    });
+  }
+
+  // === TRI PAR PUISSANCE D'AURA ===
+  if (auraSort && selectedAuraStats.length) {
+    finalFiltered.sort((a, b) => {
+      const valA = parseAuraValue(a.aura);
+      const valB = parseAuraValue(b.aura);
+      return auraSort === "desc" ? valB - valA : valA - valB;
     });
   }
 
@@ -648,6 +705,17 @@ function displayChampions() {
       statValue.style.marginTop = "2px";
       statValue.textContent = c[currentSort.stat];
       card.appendChild(statValue);
+    } else if (auraSort && selectedAuraStats.length) {
+      const auraVal = parseAuraValue(c.aura);
+      if (auraVal) {
+        const isPercent = c.aura && /by\s+\d+(?:\.\d+)?%/i.test(c.aura);
+        const statValue = document.createElement("div");
+        statValue.style.fontSize = "12px";
+        statValue.style.opacity = "0.8";
+        statValue.style.marginTop = "2px";
+        statValue.textContent = isPercent ? `${auraVal}%` : `${auraVal}`;
+        card.appendChild(statValue);
+      }
     }
 
     card.addEventListener("click", () => openChampionModal(c));
@@ -681,6 +749,12 @@ function resetAllFilters() {
   selectedAuraZones = [];
   document.querySelectorAll(".aura-stat-btn").forEach(btn => btn.classList.remove("active"));
   document.querySelectorAll(".aura-area-btn").forEach(btn => btn.classList.remove("active"));
+
+  // Aura sort button
+  auraSort = null;
+  auraSortBtn.classList.remove("active", "visible", "hiding");
+  const auraDirIcon = auraSortBtn.querySelector(".aura-sort-direction-icon");
+  if (auraDirIcon) auraDirIcon.setAttribute("data-lucide", "arrows-up-down");
 
   // Sintranos stage filter
   selectedSintStage = "";

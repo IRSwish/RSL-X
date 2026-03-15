@@ -940,6 +940,76 @@ body.modal-open {overflow: hidden;}
   box-shadow: 0 0 8px rgba(212,175,55,.5);
 }
 
+/* === AURA SORT BUTTON (8th slot) === */
+.aura-sort-btn {
+  background: none !important;
+  border: none;
+  padding: 0;
+  width: calc(25% - 10px);
+  display: none;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.aura-sort-btn.visible {
+  display: flex;
+  animation: aura-sort-pop-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.aura-sort-btn.hiding {
+  display: flex;
+  animation: aura-sort-pop-out 0.22s ease forwards;
+}
+
+.aura-sort-icon-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #1a1a1a;
+  border: 2px solid #444;
+  width: 55px;
+  height: 55px;
+  border-radius: 6px;
+  gap: 3px;
+  color: #fcf6ff;
+  transition: border-color .25s, box-shadow .25s, transform .15s;
+}
+
+.aura-sort-btn:hover .aura-sort-icon-wrapper {
+  transform: scale(1.1);
+  border-color: #d4af37;
+}
+
+.aura-sort-btn.active .aura-sort-icon-wrapper {
+  border-color: #d4af37;
+  background: rgba(212,175,55,.15);
+  box-shadow: 0 0 8px rgba(212,175,55,.5);
+}
+
+.aura-sort-icon-wrapper svg {
+  width: 18px;
+  height: 18px;
+}
+
+.aura-sort-direction-icon {
+  opacity: 0.65;
+}
+
+.aura-sort-btn.active .aura-sort-direction-icon {
+  opacity: 1;
+}
+
+@keyframes aura-sort-pop-in {
+  from { opacity: 0; transform: scale(0.3) rotate(-25deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+@keyframes aura-sort-pop-out {
+  from { opacity: 1; transform: scale(1) rotate(0deg); }
+  to   { opacity: 0; transform: scale(0.3) rotate(25deg); }
+}
+
 /* Aura Areas → 2 colonnes + boutons même largeur */
 .aura-areas-row {
   display: grid;

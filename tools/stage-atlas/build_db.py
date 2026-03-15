@@ -31,7 +31,7 @@ def _conv(base, grade, level):
 # Load
 # ---------------------------------------------------------------------------
 print("Loading dat file (~37 MB)...")
-with open(DAT_FILE, 'r', encoding='latin-1') as f:
+with open(DAT_FILE, 'r', encoding='cp1252') as f:
     data = json.loads(f.read())
 print("  done.")
 

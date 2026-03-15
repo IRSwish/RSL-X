@@ -148,6 +148,16 @@
     }
 
     // Colonnes de dates
+    const KEEP_BY_DOW = [
+      { name: 'Void',   cls: 'keep-void'   }, // dimanche
+      { name: 'Spirit', cls: 'keep-spirit' }, // lundi
+      { name: 'Force',  cls: 'keep-force'  }, // mardi
+      { name: 'Magic',  cls: 'keep-magic'  }, // mercredi
+      { name: 'Spirit', cls: 'keep-spirit' }, // jeudi
+      { name: 'Force',  cls: 'keep-force'  }, // vendredi
+      { name: 'Magic',  cls: 'keep-magic'  }, // samedi
+    ];
+
     for (let i = 0; i < totalDays; i++) {
       const currentDate = new Date(minDate);
       currentDate.setDate(minDate.getDate() + i);
@@ -166,7 +176,9 @@
       col.style.width = `${dayWidth}px`;
       col.dataset.date = isoDate;
 
-      col.innerHTML = `<span class="day">${day}</span><span class="date">${date}</span>`;
+      const keep = KEEP_BY_DOW[currentDate.getDay()];
+
+      col.innerHTML = `<span class="day">${day}</span><span class="date">${date}</span><span class="keep-pill ${keep.cls}" title="Potion Keep: ${keep.name}"></span>`;
 
       if (i > 0) {
         const leftLine = document.createElement('div');
@@ -413,7 +425,7 @@
 
     // Clicks sur points
     document.querySelectorAll('.point-box').forEach(box => {
-      box.addEventListener('click', (e) => {
+      box.addEventListener('click', () => {
         const parentEvent = box.closest('.event-block');
         const id = box.dataset.id;
 
@@ -439,13 +451,50 @@
 
         const states = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
         const currentIndex = states.findIndex(s => box.classList.contains(s));
-        const nextIndex = (e.ctrlKey || e.metaKey)
-          ? (currentIndex - 1 + states.length) % states.length
-          : (currentIndex + 1) % states.length;
+        const nextIndex = (currentIndex + 1) % states.length;
 
         states.forEach(s => box.classList.remove(s));
         box.classList.add(states[nextIndex]);
         savedStates[id] = states[nextIndex];
+        LS.setItem('pointStates', JSON.stringify(savedStates));
+
+        updateSummary();
+        updateProgressPanelFromData(timelineData);
+        buildResourcesPanel(timelineData);
+      });
+
+      box.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        const parentEvent = box.closest('.event-block');
+        const id = box.dataset.id;
+
+        if (parentEvent && parentEvent.classList.contains('event-ended')) {
+          const allStates = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+          const isValidated = box.classList.contains('state-validated');
+          allStates.forEach(s => box.classList.remove(s));
+          box.classList.add(isValidated ? 'state-passed' : 'state-validated');
+          savedStates[id] = box.classList.contains('state-validated') ? 'state-validated' : 'state-passed';
+          LS.setItem('pointStates', JSON.stringify(savedStates));
+
+          const allPoints = parentEvent.querySelectorAll('.point-box');
+          const validatedCount = Array.from(allPoints).filter(p => p.classList.contains('state-validated')).length;
+          parentEvent.classList.remove('validated', 'partial');
+          if (validatedCount === allPoints.length) parentEvent.classList.add('validated');
+          else if (validatedCount > 0) parentEvent.classList.add('partial');
+
+          updateSummary();
+          updateProgressPanelFromData(timelineData);
+          buildResourcesPanel(timelineData);
+          return;
+        }
+
+        const states = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+        const currentIndex = states.findIndex(s => box.classList.contains(s));
+        const prevIndex = (currentIndex - 1 + states.length) % states.length;
+
+        states.forEach(s => box.classList.remove(s));
+        box.classList.add(states[prevIndex]);
+        savedStates[id] = states[prevIndex];
         LS.setItem('pointStates', JSON.stringify(savedStates));
 
         updateSummary();
@@ -674,13 +723,15 @@
       const rareStatus = complete ? 'status-green' : '';
       const epicStatus = complete ? 'status-green' : '';
 
+      const copiesPerRare = Math.round(16 / allRares.length);
+
       const raresHTML = allRares.map(name => `
           <div class="stat ${rareStatus}">
             <img class="stat-icon" src="/tools/champions-index/img/champions/${name}.webp" alt="${name}"/>
             <div>
               <span class="label">${name} (Rare)</span>
               <br />
-              <span class="value">${countValidated(name)} / 4</span>
+              <span class="value">${countValidated(name)} / ${copiesPerRare}</span>
             </div>
           </div>`).join('');
 
@@ -810,6 +861,7 @@ function buildResourcesPanel(data) {
   const rareAff = (data.RareAff || 'magic').toLowerCase();
   const epicAff = (data.EpicAff || 'magic').toLowerCase();
   const counts = collectTimelineCounts();
+  let phantomEpicCount = 0;
 
   // --- Construire la liste d’instances individuelles (1 carte = 1 exemplaire) ---
   const entries = [];
@@ -852,18 +904,22 @@ function buildResourcesPanel(data) {
     // 1 epic gratuit pour 4 rares built, distribué sur le premier epic
     const fromRares = Math.floor(raresBuilt / 4);
 
+    let totalEarnedEpics = 0;
     allEpicNames.forEach((epicName, idx) => {
       const ce = counts.get(epicName);
       const fromEvents = ce ? (ce.validated || 0) + (ce.planned || 0) : 0;
       const epicsTotal = fromEvents + (idx === 0 ? fromRares : 0);
+      totalEarnedEpics += epicsTotal;
       if (epicsTotal > 0) {
         pushCopies(epicName, 'EPIC', epicAff, 5, epicsTotal);
       }
     });
+    phantomEpicCount = Math.max(0, 4 - totalEarnedEpics);
   } else if (type === 'HYBRID' && data.Epic) {
     const cf = counts.get('Fragments') || { validated: 0, planned: 0 };
     const totalEpics = Math.floor(((cf.validated || 0) + (cf.planned || 0)) / 100);
     if (totalEpics > 0) pushCopies(data.Epic, 'EPIC', epicAff, 5, totalEpics);
+    phantomEpicCount = Math.max(0, 4 - totalEpics);
   }
 
   // 🟦 HYBRID : toujours afficher le panneau, même si tu n'as pas encore 100 fragments
@@ -1068,6 +1124,16 @@ function buildResourcesPanel(data) {
 
   function updateGlobal() {
     const { totalsRare, totalsEpic, builtCount } = totalsFromCards();
+
+    // Ajoute le coût des epics non encore obtenus (toujours compter 4 epics au total)
+    if (phantomEpicCount > 0) {
+      const u = sumEpicCosts(0);
+      totalsEpic.affG += phantomEpicCount * u.affG;
+      totalsEpic.arcG += phantomEpicCount * u.arcG;
+      totalsEpic.affS += phantomEpicCount * u.affS;
+      totalsEpic.arcS += phantomEpicCount * u.arcS;
+      totalsEpic.chk4 += phantomEpicCount * u.chk4;
+    }
     const builtEl = document.getElementById('glob-built');
     if (builtEl) builtEl.textContent = String(builtCount);
 

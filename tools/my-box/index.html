@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HNK5S7EBCJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-HNK5S7EBCJ');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+
+  <script src="/config/site-config.js"></script>
+  <script src="/config/ad-banner.js" defer></script>
+  <script>document.title = "My Box | " + window.siteConfig.title;</script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../style/style.css">
+  <link rel="stylesheet" href="/tools/my-box/style.css">
+  <link rel="preload" href="/menu.html" as="fetch" crossorigin>
+</head>
+<body>
+
+<div id="menu-container"></div>
+
+<div class="header-wrapper">
+  <header id="page-title">MY BOX</header>
+</div>
+
+<div class="container">
+
+  <!-- TOOLBAR -->
+  <div class="mybox-toolbar">
+    <div class="toolbar-left">
+      <button id="importBtn" class="toolbar-btn"><i data-lucide="upload"></i> Import RSL Helper</button>
+      <input type="file" id="csvInput" accept=".csv,.CSV" style="display:none">
+      <button id="addChampBtn" class="toolbar-btn toolbar-btn-add"><i data-lucide="plus"></i> Add Champion</button>
+      <button id="exportBtn" class="toolbar-btn toolbar-btn-export"><i data-lucide="download"></i> Export</button>
+      <button id="clearBoxBtn" class="toolbar-btn toolbar-btn-danger"><i data-lucide="trash-2"></i> Clear Box</button>
+    </div>
+    <div class="toolbar-right">
+      <input type="text" id="searchInput" placeholder="Search a champion...">
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="mybox-filters">
+    <div class="filter-group">
+      <div class="filter-group-label">Rarity</div>
+      <div class="filter-btns">
+        <button class="box-rarity-btn" data-rarity="Mythical"><img src="/tools/champions-index/img/rarity/Mythical_Icon.webp"></button>
+        <button class="box-rarity-btn" data-rarity="Legendary"><img src="/tools/champions-index/img/rarity/Legendary_Icon.webp"></button>
+        <button class="box-rarity-btn" data-rarity="Epic"><img src="/tools/champions-index/img/rarity/Epic_Icon.webp"></button>
+        <button class="box-rarity-btn" data-rarity="Rare"><img src="/tools/champions-index/img/rarity/Rare_Icon.webp"></button>
+        <button class="box-rarity-btn" data-rarity="Uncommon"><img src="/tools/champions-index/img/rarity/Uncommon_Icon.webp"></button>
+        <button class="box-rarity-btn" data-rarity="Common"><img src="/tools/champions-index/img/rarity/Common_Icon.webp"></button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-label">Affinity</div>
+      <div class="filter-btns">
+        <button class="box-affinity-btn" data-affinity="Force"><img src="/tools/champions-index/img/affinity/Force.webp"></button>
+        <button class="box-affinity-btn" data-affinity="Magic"><img src="/tools/champions-index/img/affinity/Magic.webp"></button>
+        <button class="box-affinity-btn" data-affinity="Spirit"><img src="/tools/champions-index/img/affinity/Spirit.webp"></button>
+        <button class="box-affinity-btn" data-affinity="Void"><img src="/tools/champions-index/img/affinity/Void.webp"></button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-label">Faction</div>
+      <div class="filter-btns">
+        <button class="box-faction-btn" data-faction="Banner Lords"><img src="/tools/champions-index/img/factions/bannerlords.webp" title="Banner Lords"></button>
+        <button class="box-faction-btn" data-faction="High Elves"><img src="/tools/champions-index/img/factions/highelves.webp" title="High Elves"></button>
+        <button class="box-faction-btn" data-faction="Sacred Order"><img src="/tools/champions-index/img/factions/sacredorder.webp" title="Sacred Order"></button>
+        <button class="box-faction-btn" data-faction="Barbarians"><img src="/tools/champions-index/img/factions/barbarians.webp" title="Barbarians"></button>
+        <button class="box-faction-btn" data-faction="Ogryn Tribes"><img src="/tools/champions-index/img/factions/ogryntribes.webp" title="Ogryn Tribes"></button>
+        <button class="box-faction-btn" data-faction="Lizardmen"><img src="/tools/champions-index/img/factions/lizardmen.webp" title="Lizardmen"></button>
+        <button class="box-faction-btn" data-faction="Skinwalkers"><img src="/tools/champions-index/img/factions/skinwalkers.webp" title="Skinwalkers"></button>
+        <button class="box-faction-btn" data-faction="Orcs"><img src="/tools/champions-index/img/factions/orcs.webp" title="Orcs"></button>
+        <button class="box-faction-btn" data-faction="Demonspawn"><img src="/tools/champions-index/img/factions/demonspawn.webp" title="Demonspawn"></button>
+        <button class="box-faction-btn" data-faction="Undead Hordes"><img src="/tools/champions-index/img/factions/undeadhordes.webp" title="Undead Hordes"></button>
+        <button class="box-faction-btn" data-faction="Dark Elves"><img src="/tools/champions-index/img/factions/darkelves.webp" title="Dark Elves"></button>
+        <button class="box-faction-btn" data-faction="Knights Revenant"><img src="/tools/champions-index/img/factions/knightsrevenant.webp" title="Knights Revenant"></button>
+        <button class="box-faction-btn" data-faction="Dwarves"><img src="/tools/champions-index/img/factions/dwarves.webp" title="Dwarves"></button>
+        <button class="box-faction-btn" data-faction="Shadowkin"><img src="/tools/champions-index/img/factions/shadowkin.webp" title="Shadowkin"></button>
+        <button class="box-faction-btn" data-faction="Sylvan Watchers"><img src="/tools/champions-index/img/factions/sylvanwatchers.webp" title="Sylvan Watchers"></button>
+        <button class="box-faction-btn" data-faction="Argonites"><img src="/tools/champions-index/img/factions/argonites.webp" title="Argonites"></button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-label">Status</div>
+      <div class="filter-btns">
+        <label class="toggle-label"><input type="checkbox" id="filterPinned"> <i data-lucide="pin"></i> Pinned</label>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-label">Masteries</div>
+      <div class="filter-btns">
+        <label class="toggle-label"><input type="checkbox" id="filterMastered"> Mastered</label>
+        <label class="toggle-label"><input type="checkbox" id="filterPartialMastery"> Partial</label>
+        <label class="toggle-label"><input type="checkbox" id="filterNoMasteries"> None</label>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-label">Books</div>
+      <div class="filter-btns">
+        <label class="toggle-label"><input type="checkbox" id="filterFullBooks"> Full</label>
+        <label class="toggle-label"><input type="checkbox" id="filterPartialBooks"> Partial</label>
+        <label class="toggle-label"><input type="checkbox" id="filterNoBooks"> None</label>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-label">Empowerment</div>
+      <div class="filter-btns">
+        <button class="box-empower-btn" data-empower="1">+1</button>
+        <button class="box-empower-btn" data-empower="2">+2</button>
+        <button class="box-empower-btn" data-empower="3">+3</button>
+        <button class="box-empower-btn" data-empower="4">+4</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-group-label">Sort</div>
+      <div class="filter-btns">
+        <button class="sort-select-btn" id="sortBlessingBtn">Blessing ↓</button>
+      </div>
+    </div>
+
+    <div class="filter-group filter-group-reset">
+      <button id="resetBoxFilters" class="reset-btn">⟳ Reset</button>
+    </div>
+  </div>
+
+  <div class="counter" id="boxCounter"></div>
+  <div id="myboxGrid" class="mybox-grid"></div>
+
+</div><!-- /.container -->
+
+
+<!-- ============================
+     EDIT MODAL
+============================= -->
+<div id="editModal" class="modal-overlay">
+  <div class="edit-modal-content">
+    <button class="modal-close" id="editCloseBtn"><i data-lucide="x"></i></button>
+
+    <!-- Champion header -->
+    <div class="edit-header">
+      <div class="edit-portrait-wrap">
+        <img class="edit-champion-img" src="" alt="">
+        <img class="edit-frame-img" src="" alt="">
+        <img class="edit-affinity-img" src="" alt="">
+      </div>
+      <div class="edit-champ-info">
+        <div class="edit-champ-name"></div>
+        <div class="edit-champ-sub"></div>
+      </div>
+    </div>
+
+    <div class="edit-body">
+
+      <!-- RANK -->
+      <div class="edit-section">
+        <div class="edit-section-title">Rank <span class="rank-min-label" id="rankMinLabel"></span></div>
+        <div class="rank-star-selector" id="rankStarSelector">
+          <button class="rank-star-btn" data-rank="1"><img src="/tools/champions-index/img/stars/Star-Classic.webp" alt="★"></button>
+          <button class="rank-star-btn" data-rank="2"><img src="/tools/champions-index/img/stars/Star-Classic.webp" alt="★"></button>
+          <button class="rank-star-btn" data-rank="3"><img src="/tools/champions-index/img/stars/Star-Classic.webp" alt="★"></button>
+          <button class="rank-star-btn" data-rank="4"><img src="/tools/champions-index/img/stars/Star-Classic.webp" alt="★"></button>
+          <button class="rank-star-btn" data-rank="5"><img src="/tools/champions-index/img/stars/Star-Classic.webp" alt="★"></button>
+          <button class="rank-star-btn" data-rank="6"><img src="/tools/champions-index/img/stars/Star-Classic.webp" alt="★"></button>
+        </div>
+      </div>
+
+      <!-- ASCENSION -->
+      <div class="edit-section">
+        <div class="edit-section-title">Ascension</div>
+        <div class="ascension-star-selector" id="ascensionStarSelector">
+          <button class="ascension-star-btn"><img src="/tools/champions-index/img/stars/Star-Ascend.webp" alt="★"></button>
+          <button class="ascension-star-btn"><img src="/tools/champions-index/img/stars/Star-Ascend.webp" alt="★"></button>
+          <button class="ascension-star-btn"><img src="/tools/champions-index/img/stars/Star-Ascend.webp" alt="★"></button>
+          <button class="ascension-star-btn"><img src="/tools/champions-index/img/stars/Star-Ascend.webp" alt="★"></button>
+          <button class="ascension-star-btn"><img src="/tools/champions-index/img/stars/Star-Ascend.webp" alt="★"></button>
+          <button class="ascension-star-btn"><img src="/tools/champions-index/img/stars/Star-Ascend.webp" alt="★"></button>
+        </div>
+      </div>
+
+      <!-- EMPOWERMENT -->
+      <div class="edit-section">
+        <div class="edit-section-title">Empowerment</div>
+        <div class="empower-buttons">
+          <button class="empower-btn active" data-level="0">0</button>
+          <button class="empower-btn" data-level="1">+1</button>
+          <button class="empower-btn" data-level="2">+2</button>
+          <button class="empower-btn" data-level="3">+3</button>
+          <button class="empower-btn" data-level="4">+4</button>
+        </div>
+      </div>
+
+      <!-- BLESSING -->
+      <div class="edit-section">
+        <div class="edit-section-title">Blessing</div>
+        <div class="edit-blessing-row">
+          <div class="edit-blessing-visual">
+            <img class="edit-blessing-img" src="/tools/champions-index/img/blessings/Unselected.webp" alt="">
+            <img class="edit-blessing-icon-overlay" src="" alt="" style="display:none">
+          </div>
+          <div class="edit-blessing-info">
+            <div class="edit-blessing-name">No blessing</div>
+            <div class="blessing-stars-row">
+              <button class="blessing-star-btn"><img src="/tools/champions-index/img/stars/Star-Ascend.webp" alt="★"></button>
+              <button class="blessing-star-btn"><img src="/tools/champions-index/img/stars/Star-Ascend.webp" alt="★"></button>
+              <button class="blessing-star-btn"><img src="/tools/champions-index/img/stars/Star-Ascend.webp" alt="★"></button>
+              <button class="blessing-star-btn"><img src="/tools/champions-index/img/stars/Star-Ascend.webp" alt="★"></button>
+              <button class="blessing-star-btn"><img src="/tools/champions-index/img/stars/Star-Ascend.webp" alt="★"></button>
+              <button class="blessing-star-btn"><img src="/tools/champions-index/img/stars/Star-Ascend.webp" alt="★"></button>
+            </div>
+            <button class="pick-btn" id="editBlessingPickBtn"><i data-lucide="search"></i> Pick Blessing</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MASTERIES -->
+      <div class="edit-section">
+        <div class="edit-section-title">Masteries</div>
+        <div class="mastery-grid">
+          <div class="mastery-row">
+            <div class="scroll-label-img">
+              <img src="/style/img/Misc/Scroll-Basic.webp" class="scroll-icon-sm" title="Basic Scroll">
+              <span>Basic</span>
+            </div>
+            <label>Applied <input type="number" id="editT1Used" min="0" value="0"></label>
+            <label>Available <input type="number" id="editT1Unused" min="0" value="0"></label>
+          </div>
+          <div class="mastery-row">
+            <div class="scroll-label-img">
+              <img src="/style/img/Misc/Scroll-Advanced.webp" class="scroll-icon-sm" title="Advanced Scroll">
+              <span>Advanced</span>
+            </div>
+            <label>Applied <input type="number" id="editT2Used" min="0" value="0"></label>
+            <label>Available <input type="number" id="editT2Unused" min="0" value="0"></label>
+          </div>
+          <div class="mastery-row">
+            <div class="scroll-label-img">
+              <img src="/style/img/Misc/Scroll-Divine.webp" class="scroll-icon-sm" title="Divine Scroll">
+              <span>Divine</span>
+            </div>
+            <label>Applied <input type="number" id="editT3Used" min="0" value="0"></label>
+            <label>Available <input type="number" id="editT3Unused" min="0" value="0"></label>
+          </div>
+        </div>
+        <label class="mastered-toggle-label">
+          <input type="checkbox" id="editMastered">
+          <i data-lucide="star"></i> Mastered
+        </label>
+      </div>
+
+      <!-- BOOKS — dynamically filled by JS based on champion skills -->
+      <div class="edit-section">
+        <div class="edit-section-title">Books</div>
+        <div id="booksSection"></div>
+      </div>
+
+      <!-- NOTE & PIN -->
+      <div class="edit-section">
+        <div class="edit-section-title">Notes</div>
+        <textarea id="editNote" placeholder="Add a note about this champion..." rows="3"></textarea>
+        <label class="pin-toggle-label">
+          <input type="checkbox" id="editPinned">
+          <i data-lucide="pin"></i> Pin this champion
+        </label>
+      </div>
+
+    </div><!-- /.edit-body -->
+
+    <!-- ACTIONS -->
+    <div class="edit-actions">
+      <button class="action-btn action-save" id="editSaveBtn"><i data-lucide="save"></i> Save</button>
+      <button class="action-btn action-delete" id="editDeleteBtn"><i data-lucide="trash-2"></i> Remove</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ============================
+     BLESSING PICKER MODAL
+============================= -->
+<div id="blessingPickerModal" class="modal-overlay">
+  <div class="bpick-modal-content">
+    <div class="bpick-header">
+      <span class="bpick-title">Choose a Blessing</span>
+      <button class="modal-close" id="blessingPickerClose"><i data-lucide="x"></i></button>
+    </div>
+    <div class="blessing-picker-content"></div>
+  </div>
+</div>
+
+
+<!-- ============================
+     ADD CHAMPION MODAL
+============================= -->
+<div id="addModal" class="modal-overlay">
+  <div class="add-modal-content">
+    <div class="add-modal-header">
+      <span>Add a Champion</span>
+      <button class="modal-close" id="addModalClose"><i data-lucide="x"></i></button>
+    </div>
+    <input type="text" id="addSearchInput" placeholder="Search champion name..." autocomplete="off">
+    <div id="addSearchResults" class="add-search-results"></div>
+  </div>
+</div>
+
+
+<script src="/tools/my-box/script.js"></script>
+<script src="../../script.js"></script>
+</body>
+</html>

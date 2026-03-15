@@ -6070,6 +6070,67 @@ window.addEventListener("DOMContentLoaded", () => {
     const freezePostBtn = document.getElementById("freezePostBtn");
     const memberFilter = document.getElementById("memberFilter");
 
+    // Keyboard search for custom selects
+    function addKeyboardSearch(selectEl, onSelect) {
+        let searchBuffer = "";
+        let searchTimer = null;
+        let cycleChar = "";
+        let cycleIndex = -1;
+
+        document.addEventListener("keydown", (e) => {
+            if (!selectEl.classList.contains("open")) return;
+            if (e.key === "Escape") {
+                selectEl.classList.remove("open");
+                return;
+            }
+            if (e.key.length !== 1 || e.ctrlKey || e.altKey || e.metaKey) return;
+            e.preventDefault();
+
+            const key = e.key.toLowerCase();
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => { searchBuffer = ""; }, 600);
+
+            const options = Array.from(selectEl.querySelectorAll(".custom-select-option"));
+
+            // Cycling: same single char typed again → advance to next match
+            if (key === cycleChar && searchBuffer === key) {
+                const matches = options.filter(opt =>
+                    opt.textContent.trim().toLowerCase().startsWith(key)
+                );
+                if (matches.length === 0) return;
+                cycleIndex = (cycleIndex + 1) % matches.length;
+                const match = matches[cycleIndex];
+                options.forEach(opt => opt.classList.remove("keyboard-focus"));
+                match.classList.add("keyboard-focus");
+                match.scrollIntoView({ block: "nearest" });
+                onSelect(match);
+                return;
+            }
+
+            // New character typed
+            searchBuffer += key;
+            cycleChar = searchBuffer.length === 1 ? key : "";
+            cycleIndex = -1;
+
+            const match = options.find(opt =>
+                opt.textContent.trim().toLowerCase().startsWith(searchBuffer)
+            );
+            if (!match) return;
+
+            if (searchBuffer.length === 1) {
+                cycleChar = key;
+                cycleIndex = options.filter(opt =>
+                    opt.textContent.trim().toLowerCase().startsWith(key)
+                ).indexOf(match);
+            }
+
+            options.forEach(opt => opt.classList.remove("keyboard-focus"));
+            match.classList.add("keyboard-focus");
+            match.scrollIntoView({ block: "nearest" });
+            onSelect(match);
+        });
+    }
+
     // Custom Select for Member Filter
     if (memberFilter) {
         const trigger = memberFilter.querySelector(".custom-select-trigger");
@@ -6113,6 +6174,14 @@ window.addEventListener("DOMContentLoaded", () => {
             memberFilter.classList.remove("open");
 
             // Apply filters
+            applyFilters();
+        });
+
+        addKeyboardSearch(memberFilter, (option) => {
+            memberFilter.dataset.value = option.dataset.value;
+            optionsContainer.querySelectorAll(".custom-select-option").forEach(opt => opt.classList.remove("selected"));
+            option.classList.add("selected");
+            updateMemberFilterDisplay();
             applyFilters();
         });
     }
@@ -6161,6 +6230,14 @@ window.addEventListener("DOMContentLoaded", () => {
             conditionFilter.classList.remove("open");
 
             // Apply filters
+            applyFilters();
+        });
+
+        addKeyboardSearch(conditionFilter, (option) => {
+            conditionFilter.dataset.value = option.dataset.value;
+            optionsContainer.querySelectorAll(".custom-select-option").forEach(opt => opt.classList.remove("selected"));
+            option.classList.add("selected");
+            updateConditionFilterDisplay();
             applyFilters();
         });
     }

@@ -588,6 +588,11 @@ body.modal-open .map-filters-container {
     background-color: rgba(212, 175, 55, 0.3);
 }
 
+.custom-select-option.keyboard-focus {
+    background-color: rgba(212, 175, 55, 0.15);
+    outline: 1px solid rgba(212, 175, 55, 0.5);
+}
+
 /* Old select styles - kept for member filter */
 .condition-icon-select {
     flex: 1 !important;
@@ -1334,7 +1339,7 @@ body.modal-open .map-filters-container {
     display: none;
     justify-content: center;
     align-items: center;
-    z-index: 50;
+    z-index: 200;
 }
 
 .modal {
