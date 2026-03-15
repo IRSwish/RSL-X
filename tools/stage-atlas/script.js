@@ -686,6 +686,8 @@ const REGION_NAME_OVERRIDES = {
   1004: 'Soulcross',   1005: 'Amius',
   // Chimera rotations
   1301: 'Rotation 1', 1302: 'Rotation 2', 1303: 'Rotation 3', 1304: 'Rotation 4',
+  // Grim Forest rotations
+  1401: 'Easy', 1402: 'Medium', 1403: 'Hard', 1404: 'Extra Hard',
 };
 
 // ── Special stage regions ─────────────────────────────────────────────────────
@@ -964,6 +966,13 @@ const DT_SR_CONDITIONS = {
       '6 Star Void Attack Champions',
     ],
   },
+};
+
+// Grim Forest: 4 rotations, grouped by enemy level + special types
+const GF_REGIONS = new Set([1401, 1402, 1403, 1404]);
+// Boss names per stage_num (only rotation 2 / region 1402 has boss stages)
+const GF_BOSS_NAMES = {
+  127: 'Leshun', 128: 'Isheth', 129: 'Tauraze', 130: 'Maximoz', 131: 'Draugnell'
 };
 
 // Faction Wars: collapsible groups of 7 (boss on stage 7/14/21)
@@ -1323,6 +1332,7 @@ function stageLabel(stageNum, regionId) {
   if (HYDRA_REGIONS.has(regionId))   return HYDRA_STAGE_LABELS[stageNum]   ?? `${stageNum}`;
   if (CHIMERA_REGIONS.has(regionId)) return CHIMERA_STAGE_LABELS[stageNum] ?? `${stageNum}`;
   if (DT_REGIONS.has(regionId))   return stageNum >= 121 ? `SR ${stageNum - 120}` : `Floor ${stageNum}`;
+  if (GF_REGIONS.has(regionId) && GF_BOSS_NAMES[stageNum]) return GF_BOSS_NAMES[stageNum];
   return `${stageNum}`;
 }
 
@@ -1342,6 +1352,9 @@ function renderGroupedStages(allStages, list, groupSize) {
 }
 
 function renderHorizontalGroups(groups, list, stageLabel, groupLabel) {
+  // Normalise keys to strings so data-key attributes always match (supports both numeric and string keys)
+  const strGroups = new Map([...groups.entries()].map(([k, v]) => [String(k), v]));
+
   list.classList.add('stage-list--grouped');
   document.getElementById('stage-section')?.classList.add('strip--grouped');
   const groupRow = document.createElement('div');
@@ -1350,24 +1363,25 @@ function renderHorizontalGroups(groups, list, stageLabel, groupLabel) {
   stageRow.className = 'strip-stage-row';
 
   function showGroup(key) {
+    const skey = String(key);
     groupRow.querySelectorAll('.stage-group-btn').forEach(b =>
-      b.classList.toggle('active', +b.dataset.key === key)
+      b.classList.toggle('active', b.dataset.key === skey)
     );
     const activeGroupBtn = groupRow.querySelector('.stage-group-btn.active');
     if (activeGroupBtn) slideIndicator(groupRow, activeGroupBtn, '#d4af37', 'rgba(212,175,55,.1)');
-    stageRow.innerHTML = (groups.get(key) || []).map(s =>
-      `<button class="stage-btn" data-stage="${s.id}">${stageLabel(key, s)}</button>`
+    stageRow.innerHTML = (strGroups.get(skey) || []).map(s =>
+      `<button class="stage-btn" data-stage="${s.id}">${stageLabel(skey, s)}</button>`
     ).join('');
     stageRow.querySelectorAll('.stage-btn').forEach(b =>
       b.addEventListener('click', () => loadStage(+b.dataset.stage))
     );
   }
 
-  groupRow.innerHTML = [...groups.keys()].map(key =>
+  groupRow.innerHTML = [...strGroups.keys()].map(key =>
     `<button class="stage-group-btn" data-key="${key}">${groupLabel(key)}</button>`
   ).join('');
   groupRow.querySelectorAll('.stage-group-btn').forEach(btn =>
-    btn.addEventListener('click', () => showGroup(+btn.dataset.key))
+    btn.addEventListener('click', () => showGroup(btn.dataset.key))
   );
 
   list.innerHTML = '';
@@ -1707,6 +1721,64 @@ function renderStageList(regionId) {
       const key = target.stage_num >= 121 ? 121 : (Math.floor((target.stage_num - 1) / 10) * 10 + 1);
       list.querySelector(`.stage-group-btn[data-key="${key}"]`)?.click();
       loadStage(target.id);
+    } else clearStageView();
+    return;
+  }
+
+  // ── Grim Forest: groups by enemy level + Phrygius / Mimic / Bosses ──────
+  if (GF_REGIONS.has(regionId)) {
+    const gfStages = query(`
+      SELECT s.id, s.stage_num,
+             MAX(w.level) as lv,
+             MAX(CASE WHEN h.name = 'Mimic' THEN 1 ELSE 0 END) as is_mimic,
+             MAX(CASE WHEN h.name LIKE '%Phrygius%' THEN 1 ELSE 0 END) as is_phrygius,
+             MAX(CASE WHEN h.name IN (
+               'Leshun the Entangled One','Isheth the Crimson Siren',
+               'Tauraze the Bestial Flame','Maximoz the Weeping Blade',
+               'Draugnell the Eternal Gatherer'
+             ) THEN 1 ELSE 0 END) as is_boss
+      FROM stages s
+      JOIN waves w ON w.stage_id = s.id
+      LEFT JOIN heroes h ON h.id = w.hero_id
+      WHERE s.region_id = ? AND s.difficulty = ?
+      GROUP BY s.id, s.stage_num
+      ORDER BY s.stage_num
+    `, [regionId, selectedDiff]);
+    if (!gfStages.length) { hideStrip('stage-section'); return; }
+
+    // Classify into raw groups
+    const rawGroups = new Map();
+    for (const s of gfStages) {
+      const key = s.is_boss ? 'BOSSES' : s.is_phrygius ? 'PHRYGIUS' : s.is_mimic ? 'MIMIC' : `LV ${s.lv}`;
+      if (!rawGroups.has(key)) rawGroups.set(key, []);
+      rawGroups.get(key).push(s);
+    }
+    // Order: regular levels ascending, then PHRYGIUS, MIMIC, BOSSES
+    const groups = new Map();
+    [...rawGroups.keys()]
+      .filter(k => k.startsWith('LV '))
+      .sort((a, b) => parseInt(a.slice(3)) - parseInt(b.slice(3)))
+      .forEach(k => groups.set(k, rawGroups.get(k)));
+    if (rawGroups.has('PHRYGIUS')) groups.set('PHRYGIUS', rawGroups.get('PHRYGIUS'));
+    if (rawGroups.has('MIMIC'))    groups.set('MIMIC',    rawGroups.get('MIMIC'));
+    if (rawGroups.has('BOSSES'))   groups.set('BOSSES',   rawGroups.get('BOSSES'));
+
+    // Build 1-based index per stage within its group
+    const stageIndex = new Map();
+    for (const stages of groups.values()) stages.forEach((s, i) => stageIndex.set(s.id, i + 1));
+
+    label.textContent = 'Stages';
+    renderHorizontalGroups(groups, list,
+      (key, s) => key === 'BOSSES' ? (GF_BOSS_NAMES[s.stage_num] ?? `${stageIndex.get(s.id)}`) : `${stageIndex.get(s.id)}`,
+      k => k
+    );
+    if (currentStageNum) {
+      const target = gfStages.find(s => s.stage_num === currentStageNum);
+      if (target) {
+        const key = target.is_boss ? 'BOSSES' : target.is_phrygius ? 'PHRYGIUS' : target.is_mimic ? 'MIMIC' : `LV ${target.lv}`;
+        list.querySelector(`.stage-group-btn[data-key="${key}"]`)?.click();
+        loadStage(target.id);
+      } else clearStageView();
     } else clearStageView();
     return;
   }

@@ -32,7 +32,9 @@
       "Bash(/c/Users/total/AppData/Local/Programs/Python/Python313/python.exe -c \"import sqlite3; conn = sqlite3.connect\\(''/c/Users/total/OneDrive/Desktop/RSL-X/tools/champions-index/champions.db''\\); cursor = conn.cursor\\(\\); cursor.execute\\(''SELECT name FROM sqlite_master WHERE type=\"\"table\"\";''\\); tables = [row[0] for row in cursor.fetchall\\(\\)]; print\\(''Tables:'', tables\\); cursor.execute\\(''SELECT name, section, rarity, image FROM blessings ORDER BY section, rarity, name;''\\); blessings = cursor.fetchall\\(\\); print\\(''\\\\nBlessings \\(first 35\\):''\\); [print\\(f''{b[0]:30} | {b[1]:10} | {b[2]:10} | {b[3]}''\\) for b in blessings[:35]]\")",
       "Bash(/c/Users/total/AppData/Local/Programs/Python/Python313/python.exe:*)",
       "Bash(grep -r blessing /c/Users/total/OneDrive/Desktop/RSL-X --include=*.json --include=*.html)",
-      "Bash(/c/Users/total/AppData/Local/Programs/Python/Python311/python -c \":*)"
+      "Bash(/c/Users/total/AppData/Local/Programs/Python/Python311/python -c \":*)",
+      "Bash(grep -E \"\\\\.\\(dat|db|py\\)$\")",
+      "Bash(find /c/Users/total/OneDrive/Desktop/RSL-X -type f \\\\\\(-name README* -o -name *.md -o -name *.txt \\\\\\))"
     ],
     "deny": [],
     "ask": []

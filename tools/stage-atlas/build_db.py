@@ -339,12 +339,12 @@ for area in data['StageData']['Areas']:
 
                         for kk, mods in applied.items():
                             for val, is_abs in mods:
-                                if kk == 1:   # HP
-                                    eff_hp  = round(val) if is_abs else round(eff_hp  * (1 + val))
-                                elif kk == 2: # ATK
-                                    eff_atk = round(val) if is_abs else round(eff_atk * (1 + val))
-                                elif kk == 3: # DEF
-                                    eff_def = round(val) if is_abs else round(eff_def * (1 + val))
+                                if kk == 1:   # HP  — is_abs=1: add val; is_abs=0: multiply
+                                    eff_hp  = round(eff_hp  + val) if is_abs else round(eff_hp  * (1 + val))
+                                elif kk == 2: # ATK — same convention
+                                    eff_atk = round(eff_atk + val) if is_abs else round(eff_atk * (1 + val))
+                                elif kk == 3: # DEF — same convention
+                                    eff_def = round(eff_def + val) if is_abs else round(eff_def * (1 + val))
                                 elif kk == 4: # SPD (absolute = add to base)
                                     eff_spd = (eff_spd + round(val)) if is_abs else round(eff_spd * (1 + val))
                                 elif kk == 5: # RES (absolute = add to base)
