@@ -194,7 +194,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 4px;
   padding: 5px 12px 8px;
   overflow-x: auto;
@@ -202,6 +202,10 @@
   width: 100%;
   box-sizing: border-box;
 }
+/* JS adds .strip-centered when scrollWidth ≤ clientWidth — content fits, safe to center */
+.strip-list.strip-centered,
+.strip-group-row.strip-centered,
+.strip-stage-row.strip-centered { justify-content: center; }
 .strip-list::-webkit-scrollbar { display: none; }
 
 /* Sliding active indicator pill */
@@ -236,11 +240,7 @@
 /* Faction Wars: single scrollable row, no wrapping */
 .stage-list.fw-list {
   flex-wrap: nowrap;
-  justify-content: center;
   overflow-x: auto;
-}
-@media (max-width: 640px) {
-  .stage-list.fw-list { justify-content: flex-start; }
 }
 /* When stage-list shows difficulty buttons, keep them in one row */
 .stage-list.diff-mode {
@@ -256,7 +256,7 @@
   position: relative;
   display: flex;
   flex-wrap: nowrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 4px;
   padding-bottom: 4px;
   width: 100%;
@@ -265,7 +265,7 @@
   position: relative;
   display: flex;
   flex-wrap: nowrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 4px;
   width: 100%;
   overflow-x: auto;
@@ -1223,21 +1223,7 @@ body.no-anim * { transition: none !important; animation: none !important; }
   .zone-card { width: 80px; height: 80px; flex-shrink: 0; }
   .zone-nav.compact .zone-card { flex-shrink: 0; }
 
-  /* Nav strips: flex-start by default so overflow scrolls from left edge */
-  .strip-list,
-  .strip-group-row,
-  .strip-stage-row { justify-content: flex-start; }
-
-  /* safe center: auto-centers short strips, falls back to flex-start when overflowing */
-  @supports (justify-content: safe center) {
-    .strip-list,
-    .strip-group-row,
-    .strip-stage-row { justify-content: safe center; }
-    /* FW always overflows → must start from left for full scroll access */
-    .stage-list.fw-list { justify-content: flex-start; }
-  }
-
-  /* Fallback for browsers without safe-center: center explicitly short stage lists */
+  /* Short stage lists (explicit): center items */
   .stage-list--center { justify-content: center; }
 
   /* Group row: enable horizontal scroll */

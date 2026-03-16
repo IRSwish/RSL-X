@@ -73,11 +73,20 @@ function computeStats(hero, grade, level) {
 function isCalibrated(_grade) { return true; }
 
 // ── Nav strip helpers (horizontal animated bars) ───────────────────────────────
+// Toggle .strip-centered when content fits (scrollWidth ≤ clientWidth) — mobile centering
+function snapCenter(el) {
+  if (!el) return;
+  el.classList.toggle('strip-centered', el.scrollWidth <= el.clientWidth);
+}
+
 function showStrip(id) {
   const el = document.getElementById(id);
   if (!el) return;
-  // Double rAF ensures the element is rendered before the class transition fires
-  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('strip-visible')));
+  // Double rAF ensures layout is ready before transition fires + centering check
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    el.classList.add('strip-visible');
+    el.querySelectorAll('.strip-list, .strip-group-row, .strip-stage-row').forEach(snapCenter);
+  }));
 }
 
 function hideStrip(id) {
@@ -225,6 +234,11 @@ function onDbReady() {
   if (window.lucide) lucide.createIcons();
   restoreFromUrl();
 
+  // Re-check centering on every resize (strips that fitted may now overflow, or vice-versa)
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.strip-list, .strip-group-row, .strip-stage-row').forEach(snapCenter);
+  });
+
 
   // Enemy card click → modal; wave label click → collapse
   document.getElementById('waves-container').addEventListener('click', e => {
@@ -345,10 +359,10 @@ function restoreStage(stageId) {
   selectedDiff = difficulty;
   selectRegion(region_id);
   loadStage(stageId);
-  // slideIndicator uses double-rAF internally → need triple-rAF to remove no-anim after pills are placed
-  requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+  // slideIndicator uses triple-rAF internally → need quad-rAF to remove no-anim after pills are placed
+  requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => {
     document.body.classList.remove('no-anim');
-  })));
+  }))));
 }
 
 // ── Share button ──────────────────────────────────────────────────────────────
@@ -1375,6 +1389,7 @@ function renderHorizontalGroups(groups, list, stageLabel, groupLabel) {
     stageRow.querySelectorAll('.stage-btn').forEach(b =>
       b.addEventListener('click', () => loadStage(+b.dataset.stage))
     );
+    requestAnimationFrame(() => requestAnimationFrame(() => { snapCenter(groupRow); snapCenter(stageRow); }));
   }
 
   groupRow.innerHTML = [...strGroups.keys()].map(key =>
@@ -1393,9 +1408,9 @@ function renderHorizontalGroups(groups, list, stageLabel, groupLabel) {
   if (firstKey !== undefined) {
     document.body.classList.add('no-anim');
     showGroup(firstKey);
-    requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+    requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => {
       document.body.classList.remove('no-anim');
-    })));
+    }))));
   }
 }
 
@@ -1811,8 +1826,9 @@ function fitDiffModeButtons(list) {
 // ── Sliding button indicator ───────────────────────────────────────────────────
 function slideIndicator(container, activeBtn, borderColor, bgColor) {
   if (!container || !activeBtn) return;
-  // Defer so rects are valid after strip becomes visible (double-rAF like showStrip)
-  requestAnimationFrame(() => requestAnimationFrame(() => {
+  // Triple-rAF: showStrip (double-rAF) adds strip-visible + snapCenter at T+2,
+  // we measure at T+3 so centering is already applied before we read rects.
+  requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => {
     let pill = container.querySelector(':scope > .btn-indicator');
     const isNew = !pill;
     if (isNew) {
@@ -1833,7 +1849,7 @@ function slideIndicator(container, activeBtn, borderColor, bgColor) {
       void pill.offsetWidth; // force reflow: commit position before re-enabling transition
       pill.style.transition = '';
     }
-  }));
+  })));
 }
 
 // ── Stage view transitions ─────────────────────────────────────────────────────
