@@ -3,11 +3,67 @@
   "points":"anniversary",
   "events": [
     {
-      "name": "Dragon Turn Attack",
+      "name": "Champion Training",
       "type": "Tournament",
-      "start_date": "2026-01-22",
-      "end_date": "2026-01-24",
+      "start_date": "2026-03-17",
+      "end_date": "2026-03-21",
+      "points": [140]
+    },
+    {
+      "name": "Ice Golem Turn Attack",
+      "type": "Tournament",
+      "start_date": "2026-03-18",
+      "end_date": "2026-03-20",
+      "points": [50]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2026-03-19",
+      "end_date": "2026-03-22",
+      "points": [30]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2026-03-19",
+      "end_date": "2026-03-22",
+      "points": [80]
+    },
+    {
+      "name": "Champion Chase",
+      "type": "Tournament",
+      "start_date": "2026-03-20",
+      "end_date": "2026-03-23",
+      "points": [300]
+    },
+    {
+      "name": "Fire Knight Turn Attack",
+      "type": "Tournament",
+      "start_date": "2026-03-21",
+      "end_date": "2026-03-23",
+      "points": [50]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Event",
+      "start_date": "2026-03-21",
+      "end_date": "2026-03-24",
+      "points": [100]
+    },
+    {
+      "name": "Dragon (Special Rules)",
+      "type": "Tournament",
+      "start_date": "2026-03-23",
+      "end_date": "2026-03-25",
       "points": [40]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2026-03-24",
+      "end_date": "2026-03-27",
+      "points": [80]
     }
   ]
 }

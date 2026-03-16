@@ -118,6 +118,17 @@
       });
     }
 
+    // Potion Keep par jour de la semaine (0=dim, 1=lun, ..., 6=sam)
+    const KEEP_BY_DOW = [
+      { name: 'Void',   cls: 'keep-void'   }, // dimanche
+      { name: 'Spirit', cls: 'keep-spirit' }, // lundi
+      { name: 'Force',  cls: 'keep-force'  }, // mardi
+      { name: 'Magic',  cls: 'keep-magic'  }, // mercredi
+      { name: 'Spirit', cls: 'keep-spirit' }, // jeudi
+      { name: 'Force',  cls: 'keep-force'  }, // vendredi
+      { name: 'Magic',  cls: 'keep-magic'  }, // samedi
+    ];
+
     // Colonnes de dates
     for (let i = 0; i < totalDays; i++) {
       const currentDate = new Date(minDate);
@@ -137,7 +148,8 @@
       col.style.width = `${dayWidth}px`;
       col.dataset.date = isoDate;
 
-      col.innerHTML = `<span class="day">${day}</span><span class="date">${date}</span>`;
+      const keep = KEEP_BY_DOW[currentDate.getDay()];
+      col.innerHTML = `<span class="day">${day}</span><span class="date">${date}</span><span class="keep-pill ${keep.cls}" title="Potion Keep: ${keep.name}"></span>`;
 
       if (i > 0) {
         const leftLine = document.createElement('div');
@@ -179,8 +191,45 @@
     line.classList.add('timeline-line');
     timeline.appendChild(line);
 
-    // Placement des events
-    const placedEvents = computeTracks(events, minDate, dayWidth);
+    // Placement des events — split Tournament / Event
+    const isTournament = e => (e.type || '').toLowerCase() === 'tournament';
+    const tournamentEvts = events.filter(isTournament);
+    const eventEvts = events.filter(e => !isTournament(e));
+
+    const placedTournaments = computeTracks([...tournamentEvts], minDate, dayWidth);
+    const placedEventEvts = computeTracks([...eventEvts], minDate, dayWidth);
+
+    const sectionGap = 60;
+    let evtOffset = 0;
+
+    if (tournamentEvts.length > 0) {
+      const sepTop = document.createElement('div');
+      sepTop.className = 'section-separator';
+      sepTop.dataset.section = 'tournament';
+      sepTop.style.top = '62px';
+      sepTop.innerHTML = `<span class="section-separator-label">Tournaments</span>`;
+      timeline.appendChild(sepTop);
+    }
+
+    if (tournamentEvts.length > 0) {
+      const tournamentMaxTrack = placedTournaments.length > 0
+        ? Math.max(...placedTournaments.map(i => i.top))
+        : 0;
+      evtOffset = tournamentMaxTrack + 82 + sectionGap;
+
+      if (eventEvts.length > 0) {
+        const sep = document.createElement('div');
+        sep.className = 'section-separator';
+        sep.dataset.section = 'event';
+        sep.style.top = `${100 + tournamentMaxTrack + 82 + 10}px`;
+        sep.innerHTML = `<span class="section-separator-label">Events</span>`;
+        timeline.appendChild(sep);
+      }
+    }
+
+    const adjustedEventEvts = placedEventEvts.map(i => ({ ...i, top: i.top + evtOffset }));
+    const placedEvents = [...placedTournaments, ...adjustedEventEvts];
+
     placedEvents.forEach((item) => {
       const event = item.event;
       const top = item.top + 100;
@@ -192,6 +241,7 @@
 
       const block = document.createElement('div');
       block.classList.add('event-block');
+      block.classList.add(isTournament(event) ? 'type-tournament' : 'type-event');
       block.dataset.start = event.start_date;
       block.dataset.end = event.end_date;
 
@@ -258,46 +308,86 @@
 
     // Gestion clics sur points
     document.querySelectorAll('.point-box').forEach(box => {
-      box.addEventListener('click', (e) => {
+      box.addEventListener('click', () => {
         const parentEvent = box.closest('.event-block');
         const id = box.dataset.id;
 
-        const states = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
-        const currentIndex = states.findIndex(s => box.classList.contains(s));
-
-        // Si l'event est terminé : toggle direct validé/passed
         if (parentEvent && parentEvent.classList.contains('event-ended')) {
-          if (box.classList.contains('state-validated')) {
-            box.classList.remove('state-validated');
-            box.classList.add('state-passed');
-          } else {
-            box.classList.remove('state-passed');
-            box.classList.add('state-validated');
-          }
-        } else {
-          // cycle complet comme sur les fusions
-          const nextIndex = (e.ctrlKey || e.metaKey)
-            ? (currentIndex - 1 + states.length) % states.length
-            : (currentIndex + 1) % states.length;
+          const allStates = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+          const isValidated = box.classList.contains('state-validated');
+          allStates.forEach(s => box.classList.remove(s));
+          box.classList.add(isValidated ? 'state-passed' : 'state-validated');
+          savedStates[id] = box.classList.contains('state-validated') ? 'state-validated' : 'state-passed';
+          LS.setItem('pointStates', JSON.stringify(savedStates));
 
-          states.forEach(s => box.classList.remove(s));
-          box.classList.add(states[nextIndex]);
-        }
-
-        // Mise à jour storage
-        const newState = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed']
-          .find(s => box.classList.contains(s));
-        savedStates[id] = newState;
-        LS.setItem('pointStates', JSON.stringify(savedStates));
-
-        // Mise à jour classes event (validated / partial)
-        if (parentEvent) {
           const allPoints = parentEvent.querySelectorAll('.point-box');
           const validatedCount = Array.from(allPoints).filter(p => p.classList.contains('state-validated')).length;
           parentEvent.classList.remove('validated', 'partial');
-          if (validatedCount === allPoints.length && allPoints.length > 0) parentEvent.classList.add('validated');
+          if (validatedCount === allPoints.length) parentEvent.classList.add('validated');
           else if (validatedCount > 0) parentEvent.classList.add('partial');
+
+          updateSummary();
+          updateProgressPanelFromData(timelineData);
+          return;
         }
+
+        const states = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+        const currentIndex = states.findIndex(s => box.classList.contains(s));
+        const nextIndex = (currentIndex + 1) % states.length;
+
+        states.forEach(s => box.classList.remove(s));
+        box.classList.add(states[nextIndex]);
+        savedStates[id] = states[nextIndex];
+        LS.setItem('pointStates', JSON.stringify(savedStates));
+
+        const allPoints = parentEvent.querySelectorAll('.point-box');
+        const validatedCount = Array.from(allPoints).filter(p => p.classList.contains('state-validated')).length;
+        parentEvent.classList.remove('validated', 'partial');
+        if (validatedCount === allPoints.length && allPoints.length > 0) parentEvent.classList.add('validated');
+        else if (validatedCount > 0) parentEvent.classList.add('partial');
+
+        updateSummary();
+        updateProgressPanelFromData(timelineData);
+      });
+
+      box.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        const parentEvent = box.closest('.event-block');
+        const id = box.dataset.id;
+
+        if (parentEvent && parentEvent.classList.contains('event-ended')) {
+          const allStates = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+          const isValidated = box.classList.contains('state-validated');
+          allStates.forEach(s => box.classList.remove(s));
+          box.classList.add(isValidated ? 'state-passed' : 'state-validated');
+          savedStates[id] = box.classList.contains('state-validated') ? 'state-validated' : 'state-passed';
+          LS.setItem('pointStates', JSON.stringify(savedStates));
+
+          const allPoints = parentEvent.querySelectorAll('.point-box');
+          const validatedCount = Array.from(allPoints).filter(p => p.classList.contains('state-validated')).length;
+          parentEvent.classList.remove('validated', 'partial');
+          if (validatedCount === allPoints.length) parentEvent.classList.add('validated');
+          else if (validatedCount > 0) parentEvent.classList.add('partial');
+
+          updateSummary();
+          updateProgressPanelFromData(timelineData);
+          return;
+        }
+
+        const states = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+        const currentIndex = states.findIndex(s => box.classList.contains(s));
+        const prevIndex = (currentIndex - 1 + states.length) % states.length;
+
+        states.forEach(s => box.classList.remove(s));
+        box.classList.add(states[prevIndex]);
+        savedStates[id] = states[prevIndex];
+        LS.setItem('pointStates', JSON.stringify(savedStates));
+
+        const allPoints = parentEvent.querySelectorAll('.point-box');
+        const validatedCount = Array.from(allPoints).filter(p => p.classList.contains('state-validated')).length;
+        parentEvent.classList.remove('validated', 'partial');
+        if (validatedCount === allPoints.length && allPoints.length > 0) parentEvent.classList.add('validated');
+        else if (validatedCount > 0) parentEvent.classList.add('partial');
 
         updateSummary();
         updateProgressPanelFromData(timelineData);
