@@ -3,14 +3,14 @@
   "points":"demonslayer",
   "events": [
     {
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
       "type": "Tournament",
       "start_date": "2025-06-13",
       "end_date": "2025-06-16",
       "points": [50,150]
     },
     {
-      "name": "Champion Training Event",
+      "name": "Champion Training",
       "type": "Event",
       "start_date": "2025-06-13",
       "end_date": "2025-06-17",
@@ -31,7 +31,7 @@
       "points": [20,50]
     },
     {
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
       "type": "Tournament",
       "start_date": "2025-06-15",
       "end_date": "2025-06-18",
@@ -59,7 +59,7 @@
       "points": [20,50]
     },
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
       "type": "Tournament",
       "start_date": "2025-06-19",
       "end_date": "2025-06-21",
@@ -80,14 +80,14 @@
       "points": [50,150]
     },
     {
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
       "type": "Tournament",
       "start_date": "2025-06-20",
       "end_date": "2025-06-24",
       "points": [30,50]
     },
     {
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
       "type": "Tournament",
       "start_date": "2025-06-21",
       "end_date": "2025-06-23",
@@ -101,7 +101,7 @@
       "points": [30]
     },
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
       "type": "Tournament",
       "start_date": "2025-06-23",
       "end_date": "2025-06-25",
@@ -122,7 +122,7 @@
       "points": [60]
     },
     {
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
       "type": "Tournament",
       "start_date": "2025-06-25",
       "end_date": "2025-06-27",
@@ -137,20 +137,20 @@
     },
     {
       "name": "Champion Training Event",
-      "type": "Tournament",
+      "type": "Event",
       "start_date": "2025-06-26",
       "end_date": "2025-06-30",
       "points": [10,20,50]
     },
     {
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
       "type": "Tournament",
       "start_date": "2025-06-27",
       "end_date": "2025-06-29",
       "points": [50]
     },
     {
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
       "type": "Tournament",
       "start_date": "2025-06-27",
       "end_date": "2025-06-30",

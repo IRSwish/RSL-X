@@ -3,14 +3,14 @@
   "points":"teacup",
   "events": [
     {
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
       "type": "Tournament",
       "start_date": "2025-01-24",
       "end_date": "2025-01-27",
       "points": [50, 150]
     },
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
       "type": "Tournament",
       "start_date": "2025-01-24",
       "end_date": "2025-01-26",
@@ -24,7 +24,7 @@
       "points": [30]
     },
     {
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
       "type": "Tournament",
       "start_date": "2025-01-26",
       "end_date": "2025-01-28",
@@ -45,7 +45,7 @@
       "points": [10,20,70]
     },
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
       "type": "Tournament",
       "start_date": "2025-01-28",
       "end_date": "2025-01-30",
@@ -66,7 +66,7 @@
       "points": [30]
     },
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
       "type": "Tournament",
       "start_date": "2025-01-31",
       "end_date": "2025-02-03",
@@ -94,14 +94,14 @@
       "points": [10,20,70]
     },
     {
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
       "type": "Tournament",
       "start_date": "2025-02-02",
       "end_date": "2025-02-07",
       "points": [10,20,70]
     },
     {
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
       "type": "Tournament",
       "start_date": "2025-02-03",
       "end_date": "2025-02-05",
@@ -122,7 +122,7 @@
       "points": [60]
     },
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
       "type": "Tournament",
       "start_date": "2025-02-05",
       "end_date": "2025-02-08",
@@ -136,14 +136,14 @@
       "points": [60]
     },
     {
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
       "type": "Tournament",
       "start_date": "2025-02-07",
       "end_date": "2025-02-10",
       "points": [200]
     },
     {
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
       "type": "Tournament",
       "start_date": "2025-02-08",
       "end_date": "2025-02-10",
