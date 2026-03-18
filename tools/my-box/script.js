@@ -31,11 +31,12 @@ const RARITY_MIN_RANK = { Common: 1, Uncommon: 2, Rare: 3, Epic: 4, Legendary: 5
 // ── State ──────────────────────────────────────────────────
 let db              = null;
 let championsMap    = {};   // name → {name, faction, rarity, affinity, type, image, aurastat, IGid, s1-s6, p1-p2}
+let igidMap         = {};   // IGid → champion (for fast CSV lookup)
 let blessingsMap    = {};   // name → {name, section, sectionID, rarity, image}
 let blessingsBySection = []; // [{section, sectionID, blessings:[...]}]
 let myBox           = [];   // tableau d'entrées {id, name, ...data} — supporte les doublons
 
-let activeFilters = { search: '', rarities: [], affinities: [], factions: [], empowerments: [], pinnedOnly: false, masteredOnly: false, partialMasteryOnly: false, noMasteries: false, fullBooks: false, partialBooks: false, noBooks: false };
+let activeFilters = { search: '', rarities: [], affinities: [], factions: [], empowerments: [], pinnedOnly: false, duplicatesOnly: false, masteredOnly: false, partialMasteryOnly: false, noMasteries: false, fullBooks: false, partialBooks: false, noBooks: false };
 let sortBy = 'default';
 
 let _renderTimer = null;
@@ -103,6 +104,7 @@ async function loadDB() {
         p1: r[22] || null, p2: r[23] || null,
         IGid: r[25] || null,
       };
+      if (r[25]) igidMap[r[25]] = championsMap[name];
     });
   }
 
@@ -230,101 +232,125 @@ function getTotalBooksApplied(data, champ) {
 
 
 // ── CSV Import ─────────────────────────────────────────────
+// Parses a CSV line respecting quoted fields (handles names with commas)
+function parseCSVLine(line) {
+  const fields = [];
+  let i = 0, field = '';
+  while (i < line.length) {
+    if (line[i] === '"') {
+      i++;
+      while (i < line.length) {
+        if (line[i] === '"' && line[i + 1] === '"') { field += '"'; i += 2; }
+        else if (line[i] === '"') { i++; break; }
+        else { field += line[i++]; }
+      }
+    } else if (line[i] === ',') {
+      fields.push(field); field = ''; i++;
+    } else {
+      field += line[i++];
+    }
+  }
+  fields.push(field);
+  return fields;
+}
+
 function importCSV(text) {
+  // Strip UTF-8 BOM
+  text = text.replace(/^\uFEFF/, '');
+
   const lines = text.trim().split(/\r?\n/);
   if (lines.length < 2) return { imported: 0, notFound: [] };
 
-  const headers = lines[0].split(';').map(h => h.trim());
-  const idx = h => headers.indexOf(h);
+  const headers = parseCSVLine(lines[0]).map(h => h.trim());
+  const col = h => headers.indexOf(h);
 
-  const iName      = idx('Name');
-  const iEmpower   = idx('EmpowerLevel');
-  const iBlessId   = idx('BlessingID');
-  const iBlessGrade= idx('BlessingGrade');
-  const iRank      = idx('Rank');
-  // NOTE: Used/Unused columns are INVERTED in the RSL Helper CSV
-  const iUsedT1    = idx('UsedT1MasScrolls');   // actually = Unused (available)
-  const iUnusedT1  = idx('UnUsedT1MasScrolls'); // actually = Used   (applied)
-  const iUsedT2    = idx('UsedT2MasScrolls');
-  const iUnusedT2  = idx('UnUsedT2MasScrolls');
-  const iUsedT3    = idx('UsedT3MasScrolls');
-  const iUnusedT3  = idx('UnUsedT3MasScrolls');
-  const iBooksMiss = idx('BooksMissing');
+  const iId        = col('id');
+  const iName      = col('name');
+  const iStars     = col('stars');
+  const iEmpower   = col('empower_level');
+  const iAscension = col('ascension');
+  const iBlessRank = col('blessing_rank');
+  const iBlessId   = col('blessing_id');
+  const iSkill1    = col('skill_1');
+  const iSkill2    = col('skill_2');
+  const iSkill3    = col('skill_3');
+  const iSkill4    = col('skill_4');
+  const iScrollBr  = col('scrolls_bronze');
+  const iScrollSi  = col('scrolls_silver');
+  const iScrollGo  = col('scrolls_gold');
+  const iMasteries = col('masteries');
 
-  // Rebuild from scratch on import
+  // Rebuild from scratch
   myBox = [];
 
   let imported = 0;
   const notFound = [];
-  const nameCount = {};   // suit combien de fois chaque nom a été vu dans le CSV
 
   lines.slice(1).forEach(line => {
     if (!line.trim()) return;
-    const cols = line.split(';');
-    const raw  = i => (cols[i] || '').trim();
+    const cols = parseCSVLine(line);
+    const raw  = i => (i >= 0 && i < cols.length ? cols[i] : '').trim();
 
     const name = raw(iName);
     if (!name) return;
 
-    let champ = championsMap[name];
+    // Primary lookup: floor CSV id to nearest 10 → IGid
+    const csvId = parseInt(raw(iId)) || 0;
+    const igid  = Math.floor(csvId / 10) * 10;
+    let champ = igidMap[igid];
+
+    // Fallback: name-based matching
     if (!champ) {
-      const normalised = name.replace(/[''`]/g, "'");
-      champ = championsMap[normalised] || Object.values(championsMap)
-        .find(c => c.name.toLowerCase() === name.toLowerCase());
+      champ = championsMap[name];
+      if (!champ) {
+        const normalised = name.replace(/[''`]/g, "'");
+        champ = championsMap[normalised] || Object.values(championsMap)
+          .find(c => c.name.toLowerCase() === name.toLowerCase());
+      }
     }
     if (!champ) { notFound.push(name); return; }
 
     const champName    = champ.name;
-    const empowerLevel = parseInt(raw(iEmpower))   || 0;
     const minR         = RARITY_MIN_RANK[champ.rarity] || 1;
-    const rawRankVal   = iRank >= 0 ? parseInt(raw(iRank)) : 0;
-    const rank         = rawRankVal > 0 ? Math.max(minR, rawRankVal) : 6;
+    const rawStars     = parseInt(raw(iStars))     || 0;
+    const rank         = rawStars > 0 ? Math.max(minR, rawStars) : 6;
+    const ascension    = parseInt(raw(iAscension)) || 0;
+    const empowerLevel = parseInt(raw(iEmpower))   || 0;
+    const blessingLevel= parseInt(raw(iBlessRank)) || 0;
     const blessingId   = parseInt(raw(iBlessId))   || 0;
-    const blessingLevel= parseInt(raw(iBlessGrade))|| 0;
     const blessingName = BLESSING_ID_MAP[blessingId] || null;
 
-    // Invert columns as per user note
-    const t1Used   = parseInt(raw(iUnusedT1)) || 0;
-    const t1Unused = parseInt(raw(iUsedT1))   || 0;
-    const t2Used   = parseInt(raw(iUnusedT2)) || 0;
-    const t2Unused = parseInt(raw(iUsedT2))   || 0;
-    const t3Used   = parseInt(raw(iUnusedT3)) || 0;
-    const t3Unused = parseInt(raw(iUsedT3))   || 0;
-    const booksMissing = parseInt(raw(iBooksMiss)) || 0;
-    const mastered = t3Used > 0;
+    // Masteries
+    const masteriesRaw = raw(iMasteries);
+    const masteryNodes = masteriesRaw ? masteriesRaw.split(';').filter(Boolean) : [];
+    const mastered     = masteryNodes.length >= 15;
+    const t1Used       = parseInt(raw(iScrollBr)) || 0;
+    const t2Used       = parseInt(raw(iScrollSi)) || 0;
+    const t3Used       = parseInt(raw(iScrollGo)) || 0;
 
-    // Trouver la N-ième occurrence de ce nom (pour gérer les doublons CSV)
-    const seenBefore  = nameCount[champName] || 0;
-    nameCount[champName] = seenBefore + 1;
-    let existingIdx = -1, seen = 0;
-    for (let i = 0; i < myBox.length; i++) {
-      if (myBox[i].name === champName) {
-        if (seen === seenBefore) { existingIdx = i; break; }
-        seen++;
+    // Books: skill_1/2/3/4 map sequentially to buildSkillsForChamp order
+    // (handles s1/s2/s3/p1 etc. correctly)
+    const csvBookCols = [iSkill1, iSkill2, iSkill3, iSkill4];
+    const books = {};
+    buildSkillsForChamp(champ).forEach((skill, idx) => {
+      if (idx < csvBookCols.length) {
+        const count = (parseInt(raw(csvBookCols[idx])) || 1) - 1;
+        if (count > 0) books[skill.key] = count;
       }
-    }
-    const existing = existingIdx >= 0 ? myBox[existingIdx] : null;
+    });
 
-    // Auto-fill books to max when nothing is missing
-    let books = existing?.books || {};
-    if (booksMissing === 0) {
-      books = {};
-      buildSkillsForChamp(champ).filter(s => s.tomeCount > 0).forEach(s => { books[s.key] = s.tomeCount; });
-    }
-
-    const entry = {
-      id:      existing?.id      || genId(),
-      name:    champName,
-      rank, ascension: existing?.ascension ?? 0, empowerLevel, blessingName, blessingLevel,
-      t1Used, t1Unused, t2Used, t2Unused, t3Used, t3Unused,
-      mastered, booksMissing,
+    myBox.push({
+      id:           genId(),
+      gameId:       raw(iId),
+      name:         champName,
+      rank, ascension, empowerLevel, blessingName, blessingLevel,
+      t1Used, t2Used, t3Used,
+      mastered,
       books,
-      pinned:  existing?.pinned  || false,
-      note:    existing?.note    || '',
-      addedAt: existing?.addedAt || Date.now(),
-    };
-    if (existingIdx >= 0) myBox[existingIdx] = entry;
-    else myBox.push(entry);
+      pinned:       false,
+      note:         '',
+      addedAt:      Date.now(),
+    });
     imported++;
   });
 
@@ -339,7 +365,7 @@ function getFilteredSorted() {
     .filter(entry => championsMap[entry.name])
     .map(entry => ({ id: entry.id, name: entry.name, data: entry, champ: championsMap[entry.name] }));
 
-  const { search, rarities, affinities, factions, empowerments, pinnedOnly, masteredOnly, partialMasteryOnly, noMasteries, fullBooks, partialBooks, noBooks } = activeFilters;
+  const { search, rarities, affinities, factions, empowerments, pinnedOnly, duplicatesOnly, masteredOnly, partialMasteryOnly, noMasteries, fullBooks, partialBooks, noBooks } = activeFilters;
 
   if (search) {
     const q = search.toLowerCase();
@@ -349,6 +375,11 @@ function getFilteredSorted() {
   if (affinities.length) entries = entries.filter(e => affinities.includes(e.champ.affinity));
   if (factions.length)   entries = entries.filter(e => factions.includes(e.champ.faction));
   if (pinnedOnly)        entries = entries.filter(e => e.data.pinned);
+  if (duplicatesOnly) {
+    const nameCounts = {};
+    myBox.forEach(e => { nameCounts[e.name] = (nameCounts[e.name] || 0) + 1; });
+    entries = entries.filter(e => nameCounts[e.name] > 1);
+  }
   if (masteredOnly)      entries = entries.filter(e => e.data.mastered);
   if (partialMasteryOnly) entries = entries.filter(e =>
     !e.data.mastered &&
@@ -372,6 +403,11 @@ function getFilteredSorted() {
   entries.sort((a, b) => {
     // Pinned always first
     if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
+    // Duplicates filter: group by name
+    if (duplicatesOnly) {
+      const nameCmp = a.name.localeCompare(b.name);
+      if (nameCmp !== 0) return nameCmp;
+    }
     // Blessing sort mode: blessing first, then default criteria
     if (sortBy === 'blessing') {
       const blDiff = (b.data.blessingLevel || 0) - (a.data.blessingLevel || 0);
@@ -878,6 +914,10 @@ function setupEventListeners() {
     activeFilters.pinnedOnly = e.target.checked;
     renderGrid();
   });
+  document.getElementById('filterDuplicates').addEventListener('change', e => {
+    activeFilters.duplicatesOnly = e.target.checked;
+    renderGrid();
+  });
   document.getElementById('filterMastered').addEventListener('change', e => {
     activeFilters.masteredOnly = e.target.checked;
     renderGrid();
@@ -939,12 +979,13 @@ function setupEventListeners() {
 
   // Reset filters
   document.getElementById('resetBoxFilters').addEventListener('click', () => {
-    activeFilters = { search: '', rarities: [], affinities: [], factions: [], empowerments: [], pinnedOnly: false, masteredOnly: false, partialMasteryOnly: false, noMasteries: false, fullBooks: false, partialBooks: false, noBooks: false };
+    activeFilters = { search: '', rarities: [], affinities: [], factions: [], empowerments: [], pinnedOnly: false, duplicatesOnly: false, masteredOnly: false, partialMasteryOnly: false, noMasteries: false, fullBooks: false, partialBooks: false, noBooks: false };
     sortBy = 'default';
     document.getElementById('searchInput').value = '';
     document.querySelectorAll('.box-rarity-btn, .box-affinity-btn, .box-faction-btn, .box-empower-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('sortBlessingBtn').classList.remove('active');
     document.getElementById('filterPinned').checked          = false;
+    document.getElementById('filterDuplicates').checked      = false;
     document.getElementById('filterMastered').checked        = false;
     document.getElementById('filterPartialMastery').checked  = false;
     document.getElementById('filterNoMasteries').checked     = false;
