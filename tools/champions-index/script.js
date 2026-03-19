@@ -16,7 +16,8 @@ let activeEffects = {
   Buff: [],
   Debuff: [],
   Positive: [],
-  Negative: []
+  Negative: [],
+  Ignore: []
 };
 
 // Effets (buffs / debuffs / effets positifs / négatifs)
@@ -24,7 +25,8 @@ const EFFECTS = {
   Buff: [],
   Debuff: [],
   Positive: [],
-  Negative: []
+  Negative: [],
+  Ignore: []
 };
 
 const grid = document.getElementById('championGrid');
@@ -227,6 +229,17 @@ document.addEventListener("DOMContentLoaded", () => {
           negList.appendChild(row);
         });
 
+        // === Générer les filtres Ignore Effects ===
+        const ignoreList = document.getElementById("ignoreFilterList");
+        EFFECTS.Ignore.forEach(e => {
+          const row = document.createElement("label");
+          row.innerHTML = `
+            <input type="checkbox" data-type="Ignore" data-id="${e.id}">
+            <span>${e.name}</span>
+          `;
+          ignoreList.appendChild(row);
+        });
+
         // === Listeners BUFF / DEBUFF (icônes cliquables) ===
         document.querySelectorAll(".effect-icon").forEach(icon => {
           icon.addEventListener("click", () => {
@@ -258,6 +271,21 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             displayChampions();
+          });
+        });
+
+        // === Collapse filter boxes (Factions, Attributes, Auras, Advanced) ===
+        document.querySelectorAll(".filter-box-title").forEach(title => {
+          title.addEventListener("click", () => {
+            title.closest(".filter-box").classList.toggle("collapsed");
+          });
+        });
+
+        // === Collapse individual effect sections ===
+        document.querySelectorAll(".effect-title").forEach(title => {
+          title.addEventListener("click", () => {
+            const section = title.closest(".effect-section");
+            section.classList.toggle("collapsed");
           });
         });
 
@@ -590,7 +618,8 @@ function displayChampions() {
     activeEffects.Buff.length ||
     activeEffects.Debuff.length ||
     activeEffects.Positive.length ||
-    activeEffects.Negative.length;
+    activeEffects.Negative.length ||
+    activeEffects.Ignore.length;
 
   let finalFiltered = filteredChampions;
 
@@ -615,6 +644,11 @@ function displayChampions() {
 
       // negative
       for (const eff of activeEffects.Negative) {
+        if (!c.effects.includes(eff)) return false;
+      }
+
+      // ignore
+      for (const eff of activeEffects.Ignore) {
         if (!c.effects.includes(eff)) return false;
       }
 
@@ -779,14 +813,15 @@ function resetAllFilters() {
   // Effects
   document.querySelectorAll(".effect-icon").forEach(icon => icon.classList.remove("active"));
   document
-    .querySelectorAll('input[data-type="Positive"], input[data-type="Negative"]')
+    .querySelectorAll('input[data-type="Positive"], input[data-type="Negative"], input[data-type="Ignore"]')
     .forEach(cb => (cb.checked = false));
 
   activeEffects = {
     Buff: [],
     Debuff: [],
     Positive: [],
-    Negative: []
+    Negative: [],
+    Ignore: []
   };
 
   lucide.createIcons();
