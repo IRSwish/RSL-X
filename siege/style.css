@@ -2782,6 +2782,21 @@ body.modal-open .map-filters-container {
     border-color: #d4af37;
 }
 
+.import-member-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 13px;
+    border-color: rgba(212, 175, 55, 0.3);
+    color: #aaa;
+}
+
+.import-member-btn:hover {
+    border-color: #d4af37;
+    color: #d4af37;
+}
+
 /* Members Table */
 #membersTable {
     width: 100%;
@@ -2878,7 +2893,8 @@ body.modal-open .map-filters-container {
 }
 
 .member-edit-btn,
-.member-delete-btn {
+.member-delete-btn,
+.member-export-btn {
     padding: 6px 10px;
     border-radius: 6px;
     border: 1px solid #555;
@@ -2902,6 +2918,18 @@ body.modal-open .map-filters-container {
     background: #331111;
     border-color: #ff5555;
     color: #ff5555;
+}
+
+.member-export-btn {
+    margin-left: 8px;
+    border-color: rgba(212, 175, 55, 0.25) !important;
+    color: #888;
+}
+
+.member-export-btn:hover {
+    background: #112233;
+    border-color: #d4af37 !important;
+    color: #d4af37;
 }
 
 /* Member Profile Embed */
@@ -3822,6 +3850,82 @@ body.viewer-mode .filter-stats-only {
 .scroll-to-top-btn svg {
     width: 24px;
     height: 24px;
+}
+
+/* ==================== CLEAR POSTS ==================== */
+.ghost-btn--danger {
+    border-color: rgba(220, 50, 50, 0.4);
+    color: #ff6b6b;
+}
+
+.ghost-btn--danger:hover {
+    border-color: #dc3232;
+    background: rgba(220, 50, 50, 0.1);
+}
+
+.clear-posts-modal-content {
+    max-width: 420px;
+}
+
+.clear-posts-body {
+    padding-top: 8px;
+}
+
+.clear-posts-warning {
+    color: #ccc;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 12px;
+}
+
+.clear-posts-warning strong {
+    color: #ff6b6b;
+}
+
+.clear-posts-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.clear-posts-export-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px;
+    border-color: rgba(212, 175, 55, 0.4);
+    color: #d4af37;
+}
+
+.clear-posts-export-btn:hover {
+    border-color: #d4af37;
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.clear-posts-confirm-row {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.clear-posts-confirm-btn {
+    background: #dc3232;
+    border: 2px solid #dc3232;
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 18px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.clear-posts-confirm-btn:hover {
+    background: #b52828;
+    border-color: #b52828;
 }
 
 /* ==================== RESPONSIVE ==================== */

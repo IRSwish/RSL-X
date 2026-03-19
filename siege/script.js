@@ -1209,8 +1209,22 @@ function updateMembersList() {
             `;
             deleteBtn.addEventListener("click", () => deleteClanMember(member.pseudo));
 
+            // Export member button (rightmost in manage)
+            const exportMemberBtn = document.createElement("button");
+            exportMemberBtn.className = "member-export-btn";
+            exportMemberBtn.title = "Export Member";
+            exportMemberBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            `;
+            exportMemberBtn.addEventListener("click", () => exportMember(member.pseudo));
+
             manageDiv.appendChild(editBtn);
             manageDiv.appendChild(deleteBtn);
+            manageDiv.appendChild(exportMemberBtn);
             manageTd.appendChild(manageDiv);
             tr.appendChild(manageTd);
 
@@ -1377,6 +1391,122 @@ function deleteClanMember(pseudo) {
     // Save updated members to Firebase
     const refMembers = ref(db, `rooms/${currentRoomId}/siege/members`);
     set(refMembers, clanMembers);
+}
+
+// ===== MEMBER EXPORT / IMPORT =====
+
+function exportMember(pseudo) {
+    const member = clanMembers[pseudo];
+    if (!member) return;
+
+    // Collect all teams across posts
+    const teams = [];
+    Object.keys(postDataCache).forEach(postId => {
+        const postData = postDataCache[postId];
+        if (postData && Array.isArray(postData.teams)) {
+            postData.teams.forEach(team => {
+                if (team.member === pseudo) {
+                    teams.push({ postId, team });
+                }
+            });
+        }
+    });
+
+    const exportData = {
+        __type: "rslx_member_export",
+        __version: 1,
+        member: { ...member },
+        teams
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `member_${pseudo.replace(/[^a-z0-9]/gi, "_")}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+async function importMember(jsonText) {
+    let data;
+    try {
+        data = JSON.parse(jsonText);
+    } catch {
+        alert("Fichier JSON invalide.");
+        return;
+    }
+
+    if (data.__type !== "rslx_member_export") {
+        alert("Ce fichier n'est pas un export membre RSL-X.");
+        return;
+    }
+
+    const { member, teams } = data;
+    const pseudo = member.pseudo;
+
+    if (!pseudo) {
+        alert("Données membre invalides.");
+        return;
+    }
+
+    // If member already exists, ask
+    if (clanMembers[pseudo]) {
+        const overwrite = confirm(`Le membre "${pseudo}" existe déjà.\n\nCliquez OK pour fusionner ses données (ses teams existantes seront conservées, les nouvelles ajoutées).\nCliquez Annuler pour annuler l'import.`);
+        if (!overwrite) return;
+    }
+
+    // Add/update member info
+    clanMembers[pseudo] = {
+        ...clanMembers[pseudo],
+        pseudo,
+        link: member.link || "",
+        presets: member.presets || clanMembers[pseudo]?.presets || undefined
+    };
+    if (!clanMembers[pseudo].presets) delete clanMembers[pseudo].presets;
+    if (member.presets) clanMembers[pseudo].presets = member.presets;
+
+    const fbUpdates = {};
+    fbUpdates[`rooms/${currentRoomId}/siege/members`] = clanMembers;
+
+    // Inject teams into posts (skip duplicates by comparing champion names)
+    if (Array.isArray(teams)) {
+        teams.forEach(({ postId, team }) => {
+            if (!postId || !team) return;
+            if (!postDataCache[postId]) postDataCache[postId] = { teams: [] };
+            if (!Array.isArray(postDataCache[postId].teams)) postDataCache[postId].teams = [];
+
+            // Duplicate check: same member + same 4 champs in same post
+            const isDuplicate = postDataCache[postId].teams.some(t => {
+                if (t.member !== pseudo) return false;
+                return t.lead === team.lead && t.c2 === team.c2 && t.c3 === team.c3 && t.c4 === team.c4;
+            });
+
+            if (!isDuplicate) {
+                postDataCache[postId].teams.push({ ...team, member: pseudo });
+            }
+
+            fbUpdates[`rooms/${currentRoomId}/siege/${postId}`] = postDataCache[postId];
+        });
+    }
+
+    try {
+        await update(ref(db), fbUpdates);
+        // Refresh UI
+        Object.keys(postDataCache).forEach(postId => {
+            updatePostConditionsOnMap(postId);
+            updateTeamsCountOnMap(postId);
+            updateTooltipOnMap(postId);
+        });
+        updateSummaryTable();
+        updateMembersList();
+        updateConditionsFilter();
+        updateStats();
+        alert(`Membre "${pseudo}" importé avec succès.`);
+    } catch (err) {
+        console.error("Import member error:", err);
+        alert("Erreur lors de l'import du membre.");
+    }
 }
 
 // Find if a preset is already used in a post (returns formatted name only)
@@ -6380,6 +6510,25 @@ window.addEventListener("DOMContentLoaded", () => {
         document.getElementById("newMemberLink").value = "";
     });
 
+    // Import single member from file
+    const importMemberBtn = document.getElementById('importMemberBtn');
+    const importMemberFileInput = document.getElementById('importMemberFileInput');
+    if (importMemberBtn && importMemberFileInput) {
+        importMemberBtn.addEventListener('click', () => {
+            if (!currentRoomId) { alert('No active room.'); return; }
+            if (isViewer()) { alert('Cannot import in viewer mode.'); return; }
+            importMemberFileInput.click();
+        });
+        importMemberFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => importMember(ev.target.result);
+            reader.readAsText(file);
+            importMemberFileInput.value = '';
+        });
+    }
+
     copyBtn.addEventListener("click", () => {
         if (!currentRoomId) {
             alert("No active room.");
@@ -6467,6 +6616,62 @@ window.addEventListener("DOMContentLoaded", () => {
 
             // Reset input
             importFileInput.value = '';
+        });
+    }
+
+    // Clear Posts 1-18
+    const clearPostsBtn = document.getElementById('clearPostsBtn');
+    const clearPostsModal = document.getElementById('clearPostsModal');
+    const clearPostsCancelBtn = document.getElementById('clearPostsCancelBtn');
+    const clearPostsConfirmBtn = document.getElementById('clearPostsConfirmBtn');
+    const clearPostsExportBtn = document.getElementById('clearPostsExportBtn');
+
+    if (clearPostsBtn) {
+        clearPostsBtn.addEventListener('click', () => {
+            if (!currentRoomId) { alert('No active room.'); return; }
+            clearPostsModal.classList.add('active');
+        });
+    }
+    if (clearPostsCancelBtn) {
+        clearPostsCancelBtn.addEventListener('click', () => {
+            clearPostsModal.classList.remove('active');
+        });
+    }
+    if (clearPostsExportBtn) {
+        clearPostsExportBtn.addEventListener('click', () => {
+            exportSiegeData(db, currentRoomId);
+        });
+    }
+    if (clearPostsConfirmBtn) {
+        clearPostsConfirmBtn.addEventListener('click', async () => {
+            clearPostsModal.classList.remove('active');
+            const updates = {};
+            for (let i = 1; i <= 18; i++) {
+                const postId = `post${i}`;
+                const existing = postDataCache[postId] || {};
+                updates[`rooms/${currentRoomId}/siege/${postId}`] = {
+                    ...existing,
+                    teams: [],
+                    conditions: []
+                };
+                postDataCache[postId] = { ...existing, teams: [], conditions: [] };
+            }
+            try {
+                await update(ref(db), updates);
+                for (let i = 1; i <= 18; i++) {
+                    const postId = `post${i}`;
+                    updatePostConditionsOnMap(postId);
+                    updateTeamsCountOnMap(postId);
+                    updateTooltipOnMap(postId);
+                }
+                updateSummaryTable();
+                updateMembersList();
+                updateConditionsFilter();
+                updateStats();
+            } catch (err) {
+                console.error('Clear posts error:', err);
+                alert('Erreur lors du nettoyage des postes.');
+            }
         });
     }
 
