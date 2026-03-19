@@ -70,18 +70,18 @@ body.modal-open {overflow: hidden;}
 /* === EFFECTS BAR === */
 
 
-.effects-container {
+/* === TOGGLE PANELS (Filters + Effects) === */
+
+.toggle-panel {
   border: 2px solid #555;
   border-radius: 12px;
   background: #0f0f0f;
-  margin: 0;
   overflow: hidden;
   width: 100%;
 }
 
-.effects-toggle {
+.panel-toggle {
   padding: 10px 20px;
-  background: #0f0f0f;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -93,13 +93,14 @@ body.modal-open {overflow: hidden;}
   background: linear-gradient(to bottom, #feeec1, #e09f40);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  transition: background-color .15s;
 }
 
-.effects-toggle:hover {
+.panel-toggle:hover {
   background-color: #1a1a1a;
 }
 
-.effects-toggle .toggle-chevron {
+.toggle-chevron {
   width: 16px;
   height: 16px;
   color: #d4af37;
@@ -108,26 +109,39 @@ body.modal-open {overflow: hidden;}
   transition: transform .25s ease;
 }
 
-.effects-container.collapsed .toggle-chevron {
+.toggle-panel.collapsed .toggle-chevron {
   transform: rotate(-90deg);
 }
+
+/* Panel body (Filters) */
+.panel-body {
+  overflow: hidden;
+  max-height: 2000px;
+  opacity: 1;
+  padding: 16px;
+  transition: max-height .45s ease, opacity .35s ease, padding .35s ease;
+}
+
+.toggle-panel.collapsed .panel-body {
+  max-height: 0;
+  opacity: 0;
+  padding: 0 16px;
+}
+
+/* Compat alias pour effects-container */
+.effects-container { }
+.effects-toggle { }
 
 /* STRUCTURE DES EFFECTS EN 2 RANGÉES */
 .effects-filters {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  opacity: 0;
-  max-height: 0;
-  overflow: hidden;
-  padding: 0;
-  transition: max-height .45s ease, opacity .35s ease, padding .35s ease;
-}
-
-.effects-container.open .effects-filters {
   opacity: 1;
   max-height: 2000px;
+  overflow: hidden;
   padding: 24px 20px;
+  transition: max-height .45s ease, opacity .35s ease, padding .35s ease;
 }
 
 /* Rangée icons (Buffs + Debuffs) */
@@ -149,10 +163,10 @@ body.modal-open {overflow: hidden;}
 }
 
 /* Transition fluide au collapse */
-.effects-container.collapsed .effects-filters {
+.toggle-panel.collapsed .effects-filters {
   opacity: 0;
-  max-height: 0 !important;
-  padding: 0 !important;
+  max-height: 0;
+  padding: 0;
 }
 
 /* SECTION EFFECT */

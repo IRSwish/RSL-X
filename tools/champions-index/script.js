@@ -290,14 +290,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // === Collapse Effects ===
-        const effectsContainer = document.querySelector(".effects-container");
-        const effectsToggle = document.getElementById("effectsToggle");
-        const effectsPanel  = document.querySelector(".effects-filters");
+        // === Toggle Filters panel ===
+        document.getElementById("filtersToggle").addEventListener("click", () => {
+          document.getElementById("filtersPanel").classList.toggle("collapsed");
+          lucide.createIcons();
+        });
 
-        effectsToggle.addEventListener("click", () => {
-          effectsContainer.classList.toggle("open");
-          effectsPanel.classList.toggle("open");
-          effectsContainer.classList.toggle("collapsed");
+        // === Toggle Effects panel ===
+        document.getElementById("effectsToggle").addEventListener("click", () => {
+          document.querySelector(".effects-container").classList.toggle("collapsed");
           lucide.createIcons();
         });
 

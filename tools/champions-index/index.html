@@ -45,6 +45,13 @@
   </div>
 
 <div class="filters-section">
+
+<!-- === FILTERS PANEL === -->
+<div class="toggle-panel" id="filtersPanel">
+  <div class="panel-toggle" id="filtersToggle">
+    Filters <i data-lucide="chevron-down" class="toggle-chevron"></i>
+  </div>
+  <div class="panel-body">
 <div class="filter-row">
   <div class="filter-col">
   <!-- === FACTIONS === -->
@@ -264,13 +271,14 @@
 
     </div>
   </div>
-</div>
-</div>
+</div><!-- /filter-col -->
+</div><!-- /filter-row -->
+</div><!-- /panel-body -->
+</div><!-- /filtersPanel -->
 
-
-<!-- === EFFECTS FILTERS === -->
-<div class="effects-container collapsed">
-  <div id="effectsToggle" class="effects-toggle">
+<!-- === EFFECTS PANEL === -->
+<div class="toggle-panel effects-container collapsed">
+  <div id="effectsToggle" class="panel-toggle effects-toggle">
     Effects <i data-lucide="chevron-down" class="toggle-chevron"></i>
   </div>
 
@@ -314,8 +322,8 @@
       </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- /effects-filters -->
+</div><!-- /effects toggle-panel -->
 
 </div><!-- /filters-section -->
 
