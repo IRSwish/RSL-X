@@ -7,9 +7,8 @@
     <script src="/config/ad-banner.js" defer></script>
     <link rel="stylesheet" id="mainStylesheet" href="/siege/style.css">
     <script>
-        // Auto cache-busting based on daily timestamp
-        const cacheBuster = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-        document.getElementById('mainStylesheet').href = '/siege/style.css?v=' + cacheBuster;
+        const APP_VERSION = "20260319-4";
+        document.getElementById('mainStylesheet').href = '/siege/style.css?v=' + APP_VERSION;
     </script>
 </head>
 <body>
@@ -60,7 +59,7 @@
                     <path d="M14 11v6"></path>
                     <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
                 </svg>
-                Clear Posts
+                Clear
             </button>
             <input type="file" id="importFileInput" accept=".json" style="display: none;">
         </div>
@@ -654,11 +653,10 @@
 <div id="clearPostsModal" class="login-modal">
     <div class="login-modal-content clear-posts-modal-content">
         <div class="login-header">
-            <h2>⚠️ Clear Posts 1–18</h2>
+            <h2>⚠️ Clear Posts</h2>
         </div>
         <div class="clear-posts-body">
-            <p class="clear-posts-warning">Cette action va <strong>supprimer définitivement</strong> toutes les équipes et conditions des postes 1 à 18.</p>
-            <p class="clear-posts-warning">Elle est <strong>irréversible</strong>. Exportez vos données avant de continuer si vous souhaitez les conserver.</p>
+            <p class="clear-posts-warning">This action is <strong>irreversible</strong>. Export your data first if you want to keep it.</p>
             <div class="clear-posts-actions">
                 <button id="clearPostsExportBtn" class="ghost-btn clear-posts-export-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -666,11 +664,12 @@
                         <polyline points="7 10 12 15 17 10"></polyline>
                         <line x1="12" y1="15" x2="12" y2="3"></line>
                     </svg>
-                    Exporter d'abord
+                    Export first
                 </button>
                 <div class="clear-posts-confirm-row">
-                    <button id="clearPostsCancelBtn" class="ghost-btn">Annuler</button>
-                    <button id="clearPostsConfirmBtn" class="clear-posts-confirm-btn">Vider les postes</button>
+                    <button id="clearPostsCancelBtn" class="ghost-btn">Cancel</button>
+                    <button id="clearPostsConfirmBtn" class="clear-posts-confirm-btn">Posts 1–18</button>
+                    <button id="clearAllPostsConfirmBtn" class="clear-posts-confirm-btn">Clear All</button>
                 </div>
             </div>
         </div>
@@ -688,7 +687,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
 <!-- Script principal -->
 <script>
-    document.write('<script type="module" src="/siege/script.js?v=' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '"><\/script>');
+    document.write('<script type="module" src="/siege/script.js?v=' + APP_VERSION + '"><\/script>');
 </script>
 </body>
 </html>

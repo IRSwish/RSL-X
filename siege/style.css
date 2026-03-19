@@ -3928,6 +3928,16 @@ body.viewer-mode .filter-stats-only {
     border-color: #b52828;
 }
 
+#clearAllPostsConfirmBtn {
+    background: #8b1a1a;
+    border-color: #8b1a1a;
+}
+
+#clearAllPostsConfirmBtn:hover {
+    background: #6b1010;
+    border-color: #6b1010;
+}
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 900px) {
     .modal {

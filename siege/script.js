@@ -1,7 +1,7 @@
-// Version: 2025-01-12-018 - Don't auto-save while typing
+// Version: 20260319-4
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
-import { setupAuthUI, getCurrentRoom, isViewer, exportSiegeData, importSiegeData, showChangePasswordModal, logout } from "./auth.js";
+import { setupAuthUI, getCurrentRoom, isViewer, exportSiegeData, importSiegeData, showChangePasswordModal, logout } from "./auth.js?v=20260319-4";
 
 // Firebase config
 const firebaseConfig = {
@@ -1433,12 +1433,12 @@ async function importMember(jsonText) {
     try {
         data = JSON.parse(jsonText);
     } catch {
-        alert("Fichier JSON invalide.");
+        alert("Invalid JSON file.");
         return;
     }
 
     if (data.__type !== "rslx_member_export") {
-        alert("Ce fichier n'est pas un export membre RSL-X.");
+        alert("This file is not an RSL-X member export.");
         return;
     }
 
@@ -1446,13 +1446,13 @@ async function importMember(jsonText) {
     const pseudo = member.pseudo;
 
     if (!pseudo) {
-        alert("Données membre invalides.");
+        alert("Invalid member data.");
         return;
     }
 
     // If member already exists, ask
     if (clanMembers[pseudo]) {
-        const overwrite = confirm(`Le membre "${pseudo}" existe déjà.\n\nCliquez OK pour fusionner ses données (ses teams existantes seront conservées, les nouvelles ajoutées).\nCliquez Annuler pour annuler l'import.`);
+        const overwrite = confirm(`Member "${pseudo}" already exists.\n\nClick OK to merge their data (existing teams will be kept, new ones added).\nClick Cancel to abort.`);
         if (!overwrite) return;
     }
 
@@ -1502,10 +1502,10 @@ async function importMember(jsonText) {
         updateMembersList();
         updateConditionsFilter();
         updateStats();
-        alert(`Membre "${pseudo}" importé avec succès.`);
+        alert(`Member "${pseudo}" imported successfully.`);
     } catch (err) {
         console.error("Import member error:", err);
-        alert("Erreur lors de l'import du membre.");
+        alert("Error importing member.");
     }
 }
 
@@ -3905,7 +3905,7 @@ function transferTeamToPost(teamRow, targetPostId) {
         })
         .catch(err => {
             console.error(err);
-            setStatus("Erreur lors du transfert : " + err.message, true);
+            setStatus("Transfer error: " + err.message, true);
         });
 }
 
@@ -6619,11 +6619,45 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Clear Posts 1-18
+    // Clear Posts
+    const ALL_POST_IDS = [
+        ...Array.from({ length: 18 }, (_, i) => `post${i + 1}`),
+        'manashrine1', 'manashrine2',
+        'magictower1', 'magictower2', 'magictower3', 'magictower4',
+        'defensetower1', 'defensetower2', 'defensetower3', 'defensetower4', 'defensetower5',
+        'stronghold'
+    ];
+
+    async function doClearPosts(postIds) {
+        const updates = {};
+        postIds.forEach(postId => {
+            const existing = postDataCache[postId] || {};
+            const cleared = { ...existing, teams: [], conditions: [] };
+            updates[`rooms/${currentRoomId}/siege/${postId}`] = cleared;
+            postDataCache[postId] = cleared;
+        });
+        try {
+            await update(ref(db), updates);
+            postIds.forEach(postId => {
+                updatePostConditionsOnMap(postId);
+                updateTeamsCountOnMap(postId);
+                updateTooltipOnMap(postId);
+            });
+            updateSummaryTable();
+            updateMembersList();
+            updateConditionsFilter();
+            updateStats();
+        } catch (err) {
+            console.error('Clear posts error:', err);
+            alert('Error clearing posts.');
+        }
+    }
+
     const clearPostsBtn = document.getElementById('clearPostsBtn');
     const clearPostsModal = document.getElementById('clearPostsModal');
     const clearPostsCancelBtn = document.getElementById('clearPostsCancelBtn');
     const clearPostsConfirmBtn = document.getElementById('clearPostsConfirmBtn');
+    const clearAllPostsConfirmBtn = document.getElementById('clearAllPostsConfirmBtn');
     const clearPostsExportBtn = document.getElementById('clearPostsExportBtn');
 
     if (clearPostsBtn) {
@@ -6645,33 +6679,13 @@ window.addEventListener("DOMContentLoaded", () => {
     if (clearPostsConfirmBtn) {
         clearPostsConfirmBtn.addEventListener('click', async () => {
             clearPostsModal.classList.remove('active');
-            const updates = {};
-            for (let i = 1; i <= 18; i++) {
-                const postId = `post${i}`;
-                const existing = postDataCache[postId] || {};
-                updates[`rooms/${currentRoomId}/siege/${postId}`] = {
-                    ...existing,
-                    teams: [],
-                    conditions: []
-                };
-                postDataCache[postId] = { ...existing, teams: [], conditions: [] };
-            }
-            try {
-                await update(ref(db), updates);
-                for (let i = 1; i <= 18; i++) {
-                    const postId = `post${i}`;
-                    updatePostConditionsOnMap(postId);
-                    updateTeamsCountOnMap(postId);
-                    updateTooltipOnMap(postId);
-                }
-                updateSummaryTable();
-                updateMembersList();
-                updateConditionsFilter();
-                updateStats();
-            } catch (err) {
-                console.error('Clear posts error:', err);
-                alert('Erreur lors du nettoyage des postes.');
-            }
+            await doClearPosts(Array.from({ length: 18 }, (_, i) => `post${i + 1}`));
+        });
+    }
+    if (clearAllPostsConfirmBtn) {
+        clearAllPostsConfirmBtn.addEventListener('click', async () => {
+            clearPostsModal.classList.remove('active');
+            await doClearPosts(ALL_POST_IDS);
         });
     }
 
