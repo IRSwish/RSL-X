@@ -6520,11 +6520,13 @@ window.addEventListener("DOMContentLoaded", () => {
             importMemberFileInput.click();
         });
         importMemberFileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => importMember(ev.target.result);
-            reader.readAsText(file);
+            const files = Array.from(e.target.files);
+            if (!files.length) return;
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (ev) => importMember(ev.target.result);
+                reader.readAsText(file);
+            });
             importMemberFileInput.value = '';
         });
     }
