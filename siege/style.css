@@ -119,6 +119,12 @@ body.modal-open .map-filters-container {
     height: 16px;
 }
 
+.conditions-file-date {
+    font-size: 10px;
+    color: rgba(212, 175, 55, 0.6);
+    white-space: nowrap;
+}
+
 /* ==================== BUTTONS ==================== */
 .ghost-btn {
     background: #0f0f0f;

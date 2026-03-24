@@ -6621,6 +6621,128 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Import Post Conditions from CSV
+    async function importPostConditionsFromCSV() {
+        if (!currentRoomId) {
+            alert('Aucune room active.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/siege/postdata/siege_conditions.csv');
+            if (!response.ok) throw new Error('Impossible de charger siege_conditions.csv');
+
+            // Show last-modified date
+            const lastModifiedRaw = response.headers.get('Last-Modified');
+            const fileDateLabel = document.getElementById('postConditionsFileDate');
+            if (fileDateLabel && lastModifiedRaw) {
+                const d = new Date(lastModifiedRaw);
+                fileDateLabel.textContent = 'Data : ' + d.toLocaleString('fr-FR', {
+                    day: '2-digit', month: '2-digit', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+                localStorage.setItem('siege_conditions_last_modified', lastModifiedRaw);
+            }
+
+            const buffer = await response.arrayBuffer();
+            const text = new TextDecoder('utf-16').decode(buffer);
+
+            // Build description → id and name → id lookups (integer id stored in Firebase)
+            const descToId = {};
+            const nameToId = {};
+            if (siegeDB) {
+                try {
+                    const stmt = siegeDB.prepare("SELECT id, name, description FROM conditions;");
+                    while (stmt.step()) {
+                        const row = stmt.getAsObject();
+                        if (row.description) descToId[row.description.trim()] = String(row.id);
+                        if (row.name) nameToId[row.name.trim()] = String(row.id);
+                    }
+                    stmt.free();
+                } catch (e) {
+                    console.warn('importPostConditions: could not build lookup', e);
+                }
+            }
+
+            function extractId(raw) {
+                const t = raw.trim();
+                // Strip trailing bracket to get the plain description
+                const desc = t.replace(/\s*\[[^\]]+\]$/, '').trim();
+                if (descToId[desc]) return descToId[desc];
+                // Fallback: look up by the name inside the bracket
+                const bracketMatch = t.match(/\[([^\]]+)\]$/);
+                if (bracketMatch) return nameToId[bracketMatch[1].trim()] || null;
+                return null;
+            }
+
+            const lines = text.split(/\r?\n/).filter(l => l.trim() !== '');
+            const updates = {};
+
+            for (const line of lines) {
+                const i1 = line.indexOf(',');
+                if (i1 < 0) continue;
+                const i2 = line.indexOf(',', i1 + 1);
+                if (i2 < 0) continue;
+                const i3 = line.indexOf(',', i2 + 1);
+                if (i3 < 0) continue;
+
+                const spotName = line.substring(0, i1).trim();
+                const spotMatch = spotName.match(/^Spot(\d+)$/);
+                if (!spotMatch) continue;
+
+                const postId = `post${spotMatch[1]}`;
+                const c1 = extractId(line.substring(i1 + 1, i2));
+                const c2 = extractId(line.substring(i2 + 1, i3));
+                const c3 = extractId(line.substring(i3 + 1));
+                const conditions = [c1, c2, c3].filter(c => c);
+                if (conditions.length === 0) continue;
+
+                const existing = postDataCache[postId] || {};
+                const updated = { ...existing, conditions };
+                updates[`rooms/${currentRoomId}/siege/${postId}`] = updated;
+                postDataCache[postId] = updated;
+            }
+
+            if (Object.keys(updates).length === 0) {
+                setStatus('Aucune condition trouvée dans le CSV.', true);
+                return;
+            }
+
+            await update(ref(db), updates);
+
+            for (const key of Object.keys(updates)) {
+                const postId = key.split('/').pop();
+                updatePostConditionsOnMap(postId);
+                updateTooltipOnMap(postId);
+            }
+            updateSummaryTable();
+
+            setStatus(`✔ Conditions importées (${Object.keys(updates).length} posts)`);
+
+        } catch (e) {
+            console.error('importPostConditionsFromCSV:', e);
+            setStatus('Erreur : ' + e.message, true);
+        }
+    }
+
+    const importPostConditionsBtn = document.getElementById('importPostConditionsBtn');
+    if (importPostConditionsBtn) {
+        importPostConditionsBtn.addEventListener('click', () => importPostConditionsFromCSV());
+    }
+
+    // Restore last-modified date from localStorage on load
+    (function restoreConditionsFileDate() {
+        const stored = localStorage.getItem('siege_conditions_last_modified');
+        if (!stored) return;
+        const label = document.getElementById('postConditionsFileDate');
+        if (!label) return;
+        const d = new Date(stored);
+        label.textContent = 'Data : ' + d.toLocaleString('fr-FR', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
+    })();
+
     // Clear Posts
     const ALL_POST_IDS = [
         ...Array.from({ length: 18 }, (_, i) => `post${i + 1}`),
