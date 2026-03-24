@@ -8,7 +8,7 @@
   "EpicAff":"Magic",
   "events": [
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
 	  "type": "Tournament",
       "start_date": "2025-12-15",
       "end_date": "2025-12-18",
@@ -16,7 +16,7 @@
       "points": [1]
     },
 	{
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
 	  "type": "Tournament",
       "start_date": "2025-12-18",
       "end_date": "2025-12-22",
@@ -32,7 +32,7 @@
       "points": [1]
     },
 	{
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
 	  "type": "Tournament",
       "start_date": "2025-12-18",
       "end_date": "2025-12-21",
@@ -40,7 +40,7 @@
       "points": [1]
     },
 	{
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
 	  "type": "Tournament",
       "start_date": "2025-12-22",
       "end_date": "2025-12-25",
@@ -64,7 +64,7 @@
       "points": [1]
     },
 	{
-      "name": "Spider Tournament",
+      "name": "Spider",
 	  "type": "Tournament",
       "start_date": "2025-12-26",
       "end_date": "2025-12-29",
@@ -80,7 +80,7 @@
       "points": [1]
     },
 	{
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
 	  "type": "Event",
       "start_date": "2025-12-26",
       "end_date": "2025-12-29",
@@ -112,7 +112,7 @@
       "points": [1]
     },
 	{
-      "name": "Champion Training Event",
+      "name": "Champion Training",
 	  "type": "Event",
       "start_date": "2025-12-24",
       "end_date": "2025-12-28",

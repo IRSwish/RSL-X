@@ -4,7 +4,7 @@
   "datespan": "04/04/2024 - 17/04/2024",
   "events": [
     {
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
       "type": "Tournament",
       "start_date": "2024-04-04",
       "end_date": "2024-04-07",
@@ -14,7 +14,7 @@
       ]
     },
     {
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
       "type": "Tournament",
       "start_date": "2024-04-04",
       "end_date": "2024-04-08",
@@ -25,7 +25,7 @@
       ]
     },
     {
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
       "type": "Tournament",
       "start_date": "2024-04-05",
       "end_date": "2024-04-08",
@@ -66,7 +66,7 @@
       ]
     },
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
       "type": "Tournament",
       "start_date": "2024-04-07",
       "end_date": "2024-04-10",
@@ -86,7 +86,7 @@
       ]
     },
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
       "type": "Tournament",
       "start_date": "2024-04-10",
       "end_date": "2024-04-13",
@@ -106,7 +106,7 @@
       ]
     },
     {
-      "name": "Champion Training Event",
+      "name": "Champion Training",
       "type": "Event",
       "start_date": "2024-04-11",
       "end_date": "2024-04-15",
@@ -126,7 +126,7 @@
       ]
     },
     {
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
       "type": "Tournament",
       "start_date": "2024-04-13",
       "end_date": "2024-04-16",

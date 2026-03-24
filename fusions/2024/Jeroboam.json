@@ -4,7 +4,7 @@
   "datespan": "30/09/2024 - 14/10/2024",
   "events": [
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
       "type": "Tournament",
       "start_date": "2024-09-30",
       "end_date": "2024-10-03",
@@ -14,7 +14,7 @@
       ]
     },
     {
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
       "type": "Tournament",
       "start_date": "2024-09-30",
       "end_date": "2024-10-04",
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
       "type": "Tournament",
       "start_date": "2024-10-03",
       "end_date": "2024-10-06",
@@ -55,7 +55,7 @@
       ]
     },
     {
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
       "type": "Tournament",
       "start_date": "2024-10-04",
       "end_date": "2024-10-07",
@@ -96,7 +96,7 @@
       ]
     },
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
       "type": "Tournament",
       "start_date": "2024-10-07",
       "end_date": "2024-10-10",
@@ -106,7 +106,7 @@
       ]
     },
     {
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
       "type": "Tournament",
       "start_date": "2024-10-10",
       "end_date": "2024-10-13",
@@ -136,7 +136,7 @@
       ]
     },
     {
-      "name": "Champion Training Event",
+      "name": "Champion Training",
       "type": "Event",
       "start_date": "2024-10-11",
       "end_date": "2024-10-14",

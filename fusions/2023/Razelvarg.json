@@ -8,7 +8,7 @@
   "EpicAff":"Spirit",
   "events": [
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
       "type": "Tournament",
       "start_date": "2023-04-13",
       "end_date": "2023-04-16",
@@ -18,7 +18,7 @@
       ]
     },
     {
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
       "type": "Tournament",
       "start_date": "2023-04-13",
       "end_date": "2023-04-17",
@@ -69,7 +69,7 @@
       ]
     },
     {
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
       "type": "Tournament",
       "start_date": "2023-04-16",
       "end_date": "2023-04-19",
@@ -79,7 +79,7 @@
       ]
     },
     {
-      "name": "Champion Training Event",
+      "name": "Champion Training",
       "type": "Event",
       "start_date": "2023-04-20",
       "end_date": "2023-04-25",
@@ -89,7 +89,7 @@
       ]
     },
     {
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
       "type": "Tournament",
       "start_date": "2023-04-20",
       "end_date": "2023-04-23",
@@ -109,7 +109,7 @@
       ]
     },
     {
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
       "type": "Tournament",
       "start_date": "2023-04-21",
       "end_date": "2023-04-24",
@@ -139,7 +139,7 @@
       ]
     },
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
       "type": "Tournament",
       "start_date": "2023-04-22",
       "end_date": "2023-04-25",

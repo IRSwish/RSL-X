@@ -15,7 +15,7 @@
       "points": [1]
     },
     {
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
       "start_date": "2025-09-22",
       "end_date": "2025-09-25",
       "reward": "Rare",
@@ -29,14 +29,14 @@
       "points": [1]
     },
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
       "start_date": "2025-09-25",
       "end_date": "2025-09-28",
       "reward": "Rare",
       "points": [1]
     },
     {
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
       "start_date": "2025-09-25",
       "end_date": "2025-09-29",
       "reward": "Rare",
@@ -71,7 +71,7 @@
       "points": [1]
     },
     {
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
       "start_date": "2025-09-29",
       "end_date": "2025-10-02",
       "reward": "Rare",
@@ -92,21 +92,21 @@
       "points": [1]
     },
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
       "start_date": "2025-10-02",
       "end_date": "2025-10-05",
       "reward": "Rare",
       "points": [1]
     },
     {
-      "name": "Champion Training Event",
+      "name": "Champion Training",
       "start_date": "2025-10-02",
       "end_date": "2025-10-06",
       "reward": "Rare",
       "points": [1]
     },
     {
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
       "start_date": "2025-10-03",
       "end_date": "2025-10-06",
       "reward": "Rare",

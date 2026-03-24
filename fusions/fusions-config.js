@@ -168,6 +168,10 @@ window.fusions = {
     name: "Pythion Fusion",
     json: "2023/Pythion.json"
   },
+  Maranix: {
+    name: "Maranix Fusion",
+    json: "2022/Maranix.json"
+  },
   Gnishak: {
     name: "Gnishak Verminlord Fusion",
     json: "2022/Gnishak.json"
@@ -183,6 +187,14 @@ window.fusions = {
   Opardin: {
     name: "Opardin Clanfather Fusion",
     json: "2022/Opardin.json"
+  },
+  Ukko: {
+    name: "Mighty Ukko Fusion",
+    json: "2022/Ukko.json"
+  },
+  Nogoryo: {
+    name: "Nogoryo Fusion",
+    json: "2022/Nogoryo.json"
   }
 };
 

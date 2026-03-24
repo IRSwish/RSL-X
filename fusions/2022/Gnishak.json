@@ -14,7 +14,7 @@
   "Epic4Aff":"Spirit",
   "events": [
     {
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
       "type": "Tournament",
       "start_date": "2022-12-15",
       "end_date": "2022-12-18",
@@ -24,7 +24,7 @@
       ]
     },
     {
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
       "type": "Tournament",
       "start_date": "2022-12-18",
       "end_date": "2022-12-21",
@@ -44,7 +44,7 @@
       ]
     },
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
       "type": "Tournament",
       "start_date": "2022-12-22",
       "end_date": "2022-12-25",
@@ -54,7 +54,7 @@
       ]
     },
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
       "type": "Tournament",
       "start_date": "2022-12-25",
       "end_date": "2022-12-28",
@@ -64,7 +64,7 @@
       ]
     },
     {
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
       "type": "Tournament",
       "start_date": "2022-12-26",
       "end_date": "2022-12-29",
@@ -105,7 +105,7 @@
       ]
     },
     {
-      "name": "Champion Training Event",
+      "name": "Champion Training",
       "type": "Event",
       "start_date": "2022-12-18",
       "end_date": "2022-12-23",

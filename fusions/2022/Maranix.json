@@ -1,0 +1,139 @@
+{
+  "title": "Maranix",
+  "type": "Classic",
+  "datespan": "04/10/2022 - 19/10/2022",
+  "Rare": "Prosecutor",
+  "RareAff": "Spirit",
+  "Epic1": "Tomoe",
+  "Epic1Aff": "Force",
+  "events": [
+    {
+      "name": "Dragon",
+      "type": "Tournament",
+      "start_date": "2022-10-04",
+      "end_date": "2022-10-07",
+      "reward": "Prosecutor",
+      "points": [1]
+    },
+    {
+      "name": "Champion Training",
+      "type": "Event",
+      "start_date": "2022-10-04",
+      "end_date": "2022-10-09",
+      "reward": "Prosecutor, Prosecutor",
+      "points": [1, 1]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Event",
+      "start_date": "2022-10-06",
+      "end_date": "2022-10-09",
+      "reward": "Prosecutor",
+      "points": [1]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2022-10-06",
+      "end_date": "2022-10-09",
+      "reward": "Prosecutor",
+      "points": [1]
+    },
+    {
+      "name": "Summon Rush",
+      "type": "Event",
+      "start_date": "2022-10-08",
+      "end_date": "2022-10-11",
+      "reward": "Prosecutor, Tomoe",
+      "points": [1, 1]
+    },
+    {
+      "name": "Ice Golem",
+      "type": "Tournament",
+      "start_date": "2022-10-08",
+      "end_date": "2022-10-11",
+      "reward": "Prosecutor",
+      "points": [1]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2022-10-08",
+      "end_date": "2022-10-11",
+      "reward": "Prosecutor",
+      "points": [1]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Event",
+      "start_date": "2022-10-11",
+      "end_date": "2022-10-14",
+      "reward": "Prosecutor",
+      "points": [1]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2022-10-11",
+      "end_date": "2022-10-14",
+      "reward": "Prosecutor",
+      "points": [1]
+    },
+    {
+      "name": "Fire Knight",
+      "type": "Tournament",
+      "start_date": "2022-10-12",
+      "end_date": "2022-10-15",
+      "reward": "Prosecutor",
+      "points": [1]
+    },
+    {
+      "name": "Champion Training",
+      "type": "Tournament",
+      "start_date": "2022-10-12",
+      "end_date": "2022-10-16",
+      "reward": "Prosecutor",
+      "points": [1]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2022-10-13",
+      "end_date": "2022-10-16",
+      "reward": "Prosecutor",
+      "points": [1]
+    },
+    {
+      "name": "Champion Chase",
+      "type": "Tournament",
+      "start_date": "2022-10-14",
+      "end_date": "2022-10-17",
+      "reward": "Prosecutor",
+      "points": [1]
+    },
+    {
+      "name": "Spider",
+      "type": "Tournament",
+      "start_date": "2022-10-15",
+      "end_date": "2022-10-18",
+      "reward": "Prosecutor",
+      "points": [1]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Event",
+      "start_date": "2022-10-16",
+      "end_date": "2022-10-19",
+      "reward": "Prosecutor",
+      "points": [1]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2022-10-16",
+      "end_date": "2022-10-19",
+      "reward": "Prosecutor",
+      "points": [1]
+    }
+  ]
+}

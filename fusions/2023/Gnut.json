@@ -18,7 +18,7 @@
       ]
     },
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
       "type": "Tournament",
       "start_date": "2023-07-03",
       "end_date": "2023-07-06",
@@ -28,7 +28,7 @@
       ]
     },
     {
-      "name": "Champion Training Event",
+      "name": "Champion Training",
       "type": "Event",
       "start_date": "2023-07-03",
       "end_date": "2023-07-08",
@@ -58,7 +58,7 @@
       ]
     },
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
       "type": "Tournament",
       "start_date": "2023-07-06",
       "end_date": "2023-07-09",
@@ -99,7 +99,7 @@
       ]
     },
     {
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
       "type": "Tournament",
       "start_date": "2023-07-09",
       "end_date": "2023-07-13",
@@ -109,7 +109,7 @@
       ]
     },
     {
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
       "type": "Tournament",
       "start_date": "2023-07-10",
       "end_date": "2023-07-13",
@@ -149,7 +149,7 @@
       ]
     },
     {
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
       "type": "Tournament",
       "start_date": "2023-07-13",
       "end_date": "2023-07-16",
@@ -159,7 +159,7 @@
       ]
     },
     {
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
       "type": "Tournament",
       "start_date": "2023-07-14",
       "end_date": "2023-07-17",

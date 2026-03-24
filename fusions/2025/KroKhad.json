@@ -4,7 +4,7 @@
   "datespan": "28/07/2025 - 11/08/2025",
   "events": [
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
       "type": "Tournament",
       "start_date": "2025-07-28",
       "end_date": "2025-07-31",
@@ -12,7 +12,7 @@
       "points": [5]
     },    
     {
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
       "type": "Tournament",
       "start_date": "2025-07-31",
       "end_date": "2025-08-03",
@@ -28,7 +28,7 @@
       "points": [5]
     },    
     {
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
       "type": "Tournament",
       "start_date": "2025-08-03",
       "end_date": "2025-08-07",
@@ -36,7 +36,7 @@
       "points": [10, 10]
     },    
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
       "type": "Tournament",
       "start_date": "2025-08-04",
       "end_date": "2025-08-07",
@@ -44,7 +44,7 @@
       "points": [5]
     },    
     {
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
       "type": "Tournament",
       "start_date": "2025-08-07",
       "end_date": "2025-08-10",
@@ -52,7 +52,7 @@
       "points": [5]
     },    
     {
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
       "type": "Tournament",
       "start_date": "2025-08-08",
       "end_date": "2025-08-11",
@@ -68,7 +68,7 @@
       "points": [5]
     },    
     {
-      "name": "Champion Training Event",
+      "name": "Champion Training",
       "type": "Event",
       "start_date": "2025-07-28",
       "end_date": "2025-08-01",
@@ -76,7 +76,7 @@
       "points": [10]
     },    
     {
-      "name": "Dungeon Divers",
+      "name": "Gear Hunters",
       "type": "Event",
       "start_date": "2025-07-29",
       "end_date": "2025-08-01",
@@ -100,7 +100,7 @@
       "points": [15]
     },    
     {
-      "name": "Dungeon Divers",
+      "name": "Gear Hunters",
       "type": "Event",
       "start_date": "2025-08-02",
       "end_date": "2025-08-05",
@@ -116,7 +116,7 @@
       "points": [5]
     },    
     {
-      "name": "Dungeon Divers",
+      "name": "Gear Hunters",
       "type": "Event",
       "start_date": "2025-08-06",
       "end_date": "2025-08-09",

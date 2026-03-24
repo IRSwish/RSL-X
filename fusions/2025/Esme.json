@@ -4,7 +4,7 @@
   "datespan":"10/02/2025 - 24/02/2025",
   "events": [
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
 	  "type": "Tournament",
       "start_date": "2025-02-10",
       "end_date": "2025-02-13",
@@ -12,7 +12,7 @@
       "points": [5]
     },
 	{
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
 	  "type": "Tournament",
       "start_date": "2025-02-13",
       "end_date": "2025-02-16",
@@ -28,7 +28,7 @@
       "points": [5]
     },
 	{
-      "name": "Dragon Tournament",
+      "name": "Dragon",
 	  "type": "Tournament",
       "start_date": "2025-02-16",
       "end_date": "2025-02-19",
@@ -36,7 +36,7 @@
       "points": [5]
     },
 	{
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
 	  "type": "Tournament",
       "start_date": "2025-02-16",
       "end_date": "2025-02-20",
@@ -44,7 +44,7 @@
       "points": [10, 10]
     },
 	{
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
 	  "type": "Tournament",
       "start_date": "2025-02-19",
       "end_date": "2025-02-22",
@@ -52,7 +52,7 @@
       "points": [5]
     },
 	{
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
 	  "type": "Tournament",
       "start_date": "2025-02-21",
       "end_date": "2025-02-24",
@@ -68,7 +68,7 @@
       "points": [5]
     },
 	{
-      "name": "Champion Training Event",
+      "name": "Champion Training",
 	  "type": "Event",
       "start_date": "2025-02-10",
       "end_date": "2025-02-14",
@@ -76,7 +76,7 @@
       "points": [10]
     },
 	{
-      "name": "Dungeon Divers",
+      "name": "Gear Hunters",
 	  "type": "Event",
       "start_date": "2025-02-11",
       "end_date": "2025-02-14",

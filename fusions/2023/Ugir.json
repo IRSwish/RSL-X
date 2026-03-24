@@ -4,7 +4,7 @@
   "datespan": "16/11/2023 - 29/11/2023",
   "events": [
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
       "type": "Tournament",
       "start_date": "2023-11-16",
       "end_date": "2023-11-19",
@@ -24,7 +24,7 @@
       ]
     },
     {
-      "name": "Champion Training Event",
+      "name": "Champion Training",
       "type": "Event",
       "start_date": "2023-11-16",
       "end_date": "2023-11-21",
@@ -64,7 +64,7 @@
       ]
     },
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
       "type": "Tournament",
       "start_date": "2023-11-19",
       "end_date": "2023-11-22",
@@ -84,7 +84,7 @@
       ]
     },
     {
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
       "type": "Tournament",
       "start_date": "2023-11-22",
       "end_date": "2023-11-25",
@@ -94,7 +94,7 @@
       ]
     },
     {
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
       "type": "Tournament",
       "start_date": "2023-11-22",
       "end_date": "2023-11-26",
@@ -125,7 +125,7 @@
       ]
     },
     {
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
       "type": "Tournament",
       "start_date": "2023-11-25",
       "end_date": "2023-11-28",

@@ -6,7 +6,7 @@
   "EpicAff": "Void",
   "events": [
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
 	  "type": "Tournament",
       "start_date": "2025-07-03",
       "end_date": "2025-07-06",
@@ -14,7 +14,7 @@
       "points": [25]
     },
 	{
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
 	  "type": "Tournament",
       "start_date": "2025-07-03",
       "end_date": "2025-07-07",
@@ -30,7 +30,7 @@
       "points": [25]
     },
 	{
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
 	  "type": "Tournament",
       "start_date": "2025-07-06",
       "end_date": "2025-07-09",
@@ -38,15 +38,15 @@
       "points": [25]
     },
 	{
-      "name": "Kurosa's Conquest Tournament",
-	  "type": "Tournament",
+      "name": "Gear Hunters",
+	  "type": "Event",
       "start_date": "2025-07-09",
       "end_date": "2025-07-12",
       "reward": "Fragments",
       "points": [25]
     },
 	{
-      "name": "Spider Tournament",
+      "name": "Spider",
 	  "type": "Tournament",
       "start_date": "2025-07-10",
       "end_date": "2025-07-13",
@@ -54,7 +54,7 @@
       "points": [25]
     },
 	{
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
 	  "type": "Tournament",
       "start_date": "2025-07-11",
       "end_date": "2025-07-14",
@@ -70,7 +70,7 @@
       "points": [25]
     },
 	{
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
 	  "type": "Tournament",
       "start_date": "2025-07-13",
       "end_date": "2025-07-16",
@@ -86,7 +86,7 @@
       "points": [25]
     },
 	{
-      "name": "Dungeon Divers",
+      "name": "Gear Hunters",
 	  "type": "Event",
       "start_date": "2025-07-04",
       "end_date": "2025-07-07",
@@ -126,7 +126,7 @@
       "points": [25]
     },
 	{
-      "name": "Dungeon Divers",
+      "name": "Gear Hunters",
 	  "type": "Event",
       "start_date": "2025-07-12",
       "end_date": "2025-07-15",

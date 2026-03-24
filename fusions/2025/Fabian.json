@@ -8,7 +8,7 @@
   "EpicAff":"Void",
   "events": [
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
 	  "type": "Tournament",
       "start_date": "2025-03-10",
       "end_date": "2025-03-13",
@@ -16,7 +16,7 @@
       "points": [1]
     },
 	{
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
 	  "type": "Tournament",
       "start_date": "2025-03-13",
       "end_date": "2025-03-16",
@@ -32,7 +32,7 @@
       "points": [1]
     },
 	{
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
 	  "type": "Tournament",
       "start_date": "2025-03-16",
       "end_date": "2025-03-20",
@@ -40,7 +40,7 @@
       "points": [1]
     },
 	{
-      "name": "Spider Tournament",
+      "name": "Spider",
 	  "type": "Tournament",
       "start_date": "2025-03-17",
       "end_date": "2025-03-20",
@@ -48,7 +48,7 @@
       "points": [1]
     },
 	{
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
 	  "type": "Tournament",
       "start_date": "2025-03-20",
       "end_date": "2025-03-23",
@@ -56,7 +56,7 @@
       "points": [1]
     },
 	{
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
 	  "type": "Tournament",
       "start_date": "2025-03-21",
       "end_date": "2025-03-24",
@@ -72,7 +72,7 @@
       "points": [1]
     },
 	{
-      "name": "Dungeon Divers",
+      "name": "Gear Hunters",
 	  "type": "Event",
       "start_date": "2025-03-10",
       "end_date": "2025-03-13",
@@ -80,7 +80,7 @@
       "points": [1]
     },
 	{
-      "name": "Champion Training Event",
+      "name": "Champion Training",
 	  "type": "Event",
       "start_date": "2025-03-10",
       "end_date": "2025-03-14",
@@ -101,7 +101,7 @@
       "reward": "Rare, Epic",
       "points": [1, 1]
     },{
-      "name": "Dungeon Divers",
+      "name": "Gear Hunters",
 	  "type": "Event",
       "start_date": "2025-03-14",
       "end_date": "2025-03-17",
@@ -115,7 +115,7 @@
       "reward": "Rare",
       "points": [1]
     },{
-      "name": "Dungeon Divers",
+      "name": "Gear Hunters",
 	  "type": "Event",
       "start_date": "2025-03-21",
       "end_date": "2025-03-24",

@@ -8,7 +8,7 @@
   "EpicAff":"Void",
   "events": [
     {
-      "name": "Champion Training Event",
+      "name": "Champion Training",
       "type": "Event",
       "start_date": "2024-12-16",
       "end_date": "2024-12-19",
@@ -28,7 +28,7 @@
       ]
     },
     {
-      "name": "Fire Knight Tournament",
+      "name": "Fire Knight",
       "type": "Tournament",
       "start_date": "2024-12-16",
       "end_date": "2024-12-19",
@@ -48,7 +48,7 @@
       ]
     },
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
       "type": "Tournament",
       "start_date": "2024-12-19",
       "end_date": "2024-12-22",
@@ -89,7 +89,7 @@
       ]
     },
     {
-      "name": "Champion Training Tournament",
+      "name": "Champion Training",
       "type": "Tournament",
       "start_date": "2024-12-21",
       "end_date": "2024-12-24",
@@ -109,7 +109,7 @@
       ]
     },
     {
-      "name": "Ice Golem Tournament",
+      "name": "Ice Golem",
       "type": "Tournament",
       "start_date": "2024-12-22",
       "end_date": "2024-12-25",
@@ -129,7 +129,7 @@
       ]
     },
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
       "type": "Tournament",
       "start_date": "2024-12-25",
       "end_date": "2024-12-28",
@@ -139,7 +139,7 @@
       ]
     },
     {
-      "name": "Champion Training Event",
+      "name": "Champion Training",
       "type": "Event",
       "start_date": "2024-12-26",
       "end_date": "2024-12-30",
@@ -149,7 +149,7 @@
       ]
     },
     {
-      "name": "Champion Chase Tournament",
+      "name": "Champion Chase",
       "type": "Tournament",
       "start_date": "2024-12-27",
       "end_date": "2024-12-30",

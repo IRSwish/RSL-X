@@ -4,7 +4,7 @@
   "datespan": "24/11/2022 - 02/12/2022",
   "events": [
     {
-      "name": "Champion Training Event",
+      "name": "Champion Training",
       "type": "Event",
       "start_date": "2022-11-24",
       "end_date": "2022-11-27",
@@ -24,7 +24,7 @@
       ]
     },
     {
-      "name": "Spider Tournament",
+      "name": "Spider",
       "type": "Tournament",
       "start_date": "2022-11-25",
       "end_date": "2022-11-28",
@@ -46,7 +46,7 @@
       ]
     },
     {
-      "name": "Dragon Tournament",
+      "name": "Dragon",
       "type": "Tournament",
       "start_date": "2022-11-28",
       "end_date": "2022-12-01",
