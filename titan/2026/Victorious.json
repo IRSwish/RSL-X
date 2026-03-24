@@ -71,6 +71,55 @@
       "start_date": "2026-03-26",
       "end_date": "2026-03-30",
       "points": [400]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Event",
+      "start_date": "2026-03-25",
+      "end_date": "2026-03-28",
+      "points": [10, 20, 70]
+    },
+    {
+      "name": "Spider Turn Attack",
+      "type": "Tournament",
+      "start_date": "2026-03-26",
+      "end_date": "2026-03-28",
+      "points": [50]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2026-03-27",
+      "end_date": "2026-03-30",
+      "points": [30]
+    },
+    {
+      "name": "Ice Golem Turn Attack",
+      "type": "Tournament",
+      "start_date": "2026-03-28",
+      "end_date": "2026-03-30",
+      "points": [50]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2026-03-29",
+      "end_date": "2026-04-01",
+      "points": [20, 60]
+    },
+    {
+      "name": "Fire Knight Turn Attack",
+      "type": "Tournament",
+      "start_date": "2026-03-30",
+      "end_date": "2026-04-01",
+      "points": [50]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Event",
+      "start_date": "2026-03-30",
+      "end_date": "2026-04-02",
+      "points": [10, 20, 70]
     }
   ]
 }
