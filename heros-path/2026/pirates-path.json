@@ -337,7 +337,7 @@
   },
   {
     "id": "t8-2",
-    "name": "Avatar Frame x1",
+    "name": "Avatar",
     "image": "edward-frame",
     "cost": 3000,
     "requires": [
