@@ -1,4 +1,11 @@
-[
+[  
+  {
+    "id": "t0-1",
+    "name": "Key x1",
+    "image": "path-key",
+    "cost": 0,
+    "hidden": true
+  },
   {
     "id": "t1-1",
     "name": "Silver x100000",
