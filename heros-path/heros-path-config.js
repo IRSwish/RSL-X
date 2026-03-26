@@ -1,5 +1,15 @@
 // heros-path-config.js
 window.fusions = {
+    "pirates-path": {
+    name: "Pirate's Path",
+    json: "/heros-path/2026/pirates-path.json",
+    shardCosts: {
+      ancient: 300,
+      void: 750,
+      primal: 1800,
+      sacred: 4500
+    }
+  },
   "anniversary-path": {
     name: "Anniversary Path",
     json: "/heros-path/2026/anniversary-path.json",

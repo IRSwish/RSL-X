@@ -1,0 +1,347 @@
+[
+  {
+    "id": "t1-1",
+    "name": "Silver x100000",
+    "image": "silver",
+    "cost": 500
+  },
+  {
+    "id": "t1-2",
+    "name": "Mortal Soul Coin x500",
+    "image": "mortal-soul-coin",
+    "cost": 500
+  },
+  {
+    "id": "t1-3",
+    "name": "Energy x75",
+    "image": "Energy",
+    "cost": 500
+  },
+  {
+    "id": "t1-4",
+    "name": "Gems x25",
+    "image": "Gems",
+    "cost": 500,
+    "requires": [
+      "t1-3",
+      "t2-4",
+      "t2-5",
+      "t2-6"
+    ]
+  },
+  {
+    "id": "t2-1",
+    "name": "Corehammer x10",
+    "image": "corehammer",
+    "cost": 1000,
+    "requires": [
+      "t1-1",
+      "t1-2"
+    ]
+  },
+  {
+    "id": "t2-2",
+    "name": "Starstone x50",
+    "image": "starstone",
+    "cost": 1000,
+    "requires": [
+      "t1-1",
+      "t1-2"
+    ]
+  },
+  {
+    "id": "t2-3",
+    "name": "Rank Charm x10",
+    "image": "rank-charm",
+    "cost": 1000,
+    "requires": [
+      "t1-2",
+      "t1-1"
+    ]
+  },
+  {
+    "id": "t2-4",
+    "name": "Rarity Charm x10",
+    "image": "rarity-charm",
+    "cost": 1000,
+    "requires": [
+      "t1-3",
+      "t1-4"
+    ]
+  },
+  {
+    "id": "t2-5",
+    "name": "Mortal Soulstone x1",
+    "image": "mortal-soulstone",
+    "cost": 1000,
+    "requires": [
+      "t1-3",
+      "t1-4"
+    ]
+  },
+  {
+    "id": "t2-6",
+    "name": "Rank 2 Basalt x1",
+    "image": "rank-2-basalt",
+    "cost": 1000,
+    "requires": [
+      "t1-3",
+      "t1-4"
+    ]
+  },
+  {
+    "id": "t3-1",
+    "name": "Energy x600",
+    "image": "Energy",
+    "cost": 4000,
+    "requires": [
+      "t2-3",
+      "t2-2",
+      "t2-1"
+    ]
+  },
+  {
+    "id": "t3-2",
+    "name": "Celestial Crystal (Epic) x50",
+    "image": "wings-of-winter-epic",
+    "cost": 3500,
+    "requires": [
+      "t2-3",
+      "t2-2",
+      "t2-1"
+    ]
+  },
+  {
+    "id": "t3-3",
+    "name": "Celestial Crystal (Epic) x50",
+    "image": "wings-of-winter-epic",
+    "cost": 3500,
+    "requires": [
+      "t2-4",
+      "t2-5",
+      "t2-6"
+    ]
+  },
+  {
+    "id": "t3-4",
+    "name": "Epic Chaos Ore x1",
+    "image": "epic-chaos-ore",
+    "cost": 4000,
+    "requires": [
+      "t2-4",
+      "t2-5",
+      "t2-6"
+    ]
+  },
+  {
+    "id": "t4-1",
+    "name": "Anniversary Points x80",
+    "image": "points-anniversary",
+    "cost": 6000,
+    "requires": [
+      "t3-1"
+    ]
+  },
+  {
+    "id": "t4-2",
+    "name": "Anniversary Points x80",
+    "image": "points-anniversary",
+    "cost": 6000,
+    "requires": [
+      "t3-2"
+    ]
+  },
+  {
+    "id": "t4-3",
+    "name": "Anniversary Points x80",
+    "image": "points-anniversary",
+    "cost": 6000,
+    "requires": [
+      "t3-3"
+    ]
+  },
+  {
+    "id": "t4-4",
+    "name": "Anniversary Points x80",
+    "image": "points-anniversary",
+    "cost": 6000,
+    "requires": [
+      "t3-4"
+    ]
+  },
+  {
+    "id": "t5-1",
+    "name": "Mortal Essence x20",
+    "image": "immortal-soul-essence",
+    "cost": 7000,
+    "requires": [
+      "t4-1",
+      "t4-2",
+      "t4-3",
+      "t4-4"
+    ]
+  },
+  {
+    "id": "t5-2",
+    "name": "Legendary Chaos Ore x6000",
+    "image": "legendary-chaos-ore",
+    "cost": 6000,
+    "requires": [
+      "t4-1",
+      "t4-2",
+      "t4-3",
+      "t4-4"
+    ]
+  },
+  {
+    "id": "t5-3",
+    "name": "Lock x1",
+    "image": "lock",
+    "cost": 1,
+    "requires": [
+      "t4-1",
+      "t4-2",
+      "t4-3",
+      "t4-4"
+    ]
+  },
+  {
+    "id": "t5-4",
+    "name": "Eternal Soul Coin x200",
+    "image": "eternal-soul-coin",
+    "cost": 6000,
+    "requires": [
+      "t4-1",
+      "t4-2",
+      "t4-3",
+      "t4-4"
+    ]
+  },
+  {
+    "id": "t5-5",
+    "name": "Immortal Soulstone x1",
+    "image": "immortal-soulstone",
+    "cost": 7000,
+    "requires": [
+      "t4-1",
+      "t4-2",
+      "t4-3",
+      "t4-4"
+    ]
+  },
+  {
+    "id": "t6-1",
+    "name": "Lock x1",
+    "image": "lock",
+    "cost": 1,
+    "requires": [
+      "t5-1",
+      "t5-2"
+    ]
+  },
+  {
+    "id": "t6-2",
+    "name": "Anniversary Points x80",
+    "image": "points-anniversary",
+    "cost": 6000,
+    "requires": [
+      "t5-3"
+    ]
+  },
+  {
+    "id": "t6-3",
+    "name": "Lock x1",
+    "image": "lock",
+    "cost": 1,
+    "requires": [
+      "t5-4",
+      "t5-5"
+    ]
+  },
+  {
+    "id": "t7-1",
+    "name": "Edward x1",
+    "image": "edward",
+    "cost": 60000,
+    "requires": [
+      "t6-1"
+    ]
+  },
+  {
+    "id": "t7-2",
+    "name": "Legendary Skill Tome x1",
+    "image": "skill-tome-legendary",
+    "cost": 10000,
+    "requires": [
+      "t6-2"
+    ]
+  },
+  {
+    "id": "t7-3",
+    "name": "Rank 4 Basalt x1",
+    "image": "rank-4-basalt",
+    "cost": 10000,
+    "requires": [
+      "t6-2"
+    ]
+  },
+  {
+    "id": "t7-4",
+    "name": "Edward 5* Perfect Soul x1",
+    "image": "edward-5",
+    "cost": 50000,
+    "requires": [
+      "t6-3"
+    ]
+  },
+  {
+    "id": "t8-1",
+    "name": "Celestial Crystal (Mythical) x50",
+    "image": "wings-of-winter-mythical",
+    "cost": 15000,
+    "requires": [
+      "t7-1"
+    ]
+  },
+  {
+    "id": "t8-2",
+    "name": "Avatar Frame x1",
+    "image": "edward-frame",
+    "cost": 3000,
+    "requires": [
+      "t7-2",
+      "t7-3"
+    ]
+  },
+  {
+    "id": "t8-3",
+    "name": "Celestial Crystal (Mythical) x50",
+    "image": "wings-of-winter-mythical",
+    "cost": 15000,
+    "requires": [
+      "t7-4"
+    ]
+  },
+  {
+    "id": "t9-1",
+    "name": "Key x1",
+    "image": "path-key",
+    "cost": 1000,
+    "requires": [
+      "t8-1",
+      "t8-2",
+      "t8-3"
+    ]
+  },
+  {
+    "id": "t9-2",
+    "name": "Key x1",
+    "image": "path-key",
+    "cost": 1,
+    "requires": [
+      "t8-1",
+      "t8-2",
+      "t8-3"
+    ]
+  }
+]
