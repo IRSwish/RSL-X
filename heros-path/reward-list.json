@@ -127,6 +127,10 @@
   { "name": "Twysted Horns (Epic)", "image": "twysted-horns-epic" },
   { "name": "Twysted Horns (Legendary)", "image": "twysted-horns-legendary" },
   { "name": "Twysted Horns (Mythical)", "image": "twysted-horns-mythical" },
+  { "name": "Celestial Crystals (Rare)", "image": "wings-of-winter-rare" },
+  { "name": "Celestial Crystals (Epic)", "image": "wings-of-winter-epic" },
+  { "name": "Celestial Crystals (Legendary)", "image": "wings-of-winter-legendary" },
+  { "name": "Celestial Crystals (Mythical)", "image": "wings-of-winter-mythical" },
 
   { "name": "3* Perfect Soul", "image": "-3" },
   { "name": "4* Perfect Soul", "image": "-4" },

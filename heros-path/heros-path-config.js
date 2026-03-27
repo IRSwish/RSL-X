@@ -11,6 +11,16 @@ window.fusions = {
     },
     initialUnlocked: ["t0-1"]
   },
+  "test": {
+    name: "test Path",
+    json: "/heros-path/2026/test.json",
+    shardCosts: {
+      ancient: 300,
+      void: 750,
+      primal: 1800,
+      sacred: 4500
+    }
+  },
   "anniversary-path": {
     name: "Anniversary Path",
     json: "/heros-path/2026/anniversary-path.json",

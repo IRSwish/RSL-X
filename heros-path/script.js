@@ -232,6 +232,12 @@ function resetAll() {
     b.dataset.state = "locked";
   });
 
+  if (fusion.initialUnlocked && Array.isArray(fusion.initialUnlocked)) {
+    fusion.initialUnlocked.forEach(id => {
+      unlocked.add(id);
+    });
+  }
+
   recalcKeysAndPoints();
   enforceKeyLimit();
   updateAvailability();
