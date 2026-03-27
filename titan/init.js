@@ -8,6 +8,8 @@ function loadFusionFromHash() {
   // enlève tous les '/' du début
   fusionKey = fusionKey.replace(/^\/+/, '');
 
+  if (!fusionKey) return;
+
   const fusion = window.fusions[fusionKey];
   if (fusion) {
     document.getElementById('page-title').textContent = fusion.name;

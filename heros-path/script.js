@@ -254,7 +254,9 @@ pointsAvailableInput.addEventListener("input", updateStats);
 async function init() {
   const pathId = window.location.hash.replace("#", "").trim();
 
-  if (!pathId || !window.fusions || !window.fusions[pathId]) {
+  if (!pathId) return;
+
+  if (!window.fusions || !window.fusions[pathId]) {
     document.body.innerHTML = "<h2 style='text-align:center;color:red'>Invalid Path Configuration</h2>";
     return;
   }
