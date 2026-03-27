@@ -6,7 +6,8 @@ let keys = 0;             // clés disponibles
 let activeLocks = 0;      // locks actifs
 let points = 0;
 let dependentsMap = {};
-let totalKeys = 0; 
+let totalKeys = 0;
+let fusion = null;
 
 const container = document.getElementById("rewardContainer");
 const svg = document.getElementById("connections");
@@ -258,7 +259,7 @@ async function init() {
     return;
   }
 
-  const fusion = window.fusions[pathId];
+  fusion = window.fusions[pathId];
   const jsonFile = fusion.json;
   const displayName = fusion.name || "Hero's Path";
 
