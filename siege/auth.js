@@ -576,6 +576,19 @@ export function setupAuthUI(db) {
         });
     }
 
+    // Pre-fill room ID from URL query param (?room=...)
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomParam = urlParams.get('room');
+    if (roomParam) {
+        const joinRoomIdInput = document.getElementById('joinRoomId');
+        if (joinRoomIdInput) joinRoomIdInput.value = roomParam;
+    }
+
+    // Default access mode: viewer
+    document.querySelectorAll('#joinTabContent .access-mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === 'viewer');
+    });
+
     // Try to restore session on load
     restoreSession(db).then(restored => {
         if (restored) {
