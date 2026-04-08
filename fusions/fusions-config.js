@@ -1,5 +1,9 @@
 // fusions-config.js
 window.fusions = {
+  Mavara: {
+    name: "Mavara Fusion",
+    json: "2026/Mavara.json"
+  },
   Pelops: {
     name: "Pelops Fusion",
     json: "2026/Pelops.json"
