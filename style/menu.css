@@ -245,6 +245,12 @@ body.menu-opened::after {
   scrollbar-color: rgba(201,169,106,0.35) var(--bg-menu);
 }
 
+/* ── No-blur (homepage auto-open) ────────────────────────── */
+body.no-menu-blur::after {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* ── Mobile portrait ──────────────────────────────────────── */
 @media (max-width: 768px) and (orientation: portrait) {
   .sidebar {
