@@ -364,44 +364,6 @@
       box-shadow: 0 -4px 20px rgba(201,169,106,0.07) !important;
     }
 
-    /* ── Menu overrides — tout carré ── */
-    .sidebar {
-      background: #080706 !important;
-      border-right: 1px solid rgba(201,169,106,0.55) !important;
-      border-radius: 0 !important;
-      isolation: isolate !important; /* empêche le backdrop-filter de l'overlay de flouter le menu */
-    }
-
-    /* Retire le blur de l'overlay quand menu ouvert */
-    body.menu-opened::after {
-      backdrop-filter: none !important;
-    }
-
-    .menu-links a,
-    .dropdown-toggle,
-    .dropdown-sub-toggle {
-      border-radius: 0 !important;
-    }
-
-    .menu-links a:hover,
-    .dropdown-toggle:hover,
-    .dropdown-sub-toggle:hover {
-      background: rgba(201,169,106,0.08) !important;
-      color: #f1ddb1 !important;
-    }
-
-    .active-link {
-      background: rgba(201,169,106,0.12) !important;
-      border-radius: 0 !important;
-    }
-
-    /* Icônes Lucide anguleuses */
-    .burger-btn svg,
-    #menu-container svg {
-      stroke-linecap: square !important;
-      stroke-linejoin: miter !important;
-    }
-
     /* ── Keyframes background ── */
     @keyframes orbDrift1 {
       0%   { transform: translate(0,0) scale(1); }

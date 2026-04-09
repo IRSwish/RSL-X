@@ -1,56 +1,88 @@
-/* === Bouton Burger (en haut à gauche) === */
+/* ============================================================
+   RSL-X — Menu V2  |  Dark Fantasy
+   ============================================================ */
+
+/* ── Palette ──────────────────────────────────────────────── */
+:root {
+  --gold:        #c9a96a;
+  --gold-light:  #f1ddb1;
+  --gold-dim:    rgba(201,169,106,0.55);
+  --gold-subtle: rgba(201,169,106,0.08);
+  --gold-hover:  rgba(201,169,106,0.12);
+  --text:        #e8e0d2;
+  --text-dim:    rgba(232,224,210,0.55);
+  --bg-menu:     #080706;
+}
+
+/* ── Burger ───────────────────────────────────────────────── */
 .burger-btn {
   position: fixed;
-  top: 12px;
-  left: 12px;
+  top: 14px;
+  left: 14px;
   background: none;
   border: none;
-  color: #fcf6ff;
-  font-size: 34px;
-  line-height: 1;
+  color: var(--text);
   cursor: pointer;
   z-index: 10001;
   padding: 6px;
-  transition: color 0.25s ease, transform 0.2s ease;
+  transition: color 0.2s ease;
 }
 
-.burger-btn:hover {
-  color: #d4af37; /* Doré au survol */
-  transform: scale(1.08);
-}
+.burger-btn:hover { color: var(--gold-light); }
 
-/* Taille des icônes Lucide */
-.burger-btn svg {
-  width: 34px;
-  height: 34px;
-  stroke-width: 2;
+.burger-btn svg,
+#menu-container svg {
+  width: 28px;
+  height: 28px;
+  stroke-width: 1.75;
   vertical-align: middle;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
 }
 
+/* ── Sidebar ──────────────────────────────────────────────── */
 .sidebar {
   position: fixed;
   top: 0;
-  left: -270px;
-  width: 250px;
+  left: -280px;
+  width: 260px;
   height: 100%;
-  background: #0e0e0e;
-  border-right: 2px solid #d4af37;
-  box-shadow: 6px 0 18px rgba(0, 0, 0, 0.7);
-  transition: left 0.3s ease;
-  z-index: 10000; /* ✅ au-dessus de l’overlay */
+  background: var(--bg-menu);
+  border-right: 1px solid var(--gold-dim);
+  box-shadow:
+    4px 0 32px rgba(0,0,0,0.85),
+    inset -1px 0 0 rgba(201,169,106,0.06),
+    0 0 40px rgba(201,169,106,0.04);
+  transition: left 0.28s cubic-bezier(0.4,0,0.2,1);
+  z-index: 10000;
   overflow-y: auto;
+  overflow-x: hidden;
+  isolation: isolate;
 }
 
-.sidebar.open {
-  left: 0; /* ouverture fluide */
+.sidebar.open { left: 0; }
+
+/* ── En-tête sidebar ──────────────────────────────────────── */
+.sidebar-header {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid rgba(201,169,106,0.18);
+  margin-bottom: 8px;
 }
 
-/* Contenu interne */
+.sidebar-logo {
+  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-size: 1.35rem;
+  color: var(--gold-light);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-shadow: 0 0 14px rgba(201,169,106,0.3);
+}
+
+/* ── Contenu ──────────────────────────────────────────────── */
 .sidebar-content {
-  padding: 70px 16px 30px;
+  padding: 60px 14px 40px;
 }
 
-/* === Nettoyage global === */
 .menu-links,
 .dropdown-content,
 .dropdown-sub-content {
@@ -59,281 +91,192 @@
   padding: 0;
 }
 
-/* === Liens et dropdowns principaux === */
-.menu-links li {
-  margin: 2px 0;
-}
+.menu-links li { margin: 1px 0; }
 
+/* ── Items principaux ─────────────────────────────────────── */
 .menu-links a,
 .dropdown-toggle {
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #fcf6ff;
+  gap: 8px;
+  color: var(--text);
   text-decoration: none;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  padding: 6px 10px;
-  border-radius: 4px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13.5px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  padding: 7px 10px;
+  border-radius: 0;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.18s ease, color 0.18s ease;
+  border-left: 2px solid transparent;
 }
 
-/* hover doré */
 .menu-links a:hover,
 .dropdown-toggle:hover {
-  background: rgba(212, 175, 55, 0.1);
-  color: #d4af37;
+  background: var(--gold-subtle);
+  color: var(--gold-light);
+  border-left-color: var(--gold);
 }
 
-/* === Flèches uniquement sur dropdowns === */
-.dropdown-toggle::before,
-.dropdown-sub-toggle::before {
-  content: "▸";
-  font-size: 16px;
-  color: #d4af37;
-  opacity: 0.7;
+/* ── Flèches dropdown ─────────────────────────────────────── */
+.dropdown-toggle::after,
+.dropdown-sub-toggle::after {
+  content: "›";
+  margin-left: auto;
+  font-size: 15px;
+  color: var(--gold);
+  opacity: 0.6;
   transition: transform 0.2s ease, opacity 0.2s ease;
-  flex-shrink: 0;
+  line-height: 1;
 }
 
-/* --- Alignement uniforme pour tous les éléments --- */
-.menu-links a,
-.dropdown-toggle,
-.dropdown-sub-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  position: relative;
-}
-
-/* Crée une "zone fantôme" de flèche sur les liens simples */
-.menu-links a::before {
-  content: "▸";
-  display: inline-block;
-  gap: 6px;
-  width: 12px; /* même largeur que la flèche réelle */
-  flex-shrink: 0;
-}
-
-
-/* Rotation flèche quand ouvert */
-.dropdown.open > .dropdown-toggle::before,
-.dropdown-sub-toggle.open::before {
+.dropdown.open > .dropdown-toggle::after,
+.dropdown-sub-toggle.open::after {
   transform: rotate(90deg);
   opacity: 1;
 }
 
-/* === Supprime la flèche sur les liens simples === */
-.menu-links a::before {
-  content: none !important;
-}
-
-/* === Sous-listes === */
+/* ── Sous-listes ──────────────────────────────────────────── */
 .dropdown-content {
   display: none;
+  margin-left: 0;
+  border-left: 1px solid rgba(201,169,106,0.15);
   margin-left: 10px;
-  border-left: 1px solid rgba(212, 175, 55, 0.2);
-  padding-left: 8px;
-  margin-top: 3px;
+  padding-left: 0;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
-.dropdown.open > .dropdown-content {
-  display: block;
-}
+.dropdown.open > .dropdown-content { display: block; }
 
-/* === Sous-dropdowns (ex: années) === */
+/* ── Sous-dropdowns (années) ──────────────────────────────── */
 .dropdown-sub-toggle {
-  color: #d4af37;
-  font-weight: 600;
-  font-size: 13px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  border-radius: 4px;
+  gap: 8px;
+  color: var(--gold);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 0;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.18s ease, color 0.18s ease;
 }
 
 .dropdown-sub-toggle:hover {
-  background: rgba(212, 175, 55, 0.08);
-  color: #fcf6ff;
+  background: var(--gold-subtle);
+  color: var(--gold-light);
 }
 
-/* Sous-niveau des années */
 .dropdown-sub-content {
   display: none;
-  margin-left: 12px;
-  padding-left: 6px;
-  border-left: 1px dashed rgba(212, 175, 55, 0.2);
+  border-left: 1px dashed rgba(201,169,106,0.12);
+  margin-left: 10px;
+  padding-left: 0;
 }
 
-.dropdown-sub-toggle.open + .dropdown-sub-content {
-  display: block;
-}
+.dropdown-sub-toggle.open + .dropdown-sub-content { display: block; }
 
-/* Liens internes compacts */
+/* ── Liens feuilles ───────────────────────────────────────── */
 .dropdown-sub-content a {
-  font-size: 13px;
-  padding: 4px 8px;
-  border-radius: 4px;
+  font-size: 12.5px;
+  padding: 5px 10px;
+  color: var(--text-dim);
   display: block;
+  border-radius: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+  border-left: 2px solid transparent;
 }
 
 .dropdown-sub-content a:hover {
-  background: rgba(212, 175, 55, 0.1);
-  color: #d4af37;
+  background: var(--gold-subtle);
+  color: var(--gold-light);
+  border-left-color: var(--gold);
 }
 
+/* ── Lien actif ───────────────────────────────────────────── */
+.active-link {
+  color: var(--gold-light) !important;
+  font-weight: 600 !important;
+  background: var(--gold-hover) !important;
+  border-left-color: var(--gold) !important;
+  border-radius: 0 !important;
+}
 
-/* === Overlay sombre / flou quand le menu est ouvert === */
+/* ── Overlay ──────────────────────────────────────────────── */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(2px);
+  background: rgba(0,0,0,0.55);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 9998; /* 🔽 inférieur au menu (10000) */
+  transition: opacity 0.28s ease;
+  z-index: 9998;
 }
 
-/* Affiché quand le menu est ouvert */
 body.menu-opened::after {
   opacity: 1;
   pointer-events: auto;
 }
 
-/* Lien actif dans le menu */
-.active-link {
-  color: #d4af37 !important;
-  font-weight: 600;
-  background: rgba(212, 175, 55, 0.12);
-  border-radius: 4px;
-}
-
-/* === Scrollbar stylisée pour le menu latéral === */
-.sidebar::-webkit-scrollbar {
-  width: 10px;
-}
+/* ── Scrollbar ────────────────────────────────────────────── */
+.sidebar::-webkit-scrollbar { width: 4px; }
 
 .sidebar::-webkit-scrollbar-track {
-  background: #0e0e0e;
-  border-left: 1px solid rgba(212, 175, 55, 0.2);
+  background: var(--bg-menu);
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #d4af37 0%, #f52584 100%);
-  border-radius: 10px;
-  border: 2px solid #0e0e0e; /* garde un effet "rainuré" */
-  box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
+  background: rgba(201,169,106,0.35);
+  border-radius: 0;
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #f52584 0%, #00c9ff 100%);
-  box-shadow: 0 0 12px rgba(0, 201, 255, 0.4);
+  background: rgba(201,169,106,0.65);
 }
 
-/* Firefox */
 .sidebar {
   scrollbar-width: thin;
-  scrollbar-color: #d4af37 #0e0e0e;
+  scrollbar-color: rgba(201,169,106,0.35) var(--bg-menu);
 }
 
-/* === 📱 Mode portrait : menu plein écran === */
+/* ── Mobile portrait ──────────────────────────────────────── */
 @media (max-width: 768px) and (orientation: portrait) {
-
-  /* --- Menu prend toute la largeur et la hauteur --- */
   .sidebar {
-    position: fixed;
-    top: 0;
-    left: -270px;
-    width: 250px;
-    height: 100%;
-    background: #0e0e0e;
-    border-right: 2px solid #d4af37;
-    box-shadow: 6px 0 18px rgba(0, 0, 0, 0.7);
-    transition: left 0.3s ease;
-    z-index: 10000;
-    overflow-y: auto;
-    isolation: isolate; /* ✅ empêche le flou du body::after d’affecter le menu */
+    width: 260px;
   }
 
-  .sidebar.open {
-    left: 0;
-  }
+  .burger-btn { top: 14px; left: 14px; }
 
-  /* --- Bouton burger visible au-dessus du menu --- */
-  .burger-btn {
-    position: fixed;
-    top: 14px;
-    left: 14px;
-    z-index: 10001;
-    font-size: 38px;
-  }
+  .sidebar-content { padding: 72px 14px 60px; }
 
-  /* --- Contenu centré, marges plus grandes --- */
-  .sidebar-content {
-    padding: 80px 28px 60px;
-  }
-
-  /* --- Liens plus lisibles et espacés --- */
   .menu-links a,
   .dropdown-toggle,
   .dropdown-sub-toggle {
-    font-size: 18px;
-    padding: 12px 16px;
+    font-size: 16px;
+    padding: 11px 12px;
   }
 
   .dropdown-sub-content a {
-    font-size: 16px;
-    padding: 10px 14px;
+    font-size: 14.5px;
+    padding: 9px 12px;
   }
 
-  .menu-links li {
-    margin: 8px 0;
-  }
+  .menu-links li { margin: 4px 0; }
 
-  /* --- Scrollbar large et adaptée au pouce --- */
-  .sidebar::-webkit-scrollbar {
-    width: 14px;
-  }
+  body.menu-opened::after { opacity: 1; }
 
-  /* --- Overlay supprimé : le menu est la page --- */
-  body.menu-opened::after {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  /* --- Supprimer la bordure de séparation gauche --- */
-  .dropdown-content,
-  .dropdown-sub-content {
-    border-left: none;
-  }
-
-  /* --- Animation légère de fondu à l’ouverture --- */
   .sidebar.open {
-    animation: fadeInMenu 0.3s ease;
+    animation: slideIn 0.28s cubic-bezier(0.4,0,0.2,1);
   }
 
-  @keyframes fadeInMenu {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  @keyframes slideIn {
+    from { opacity: 0.6; transform: translateX(-12px); }
+    to   { opacity: 1;   transform: translateX(0); }
   }
-}
-
-/* === Désactive le flou du menu sur la page d'accueil === */
-body.no-menu-blur::after {
-  opacity: 0 !important;
-  backdrop-filter: none !important;
-  pointer-events: none !important;
 }
