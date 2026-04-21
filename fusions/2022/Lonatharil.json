@@ -1,0 +1,183 @@
+{
+  "title": "LONATHARIL",
+  "type": "Hybrid",
+  "datespan": "04/08/2022 - 21/08/2022",
+  "Epic1": "Carlinia",
+  "Epic2": "Yelagirna",
+  "Epic3": "Anchorite",
+  "Epic4": "Wuji",
+  "Epic1Aff":"Spirit",
+  "Epic2Aff":"Spirit",
+  "Epic3Aff":"Spirit",
+  "Epic4Aff":"Force",
+  "events": [
+    {
+      "name": "Spider",
+      "type": "Tournament",
+      "start_date": "2022-08-04",
+      "end_date": "2022-08-07",
+      "reward": "Fragments",
+      "points": [
+        20
+      ]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Event",
+      "start_date": "2022-08-04",
+      "end_date": "2022-08-07",
+      "reward": "Fragments, Fragments",
+      "points": [
+        15,
+        20
+      ]
+    },
+    {
+      "name": "Champion Chase",
+      "type": "Tournament",
+      "start_date": "2022-08-05",
+      "end_date": "2022-08-08",
+      "reward": "Fragments, Fragments",
+      "points": [
+        20,
+        20
+      ]
+    },
+    {
+      "name": "Champion Training",
+      "type": "Tournament",
+      "start_date": "2022-08-05",
+      "end_date": "2022-08-09",
+      "reward": "Fragments, Fragments",
+      "points": [
+        20,
+        20
+      ]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2022-08-06",
+      "end_date": "2022-08-09",
+      "reward": "Fragments",
+      "points": [
+        15
+      ]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2022-08-06",
+      "end_date": "2022-08-09",
+      "reward": "Fragments",
+      "points": [
+        20
+      ]
+    },
+    {
+      "name": "Dragon",
+      "type": "Tournament",
+      "start_date": "2022-08-08",
+      "end_date": "2022-08-11",
+      "reward": "Fragments",
+      "points": [
+        20
+      ]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Event",
+      "start_date": "2022-08-10",
+      "end_date": "2022-08-14",
+      "reward": "Fragments, Fragments",
+      "points": [
+        20,
+        15
+      ]
+    },
+    {
+      "name": "Champion Training",
+      "type": "Tournament",
+      "start_date": "2022-08-11",
+      "end_date": "2022-08-16",
+      "reward": "Fragments, Fragments, Fragments",
+      "points": [
+        20,
+        20,
+        15
+      ]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2022-08-11",
+      "end_date": "2022-08-14",
+      "reward": "Fragments",
+      "points": [
+        20
+      ]
+    },
+    {
+      "name": "Ice Golem",
+      "type": "Tournament",
+      "start_date": "2022-08-12",
+      "end_date": "2022-08-15",
+      "reward": "Fragments",
+      "points": [
+        20
+      ]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2022-08-12",
+      "end_date": "2022-08-15",
+      "reward": "Fragments",
+      "points": [
+        15
+      ]
+    },
+    {
+      "name": "Summon Rush",
+      "type": "Event",
+      "start_date": "2022-08-12",
+      "end_date": "2022-08-15",
+      "reward": "Fragments, Fragments",
+      "points": [
+        25,
+        25
+      ]
+    },
+    {
+      "name": "Fire Knight",
+      "type": "Tournament",
+      "start_date": "2022-08-16",
+      "end_date": "2022-08-19",
+      "reward": "Fragments",
+      "points": [
+        20
+      ]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Event",
+      "start_date": "2022-08-15",
+      "end_date": "2022-08-19",
+      "reward": "Fragments, Fragments",
+      "points": [
+        15,
+        20
+      ]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2022-08-16",
+      "end_date": "2022-08-19",
+      "reward": "Fragments",
+      "points": [
+        20
+      ]
+    }
+  ]
+}

@@ -1,128 +1,256 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HNK5S7EBCJ"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-HNK5S7EBCJ');
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fusions - RSL-X</title>
   <script src="https://unpkg.com/lucide@latest" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
   <script src="/config/site-config.js"></script>
   <script src="/config/sessions.js"></script>
   <script src="/config/ad-banner.js" defer></script>
   <link rel="stylesheet" href="/style/style.css">
   <link rel="stylesheet" href="/fusions/fusions-sidebar.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="preload" href="/menu.html" as="fetch" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    @font-face {
+      font-family: "Middle Ages";
+      src: url('/style/MiddAges.ttf') format('truetype');
+      font-display: swap;
+    }
+
+    * { box-sizing: border-box; }
+
+    /* ── Background animé ── */
+    .df-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .df-orb { position: absolute; border-radius: 50%; }
+    .df-orb-1 { width: 70vmax; height: 70vmax; top: -15%; left: -15%; background: radial-gradient(circle, rgba(201,169,106,0.10) 0%, transparent 65%); filter: blur(65px); animation: orbDrift1 28s ease-in-out infinite alternate; }
+    .df-orb-2 { width: 55vmax; height: 55vmax; bottom: -10%; right: -10%; background: radial-gradient(circle, rgba(90,70,145,0.08) 0%, transparent 65%); filter: blur(75px); animation: orbDrift2 35s ease-in-out infinite alternate; }
+    .df-orb-3 { width: 45vmax; height: 45vmax; top: 30%; left: 35%; background: radial-gradient(circle, rgba(160,88,38,0.07) 0%, transparent 60%); filter: blur(55px); animation: orbDrift3 22s ease-in-out infinite alternate; }
+    .df-scratches { position: absolute; inset: -5%; background-image: repeating-linear-gradient(58deg, transparent 0px, transparent 172px, rgba(255,255,255,0.028) 172px, rgba(255,255,255,0.028) 172.5px), repeating-linear-gradient(45deg, transparent 0px, transparent 157px, rgba(255,255,255,0.032) 157px, rgba(255,255,255,0.032) 158px), repeating-linear-gradient(67deg, transparent 0px, transparent 167px, rgba(201,169,106,0.034) 167px, rgba(201,169,106,0.034) 167.5px); animation: scratchShimmer 28s ease-in-out infinite alternate; }
+    .df-noise { position: absolute; inset: 0; opacity: 0.4; mix-blend-mode: overlay; }
+    .df-beam { position: absolute; top: -100%; left: -60%; width: 38%; height: 300%; background: linear-gradient(90deg, transparent 0%, rgba(201,169,106,0.014) 35%, rgba(201,169,106,0.028) 50%, rgba(201,169,106,0.014) 65%, transparent 100%); transform: rotate(15deg) translateX(-80vw); animation: beamSweep 24s ease-in-out infinite; }
+    .df-embers { position: absolute; inset: 0; background-image: radial-gradient(circle at 12% 68%, rgba(201,169,106,0.18) 0 1px, transparent 2px), radial-gradient(circle at 76% 20%, rgba(201,169,106,0.15) 0 1px, transparent 2px), radial-gradient(circle at 52% 12%, rgba(201,169,106,0.12) 0 1.5px, transparent 2.5px); animation: embersFloat 11s ease-in-out infinite alternate; }
+
+    @keyframes orbDrift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(4%,3%) scale(1.06); } }
+    @keyframes orbDrift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-3%,-4%) scale(1.08); } }
+    @keyframes orbDrift3 { from { transform: translate(0,0) scale(1); } to { transform: translate(5%,-3%) scale(0.95); } }
+    @keyframes scratchShimmer { from { opacity: 0.7; } to { opacity: 1; } }
+    @keyframes beamSweep { 0% { transform: rotate(15deg) translateX(-80vw); } 100% { transform: rotate(15deg) translateX(200vw); } }
+    @keyframes embersFloat { from { transform: translate(0,0); } to { transform: translate(2px,-4px); } }
+
+    body::before { display: none; }
+    body { background: radial-gradient(circle at 20% 20%, rgba(110,85,45,0.08), transparent 30%), radial-gradient(circle at 80% 30%, rgba(80,70,120,0.08), transparent 28%), linear-gradient(160deg, #050505, #0c0b0a 45%, #14110f); }
+
+    .header-wrapper { text-align: center; }
+
+
+    /* ── Timeline df-panel ── */
+    .timeline-panel {
+      position: relative;
+      width: 92%;
+      margin: 0 auto 40px;
+      padding: 20px 0;
+      background: linear-gradient(180deg, rgba(22,18,16,0.96), rgba(8,7,7,0.94));
+      border: 1px solid rgba(201,169,106,0.18);
+    }
+    .timeline-panel::before {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(201,169,106,0.10);
+      pointer-events: none;
+      z-index: 1;
+      animation: tpGlow 4s ease-in-out infinite;
+    }
+    .timeline-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(201,169,106,0.04) 0%, transparent 30%, transparent 70%, rgba(201,169,106,0.04) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes tpGlow {
+      0%, 100% { box-shadow: 0 0 8px rgba(201,169,106,0.15), inset 0 0 10px rgba(201,169,106,0.05); opacity: 0.85; }
+      50%       { box-shadow: 0 0 16px rgba(201,169,106,0.28), inset 0 0 18px rgba(201,169,106,0.09); opacity: 1; }
+    }
+
+    /* ── Ornements ── */
+    @keyframes shimOut { 0% { stroke-dashoffset: 32; opacity: 0; } 8% { opacity: 0.65; } 88% { opacity: 0.65; } 100% { stroke-dashoffset: -106; opacity: 0; } }
+    @keyframes gemPulse { 0%, 100% { opacity: 0.88; } 50% { opacity: 1; } }
+    .b-orn { position: absolute; width: 70px; height: 70px; pointer-events: none; filter: drop-shadow(0 0 6px rgba(201,169,106,0.45)); z-index: 10; }
+    .b-orn.tl { top: -20px; left: -20px; }
+    .b-orn.tr { top: -20px; right: -20px; transform: scaleX(-1); }
+    .b-orn.bl { bottom: -20px; left: -20px; transform: scaleY(-1); }
+    .b-orn.br { bottom: -20px; right: -20px; transform: scale(-1); }
+    .b-sh { stroke-dasharray: 32 106; animation: shimOut 3s linear infinite; opacity: 0; }
+    .b-gem { animation: gemPulse 2.5s ease-in-out infinite; }
+    .b-orn.tr .b-sh  { animation-delay: -0.75s; }
+    .b-orn.bl .b-sh  { animation-delay: -1.5s; }
+    .b-orn.br .b-sh  { animation-delay: -2.25s; }
+    .b-orn.tr .b-gem { animation-delay: -0.625s; }
+    .b-orn.bl .b-gem { animation-delay: -1.25s; }
+    .b-orn.br .b-gem { animation-delay: -1.875s; }
+
+    /* ── Timeline container padding ── */
+    .timeline-container { padding: 0 20px; }
+
+    /* ── Override CSS variables ── */
+    :root {
+      --line-color: #c9a96a;
+      --grid-line-color: rgba(201,169,106,0.12);
+      --event-bg: rgba(12,10,9,0.85);
+      --event-border: rgba(201,169,106,0.3);
+    }
+
+    /* ── Event blocks V2 ── */
+    .event-block {
+      border-radius: 0 !important;
+      border-width: 1px !important;
+    }
+    .event-block.type-tournament:not(.event-ended) {
+      background: rgba(18,35,90,0.22);
+      border-color: rgba(90,140,220,0.28);
+    }
+    .event-block.type-event:not(.event-ended) {
+      background: rgba(10,50,25,0.22);
+      border-color: rgba(60,170,100,0.28);
+    }
+
+    /* ── Keep pills : rectangulaires, moins saturées ── */
+    .keep-pill { border-radius: 0; }
+    .keep-spirit { background: rgba(76, 140, 80, 0.32) !important; }
+    .keep-force  { background: rgba(160, 55, 55, 0.32) !important; }
+    .keep-magic  { background: rgba(45, 110, 180, 0.32) !important; }
+    .keep-void   { background: rgba(100, 55, 140, 0.32) !important; }
+
+    .ad-banner-footer {
+      background: rgba(8,6,5,0.97) !important;
+      border-top: 1px solid rgba(201,169,106,0.45) !important;
+      box-shadow: 0 -4px 20px rgba(201,169,106,0.07) !important;
+      box-sizing: content-box !important;
+    }
+  </style>
 </head>
 <body>
-  <!-- MENU -->
-  <div id="menu-container"></div>
 
-  <!-- Info button -->
-  <button id="info-btn" class="info-btn" aria-label="Infos">
-    <i data-lucide="info"></i>
-  </button>
+<!-- Dark fantasy background -->
+<div class="df-bg">
+  <div class="df-orb df-orb-1"></div>
+  <div class="df-orb df-orb-2"></div>
+  <div class="df-orb df-orb-3"></div>
+  <div class="df-scratches"></div>
+  <div class="df-beam"></div>
+  <div class="df-embers"></div>
+  <canvas class="df-noise" id="noiseCanvas"></canvas>
+</div>
 
-  <div class="header-wrapper">
-    <header id="page-title"></header>
+<div id="menu-container"></div>
+
+<!-- Fusion banner: champion info (left) + progress (right) -->
+<div id="fusion-banner">
+  <div class="banner-champion">
+    <img class="banner-champ-img" id="banner-champ-img" alt=""/>
+    <div class="banner-champ-info">
+      <div class="banner-champ-name" id="banner-champ-name"></div>
+      <div class="banner-champ-meta">
+        <span class="banner-type-pill" id="banner-type-pill"></span>
+        <span class="banner-datespan" id="banner-datespan"></span>
+      </div>
+      <div class="banner-champ-attrs" id="banner-champ-attrs"></div>
+    </div>
   </div>
+  <div class="banner-progress">
+    <div class="banner-progress-header">Progress</div>
+    <div class="banner-progress-body" id="progress-panel"></div>
+  </div>
+</div>
 
+<div class="timeline-panel">
+  <svg class="b-orn tl" viewBox="0 0 70 70" fill="none"><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="b-sh"/><rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="b-gem"/></svg>
+  <svg class="b-orn tr" viewBox="0 0 70 70" fill="none"><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="b-sh"/><rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="b-gem"/></svg>
+  <svg class="b-orn bl" viewBox="0 0 70 70" fill="none"><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="b-sh"/><rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="b-gem"/></svg>
+  <svg class="b-orn br" viewBox="0 0 70 70" fill="none"><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="b-sh"/><rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="b-gem"/></svg>
   <div class="timeline-container" id="timeline-container">
     <div class="timeline"></div>
   </div>
+</div>
 
-  <!-- Sidebar -->
-  <div id="info-sidebar">
-    <!-- LEGEND -->
-    <div class="panel">
-      <div class="panel-header">Legend</div>
-      <div class="panel-body">
-        <div class="legend">
-          <div><span class="legend-dot skipped"></span> Skipped</div>
-          <div><span class="legend-dot in-progress"></span> Planned</div>
-          <div><span class="legend-dot done"></span> Done</div>
-          <div><span class="legend-dot not-started"></span> Not started</div>
-        </div>
-      </div>
-    </div>
+<!-- Legend strip (below calendar) -->
+<div id="legend-strip">
+  <div><span class="legend-dot skipped"></span> Skipped</div>
+  <div><span class="legend-dot in-progress"></span> Planned</div>
+  <div><span class="legend-dot done"></span> Done</div>
+  <div><span class="legend-dot not-started"></span> Not started</div>
+</div>
 
-    <!-- PROGRESS -->
-    <div class="panel">
-      <div class="panel-header">Progress</div>
-      <div class="panel-body progress-panel" id="progress-panel"></div>
-    </div>
+<!-- Resources recap (below legend) -->
+<div id="resources-panel-wrapper" style="display:none">
+  <div class="resources-header">Resources</div>
+  <div id="resources-panel"></div>
+</div>
 
-    <!-- RESOURCES -->
-    <div class="panel" id="resources-panel-wrapper" style="display:none">
-      <div class="panel-header">Resources</div>
-      <div class="panel-body" id="resources-panel"></div>
-    </div>
-  </div>
+<!-- Scripts -->
+<script src="/fusions/fusions-config.js"></script>
+<script src="/fusions/fusion.js"></script>
+<script src="/script.js"></script>
+<script src="/fusions/init.js"></script>
+<script src="/config/session-widget.js"></script>
 
-  <!-- Pinned panels (bottom-left) -->
-  <div id="pinned-area">
-    <div id="pinned-legend" class="pinned-panel">
-      <div class="panel">
-        <div class="panel-header">Legend</div>
-        <div class="panel-body">
-          <div class="legend">
-            <div><span class="legend-dot skipped"></span> Skipped</div>
-            <div><span class="legend-dot in-progress"></span> Planned</div>
-            <div><span class="legend-dot done"></span> Done</div>
-            <div><span class="legend-dot not-started"></span> Not started</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div id="pinned-progress" class="pinned-panel">
-      <div class="panel">
-        <div class="panel-header">Progress</div>
-        <div class="panel-body progress-panel" id="pinned-progress-panel"></div>
-      </div>
-    </div>
-  </div>
+<script>
+  // Synchronise la hauteur du timeline-panel avec le contenu réel
+  (function() {
+    function fitTimelinePanel() {
+      const panel = document.querySelector('.timeline-panel');
+      const container = document.getElementById('timeline-container');
+      if (!panel || !container) return;
+      const h = container.scrollHeight;
+      if (h > 0) panel.style.minHeight = (h + 40) + 'px'; // 40px = padding top + bottom
+    }
 
-  <!-- Pin toggle buttons (bottom-left) -->
-  <div id="pin-toggles">
-    <button type="button" class="pin-toggle-btn" id="pin-legend-btn" title="Pin Legend">
-      <i data-lucide="map"></i>
-      <span>Legend</span>
-    </button>
-    <button type="button" class="pin-toggle-btn" id="pin-progress-btn" title="Pin Progress">
-      <i data-lucide="bar-chart-3"></i>
-      <span>Progress</span>
-    </button>
-  </div>
+    const container = document.getElementById('timeline-container');
+    if (container) {
+      const ro = new ResizeObserver(() => fitTimelinePanel());
+      ro.observe(container);
+    }
+    window.addEventListener('resize', fitTimelinePanel);
+  })();
+</script>
 
-  <!-- Scripts -->
-  <script src="/fusions/fusions-config.js"></script>
-  <script src="/fusions/fusion.js"></script>
-  <script src="/script.js"></script>
-  <script src="/fusions/init.js"></script>
-  <script src="/config/session-widget.js"></script>
-
-  <div class="adsense-container">
-    <div class="ad-label">Advertisement</div>
-
-    <ins class="adsbygoogle"
-      style="display:block"
-      data-ad-client="ca-pub-8653563887265027"
-      data-ad-slot="9042028911"
-      data-ad-format="auto"
-      data-full-width-responsive="true"></ins>
-
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  </div>
+<script>
+  (function() {
+    const canvas = document.getElementById('noiseCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    function drawNoise() {
+      const w = canvas.width, h = canvas.height;
+      const img = ctx.createImageData(w, h);
+      for (let i = 0; i < img.data.length; i += 4) {
+        const v = Math.random() * 255 | 0;
+        img.data[i] = img.data[i+1] = img.data[i+2] = v;
+        img.data[i+3] = 18;
+      }
+      ctx.putImageData(img, 0, 0);
+      setTimeout(drawNoise, 80);
+    }
+    drawNoise();
+  })();
+</script>
 
 </body>
 </html>

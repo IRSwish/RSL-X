@@ -1,335 +1,454 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HNK5S7EBCJ"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-HNK5S7EBCJ');
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://unpkg.com/lucide@latest" defer></script>
   <meta charset="UTF-8">
+  <script src="https://unpkg.com/lucide@latest" defer></script>
   <script src="/config/site-config.js"></script>
-    <script src="/config/ad-banner.js" defer></script>
+  <script src="/config/ad-banner.js" defer></script>
   <script>document.title = "Efficiency Lab | " + window.siteConfig.title;</script>
   <link rel="stylesheet" href="/style/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="preload" href="/menu.html" as="fetch" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
   <style>
+    @font-face {
+      font-family: "Middle Ages";
+      src: url('/style/MiddAges.ttf') format('truetype');
+      font-display: swap;
+    }
+
     * { box-sizing: border-box; }
 
+    /* ── Background animé ── */
+    .df-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .df-orb {
+      position: absolute;
+      border-radius: 50%;
+    }
+    .df-orb-1 {
+      width: 70vmax; height: 70vmax;
+      top: -15%; left: -15%;
+      background: radial-gradient(circle, rgba(201,169,106,0.10) 0%, transparent 65%);
+      filter: blur(65px);
+      animation: orbDrift1 28s ease-in-out infinite alternate;
+    }
+    .df-orb-2 {
+      width: 55vmax; height: 55vmax;
+      bottom: -10%; right: -10%;
+      background: radial-gradient(circle, rgba(90,70,145,0.08) 0%, transparent 65%);
+      filter: blur(75px);
+      animation: orbDrift2 35s ease-in-out infinite alternate;
+    }
+    .df-orb-3 {
+      width: 45vmax; height: 45vmax;
+      top: 30%; left: 35%;
+      background: radial-gradient(circle, rgba(160,88,38,0.07) 0%, transparent 60%);
+      filter: blur(55px);
+      animation: orbDrift3 22s ease-in-out infinite alternate;
+    }
+
+    .df-scratches {
+      position: absolute;
+      inset: -5%;
+      background-image:
+        repeating-linear-gradient(58deg,  transparent 0px, transparent 172px, rgba(255,255,255,0.028) 172px, rgba(255,255,255,0.028) 172.5px),
+        repeating-linear-gradient(72deg,  transparent 0px, transparent 241px, rgba(201,169,106,0.014) 241px, rgba(201,169,106,0.014) 241.5px),
+        repeating-linear-gradient(45deg,  transparent 0px, transparent 157px, rgba(255,255,255,0.032) 157px, rgba(255,255,255,0.032) 158px),
+        repeating-linear-gradient(80deg,  transparent 0px, transparent 211px, rgba(201,169,106,0.022) 211px, rgba(201,169,106,0.022) 211.5px),
+        repeating-linear-gradient(35deg,  transparent 0px, transparent 283px, rgba(255,255,255,0.012) 283px, rgba(255,255,255,0.012) 284px),
+        repeating-linear-gradient(67deg,  transparent 0px, transparent 167px, rgba(201,169,106,0.034) 167px, rgba(201,169,106,0.034) 167.5px),
+        repeating-linear-gradient(52deg,  transparent 0px, transparent 227px, rgba(255,255,255,0.018) 227px, rgba(255,255,255,0.018) 228px),
+        repeating-linear-gradient(78deg,  transparent 0px, transparent 193px, rgba(201,169,106,0.030) 193px, rgba(201,169,106,0.030) 193.5px);
+      animation: scratchShimmer 28s ease-in-out infinite alternate;
+    }
+
+    .df-noise {
+      position: absolute;
+      inset: 0;
+      opacity: 0.4;
+      mix-blend-mode: overlay;
+    }
+
+    .df-beam {
+      position: absolute;
+      top: -100%; left: -60%;
+      width: 38%; height: 300%;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(201,169,106,0.014) 35%,
+        rgba(201,169,106,0.028) 50%,
+        rgba(201,169,106,0.014) 65%,
+        transparent 100%
+      );
+      transform: rotate(15deg) translateX(-80vw);
+      animation: beamSweep 24s ease-in-out infinite;
+    }
+
+    .df-embers {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 12% 68%, rgba(201,169,106,0.18) 0 1px, transparent 2px),
+        radial-gradient(circle at 76% 20%, rgba(201,169,106,0.15) 0 1px, transparent 2px),
+        radial-gradient(circle at 52% 12%, rgba(201,169,106,0.12) 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 30% 52%, rgba(201,169,106,0.10) 0 1px, transparent 2px),
+        radial-gradient(circle at 88% 80%, rgba(201,169,106,0.10) 0 1px, transparent 2px);
+      animation: embersFloat 11s ease-in-out infinite alternate;
+    }
+
+    body::before { display: none; }
+
+    body {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(110,85,45,0.08), transparent 30%),
+        radial-gradient(circle at 80% 30%, rgba(80,70,120,0.08), transparent 28%),
+        radial-gradient(circle at 50% 80%, rgba(145,110,45,0.06), transparent 32%),
+        linear-gradient(160deg, #050505, #0c0b0a 45%, #14110f);
+    }
+
+    .header-wrapper {
+      text-align: center;
+    }
+
+    /* ── Layout ── */
     .main-container {
-      width: min(1100px, 95%);
-      margin: 30px auto;
+      position: relative;
+      width: min(1080px, 96%);
+      margin: 32px auto 56px;
       padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
     }
 
-    /* Selection Panel */
-    .selection-panel {
-      background: var(--bg2);
-      border: 2px solid var(--gold);
-      border-radius: 10px;
-      padding: 25px;
-      margin-bottom: 25px;
-      box-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
+    /* ── Panel — même style que l'index ── */
+    .df-panel {
+      position: relative;
+      padding: 28px 32px;
+      background:
+        linear-gradient(180deg, rgba(22,18,16,0.96), rgba(8,7,7,0.94)),
+        linear-gradient(135deg, rgba(201,169,106,0.06), rgba(255,255,255,0.03) 40%, transparent 70%);
+      border: 1px solid rgba(255,228,170,0.14);
+      box-shadow:
+        0 25px 70px rgba(0,0,0,0.75),
+        inset 0 0 0 1px rgba(255,255,255,0.04),
+        inset 0 0 30px rgba(201,169,106,0.05);
+      overflow: visible;
     }
 
-    .section-title {
-      font-weight: 600;
-      color: var(--gold);
-      margin-bottom: 15px;
-      font-size: 16px;
+    .df-panel::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(201,169,106,0.72);
+      box-shadow:
+        0 0 8px rgba(201,169,106,0.22),
+        0 0 20px rgba(201,169,106,0.08),
+        inset 0 0 10px rgba(201,169,106,0.06);
+      animation: borderGlow 4.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .df-panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      padding: 1px;
+      background: linear-gradient(
+        120deg,
+        rgba(255,255,255,0.05),
+        rgba(201,169,106,0.35),
+        rgba(255,255,255,0.02),
+        rgba(143,106,47,0.35)
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    /* ── Ornements coins ── */
+    .ornament {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      pointer-events: none;
+      filter: drop-shadow(0 0 6px rgba(201,169,106,0.45));
+    }
+    .top-left     { top: -20px;    left: -20px; }
+    .top-right    { top: -20px;    right: -20px;  transform: scaleX(-1); }
+    .bottom-left  { bottom: -20px; left: -20px;   transform: scaleY(-1); }
+    .bottom-right { bottom: -20px; right: -20px;  transform: scale(-1); }
+
+    .sh-out {
+      stroke-dasharray: 32 106;
+      animation: shimOut 3s linear infinite;
+      opacity: 0;
+    }
+    @keyframes shimOut {
+      0%   { stroke-dashoffset: 32;   opacity: 0; }
+      8%   { opacity: 0.65; }
+      88%  { opacity: 0.65; }
+      100% { stroke-dashoffset: -106; opacity: 0; }
+    }
+    .gem { animation: gemPulse 2.5s ease-in-out infinite; }
+    @keyframes gemPulse {
+      0%, 100% { opacity: 0.88; }
+      50%      { opacity: 1; }
+    }
+    .top-right    .sh-out { animation-delay: -0.75s; }
+    .bottom-left  .sh-out { animation-delay: -1.5s; }
+    .bottom-right .sh-out { animation-delay: -2.25s; }
+    .top-right    .gem    { animation-delay: -0.625s; }
+    .bottom-left  .gem    { animation-delay: -1.25s; }
+    .bottom-right .gem    { animation-delay: -1.875s; }
+
+    /* ── Section label ── */
+    .section-label {
+      font-family: "Middle Ages", "Cormorant Garamond", serif;
+      font-size: 0.85rem;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      color: rgba(241,221,177,0.75);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(201,169,106,0.5), transparent);
     }
 
+    /* ── Grille de sélection ── */
     .dropdown-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 14px;
     }
 
     .input-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 7px;
       opacity: 0;
-      animation: fadeInSlide 0.3s ease forwards;
+      animation: fadeUp 0.28s ease forwards;
     }
+    .input-group.hidden { display: none; }
 
-    @keyframes fadeInSlide {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .input-group.hidden {
-      display: none;
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .input-label {
-      color: var(--text);
-      font-size: 13px;
-      font-weight: 500;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: rgba(232,224,210,0.5);
     }
 
     .styled-select {
-      background: rgba(0, 0, 0, 0.3);
-      border: 2px solid var(--gray);
-      border-radius: 8px;
-      padding: 10px 12px;
-      color: var(--text);
-      font-size: 14px;
-      transition: all 0.25s ease;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(201,169,106,0.22);
+      border-radius: 0;
+      padding: 9px 32px 9px 12px;
+      color: #e8e0d2;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 13px;
       outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9a96a' stroke-width='1.5' fill='none' stroke-linecap='square'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      transition: border-color 0.2s;
     }
-
-    .styled-select:hover {
-      border-color: var(--gold);
-    }
-
+    .styled-select:hover { border-color: rgba(201,169,106,0.55); }
     .styled-select:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+      border-color: #c9a96a;
+      box-shadow: 0 0 0 1px rgba(201,169,106,0.2);
     }
+    .styled-select option { background: #0c0b0a; color: #e8e0d2; }
 
-    .styled-select option {
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    /* Points Section */
-    .points-panel {
-      background: var(--bg2);
-      border: 2px solid var(--gold);
-      border-radius: 10px;
-      padding: 25px;
-      margin-bottom: 25px;
-      box-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
-    }
-
+    /* ── Points tracking ── */
     .points-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
     }
 
     .points-input-box {
-      background: rgba(0, 0, 0, 0.3);
-      border: 2px solid var(--gray);
-      border-radius: 8px;
-      padding: 15px;
-      transition: all 0.25s ease;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(201,169,106,0.18);
+      padding: 18px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 8px;
+      transition: border-color 0.2s;
     }
-
-    .points-input-box:hover {
-      border-color: var(--gold);
-    }
+    .points-input-box:hover { border-color: rgba(201,169,106,0.45); }
 
     .points-input-box label {
-      display: block;
-      color: var(--gold);
-      font-size: 13px;
-      font-weight: 500;
-      margin-bottom: 8px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
       text-transform: uppercase;
+      color: #c9a96a;
     }
 
     .points-input-box input {
       width: 100%;
       background: transparent;
       border: none;
-      color: var(--text);
-      font-size: 24px;
-      font-weight: 700;
+      color: #f1ddb1;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 28px;
+      font-weight: 600;
       outline: none;
       text-align: center;
     }
 
     .remaining-box {
-      background: linear-gradient(145deg, #141414, #1b1b1b);
-      border: 2px solid var(--gold);
-      border-radius: 8px;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-    }
-
-    .remaining-label {
-      color: var(--gold);
-      font-size: 13px;
-      font-weight: 500;
-      text-transform: uppercase;
-    }
-
-    .remaining-value {
-      color: var(--text);
-      font-size: 24px;
-      font-weight: 700;
-    }
-
-    /* Cost Section */
-    .cost-section {
-      margin-bottom: 25px;
-      opacity: 0;
-      max-height: 0;
-      overflow: hidden;
-      transition: opacity 0.3s ease, max-height 0.3s ease;
-    }
-
-    .cost-section.visible {
-      opacity: 1;
-      max-height: 600px;
-    }
-
-    .cost-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-    }
-
-    .cost-box {
-      background: var(--bg2);
-      border: 2px solid var(--gold);
-      border-radius: 10px;
-      padding: 20px;
+      background: rgba(201,169,106,0.06);
+      border: 1px solid rgba(201,169,106,0.45);
+      padding: 18px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      box-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
-      min-height: 140px;
     }
 
+    .remaining-label {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #c9a96a;
+    }
+
+    .remaining-value {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: #f1ddb1;
+    }
+
+    /* ── Séparateur interne ── */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,169,106,0.35), transparent);
+      margin: 24px 0;
+    }
+
+    /* ── Cost section ── */
+    .cost-section {
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.3s ease, max-height 0.4s ease;
+    }
+    .cost-section.visible { opacity: 1; max-height: 400px; }
+
+    .cost-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .cost-box {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(201,169,106,0.18);
+      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 120px;
+      transition: border-color 0.2s;
+    }
+    .cost-box:hover { border-color: rgba(201,169,106,0.45); }
+
     .cost-icon {
-      width: 48px;
-      height: 48px;
+      width: 40px; height: 40px;
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
-      filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.25));
+      filter: drop-shadow(0 0 6px rgba(201,169,106,0.2));
     }
 
     .cost-value {
+      font-family: 'Inter', system-ui, sans-serif;
       font-weight: 700;
-      font-size: 24px;
-      color: var(--gold);
-      letter-spacing: 0.3px;
+      font-size: 28px;
+      color: #f1ddb1;
     }
 
     .cost-label {
-      font-size: 13px;
-      color: var(--text);
-      font-weight: 500;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
       text-transform: uppercase;
+      color: rgba(232,224,210,0.5);
     }
 
     .cost-hint {
-      font-size: 12px;
-      color: var(--text);
-      opacity: 0.7;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 11px;
+      color: rgba(232,224,210,0.4);
       font-style: italic;
       text-align: center;
-      margin-top: 0;
     }
 
-    /* Table Section */
-    .table-panel {
-      margin-bottom: 25px;
-      overflow-x: auto;
-    }
+    /* ── Table ── */
+    .table-section { display: block; }
+    .table-section.hidden { display: none; }
 
     #points-table {
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      border: 2px solid #3a3a3a !important;
-      border-radius: 10px;
-      overflow: hidden;
+      border-collapse: collapse;
     }
 
     #points-table thead th {
-      background: rgba(0, 0, 0, 0.6) !important;
-      color: #d4af37 !important;
-      -webkit-text-fill-color: #d4af37 !important;
+      background: rgba(0,0,0,0.5);
+      color: #c9a96a !important;
+      -webkit-text-fill-color: #c9a96a !important;
       -webkit-background-clip: unset !important;
       background-clip: unset !important;
-      padding: 12px 10px !important;
+      padding: 11px 10px;
+      font-family: 'Inter', system-ui, sans-serif;
       font-weight: 600;
+      font-size: 12px;
       text-align: center;
-      border-bottom: 1px solid #3a3a3a !important;
-      border-right: 1px solid #3a3a3a !important;
-      font-size: 14px;
+      border-bottom: 1px solid rgba(201,169,106,0.22);
+      border-right: 1px solid rgba(201,169,106,0.10);
     }
+    #points-table thead th:last-child { border-right: none; }
 
-    #points-table thead th:last-child {
-      border-right: none !important;
-    }
-
-    #points-table thead th:first-child {
-      border-top-left-radius: 10px;
-      padding: 0;
-    }
-
-    #points-table thead th:last-child {
-      border-top-right-radius: 10px;
-    }
-
-    #points-table tbody td {
-      padding: 10px !important;
-      text-align: center;
-      color: var(--text);
-      border-bottom: 1px solid #3a3a3a !important;
-      border-right: 1px solid #3a3a3a !important;
-      background-color: transparent !important;
-      transition: all 0.2s ease;
-      font-size: 13px;
-    }
-
-    #points-table tbody td:last-child {
-      border-right: none !important;
-    }
-
-    #points-table tbody tr:last-child td {
-      border-bottom: none !important;
-    }
-
-    #points-table tbody tr:last-child td:first-child {
-      border-bottom-left-radius: 10px;
-    }
-
-    #points-table tbody tr:last-child td:last-child {
-      border-bottom-right-radius: 10px;
-    }
-
-    #points-table tbody td:first-child {
-      background: rgba(0, 0, 0, 0.6) !important;
-      font-weight: 600;
-      color: var(--text);
-      text-align: left;
-    }
-
-    #points-table tbody tr:hover {
-      background: rgba(212, 175, 55, 0.1);
-    }
-
-    /* Toggle in table header */
     .rarity-cell {
       cursor: pointer;
       user-select: none;
@@ -337,166 +456,221 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: all 0.2s ease;
-      padding: 12px 10px;
-      width: 100%;
-      height: 100%;
-      color: #d4af37 !important;
-      -webkit-text-fill-color: #d4af37 !important;
-      -webkit-background-clip: unset !important;
-      background-clip: unset !important;
+      padding: 11px 10px;
+      width: 100%; height: 100%;
+      color: #c9a96a !important;
+      -webkit-text-fill-color: #c9a96a !important;
+      transition: color 0.15s;
     }
-
     .rarity-cell:hover {
-      color: #f1f5f9 !important;
-      -webkit-text-fill-color: #f1f5f9 !important;
+      color: #f1ddb1 !important;
+      -webkit-text-fill-color: #f1ddb1 !important;
+    }
+    .rarity-cell svg { width: 14px; height: 14px; }
+
+    #points-table tbody td {
+      padding: 9px 10px;
+      text-align: center;
+      color: #e8e0d2;
+      background-color: transparent !important;
+      border-bottom: 1px solid rgba(201,169,106,0.10);
+      border-right: 1px solid rgba(201,169,106,0.08);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 13px;
+    }
+    #points-table tbody td:last-child { border-right: none; }
+    #points-table tbody tr:last-child td { border-bottom: none; }
+
+    #points-table tbody td:first-child {
+      background: rgba(0,0,0,0.35) !important;
+      font-weight: 600;
+      text-align: left;
+      font-size: 12px;
     }
 
-    .rarity-cell svg {
-      width: 16px;
-      height: 16px;
+    #points-table tbody tr:hover td { background: rgba(201,169,106,0.06) !important; }
+    #points-table tbody tr:hover td:first-child { background: rgba(201,169,106,0.08) !important; }
+
+    #points-table tbody tr:nth-child(1) td:first-child { color: #888 !important; }
+    #points-table tbody tr:nth-child(2) td:first-child { color: #4ade80 !important; }
+    #points-table tbody tr:nth-child(3) td:first-child { color: #60a5fa !important; }
+    #points-table tbody tr:nth-child(4) td:first-child { color: #c084fc !important; }
+    #points-table tbody tr:nth-child(5) td:first-child { color: #f1ddb1 !important; }
+    #points-table tbody tr:nth-child(6) td:first-child { color: #f87171 !important; }
+
+    .hidden { display: none !important; }
+
+    /* ── Keyframes ── */
+    @keyframes orbDrift1 {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(12%,18%) scale(1.12); }
+    }
+    @keyframes orbDrift2 {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(-18%,-12%) scale(1.18); }
+    }
+    @keyframes orbDrift3 {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(-10%,8%) scale(0.88); }
+    }
+    @keyframes scratchShimmer {
+      0%   { opacity: 0.55; }
+      100% { opacity: 1; }
+    }
+    @keyframes beamSweep {
+      0%   { transform: rotate(15deg) translateX(-80vw); opacity: 0; }
+      8%   { opacity: 1; }
+      92%  { opacity: 1; }
+      100% { transform: rotate(15deg) translateX(200vw); opacity: 0; }
+    }
+    @keyframes embersFloat {
+      0%   { opacity: 0.4; transform: translate(0,0); }
+      100% { opacity: 0.9; transform: translate(0.5%,-0.5%); }
+    }
+    @keyframes borderGlow {
+      0%, 100% { opacity: 0.55; box-shadow: 0 0 6px rgba(201,169,106,0.15), inset 0 0 8px rgba(201,169,106,0.04); }
+      50%       { opacity: 1;    box-shadow: 0 0 14px rgba(201,169,106,0.35), inset 0 0 14px rgba(201,169,106,0.10); }
+    }
+    @keyframes borderShift {
+      0%   { transform: rotate(0deg) scale(1); }
+      50%  { transform: rotate(0.5deg) scale(1.002); }
+      100% { transform: rotate(0deg) scale(1); }
     }
 
-    /* Rarity colors */
-    #points-table tbody tr:nth-child(1) td:first-child {
-      color: #999 !important; /* Common - Gris */
+    /* ── Ad banner ── */
+    .ad-banner-footer {
+      background: rgba(8,6,5,0.97) !important;
+      border-top: 1px solid rgba(201,169,106,0.45) !important;
+      box-shadow: 0 -4px 20px rgba(201,169,106,0.07) !important;
+      box-sizing: content-box !important;
     }
 
-    #points-table tbody tr:nth-child(2) td:first-child {
-      color: #4ade80 !important; /* Uncommon - Vert */
-    }
-
-    #points-table tbody tr:nth-child(3) td:first-child {
-      color: #3b82f6 !important; /* Rare - Bleu */
-    }
-
-    #points-table tbody tr:nth-child(4) td:first-child {
-      color: #a855f7 !important; /* Epic - Violet */
-    }
-
-    #points-table tbody tr:nth-child(5) td:first-child {
-      color: #fbbf24 !important; /* Legendary - Jaune doré */
-    }
-
-    #points-table tbody tr:nth-child(6) td:first-child {
-      color: #ef4444 !important; /* Mythical - Rouge */
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Responsive */
+    /* ── Responsive ── */
     @media (max-width: 768px) {
-      .dropdown-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .points-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .cost-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .cost-box {
-        min-height: auto;
-        padding: 15px;
-      }
-
-      .table-panel {
-        overflow-x: auto;
-      }
-
-      #points-table {
-        font-size: 11px;
-      }
-
+      .dropdown-grid { grid-template-columns: 1fr; }
+      .points-grid   { grid-template-columns: 1fr; }
+      .cost-grid     { grid-template-columns: 1fr; }
+      .cost-box      { min-height: auto; padding: 16px; }
+      #points-table  { font-size: 11px; }
       #points-table thead th,
-      #points-table tbody td {
-        padding: 8px 5px;
-      }
+      #points-table tbody td { padding: 7px 5px; }
     }
   </style>
 </head>
 <body>
 
-<!-- BARRE DE MENU CENTRÉE -->
-<div id="menu-container"></div>
+<!-- Background animé -->
+<div class="df-bg">
+  <div class="df-orb df-orb-1"></div>
+  <div class="df-orb df-orb-2"></div>
+  <div class="df-orb df-orb-3"></div>
+  <div class="df-noise" id="df-noise"></div>
+  <div class="df-scratches"></div>
+  <div class="df-beam"></div>
+  <div class="df-embers"></div>
+</div>
 
+<div id="menu-container"></div>
 <div class="header-wrapper">
-  <header id="page-title">EFFICIENCY LAB</header>
+  <header id="page-title">Efficiency Lab</header>
 </div>
 
 <div class="main-container">
-  <!-- Selection Panel -->
-  <div class="selection-panel">
-    <div class="section-title">Event & Zone Selection</div>
+  <div class="df-panel">
+
+    <!-- Ornements -->
+    <svg class="ornament top-left" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon class="gem" points="9,0 18,9 9,18 0,9" fill="#c9a96a" opacity="0.92"/>
+      <polygon points="9,4 14,9 9,14 4,9" fill="#f1ddb1" opacity="0.35"/>
+      <path d="M 9 78 L 9 9 L 78 9" stroke="#c9a96a" stroke-width="2" stroke-linecap="square" opacity="0.78"/>
+      <path class="sh-out" d="M 9 78 L 9 9 L 78 9" stroke="#f1ddb1" stroke-width="2" stroke-linecap="round"/>
+      <line x1="9" y1="36" x2="18" y2="36" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+      <line x1="36" y1="9" x2="36" y2="18" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+    </svg>
+    <svg class="ornament top-right" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon class="gem" points="9,0 18,9 9,18 0,9" fill="#c9a96a" opacity="0.92"/>
+      <polygon points="9,4 14,9 9,14 4,9" fill="#f1ddb1" opacity="0.35"/>
+      <path d="M 9 78 L 9 9 L 78 9" stroke="#c9a96a" stroke-width="2" stroke-linecap="square" opacity="0.78"/>
+      <path class="sh-out" d="M 9 78 L 9 9 L 78 9" stroke="#f1ddb1" stroke-width="2" stroke-linecap="round"/>
+      <line x1="9" y1="36" x2="18" y2="36" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+      <line x1="36" y1="9" x2="36" y2="18" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+    </svg>
+    <svg class="ornament bottom-left" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon class="gem" points="9,0 18,9 9,18 0,9" fill="#c9a96a" opacity="0.92"/>
+      <polygon points="9,4 14,9 9,14 4,9" fill="#f1ddb1" opacity="0.35"/>
+      <path d="M 9 78 L 9 9 L 78 9" stroke="#c9a96a" stroke-width="2" stroke-linecap="square" opacity="0.78"/>
+      <path class="sh-out" d="M 9 78 L 9 9 L 78 9" stroke="#f1ddb1" stroke-width="2" stroke-linecap="round"/>
+      <line x1="9" y1="36" x2="18" y2="36" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+      <line x1="36" y1="9" x2="36" y2="18" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+    </svg>
+    <svg class="ornament bottom-right" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon class="gem" points="9,0 18,9 9,18 0,9" fill="#c9a96a" opacity="0.92"/>
+      <polygon points="9,4 14,9 9,14 4,9" fill="#f1ddb1" opacity="0.35"/>
+      <path d="M 9 78 L 9 9 L 78 9" stroke="#c9a96a" stroke-width="2" stroke-linecap="square" opacity="0.78"/>
+      <path class="sh-out" d="M 9 78 L 9 9 L 78 9" stroke="#f1ddb1" stroke-width="2" stroke-linecap="round"/>
+      <line x1="9" y1="36" x2="18" y2="36" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+      <line x1="36" y1="9" x2="36" y2="18" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+    </svg>
+
+    <!-- Event & Zone -->
+    <div class="section-label">Event & Zone</div>
     <div class="dropdown-grid">
       <div class="input-group">
         <label class="input-label">Event Type</label>
         <select id="event-type" class="styled-select">
-          <option value="">-- Event Type --</option>
+          <option value="">— Event Type —</option>
           <option value="tournament">Tournament</option>
           <option value="gearhunters">Gear Hunters</option>
           <option value="herospath">Hero's Path</option>
           <option value="deckoffate">Deck of Fate</option>
         </select>
       </div>
-
       <div class="input-group">
         <label class="input-label">Zone</label>
         <select id="zone" class="styled-select">
-          <option value="">-- Zone --</option>
+          <option value="">— Zone —</option>
           <option value="dungeons">Fire Knight / Ice Golem / Dragon</option>
           <option value="spider">Spider</option>
           <option value="eventdungeon">Event Dungeon</option>
           <option value="campaign">Campaign</option>
         </select>
       </div>
-
-      <!-- Campagne -->
       <div class="input-group hidden" id="campaign-difficulty-group">
         <label class="input-label">Campaign Difficulty</label>
         <select id="campaign-difficulty" class="styled-select">
-          <option value="">-- Difficulty --</option>
+          <option value="">— Difficulty —</option>
           <option value="Normal">Normal</option>
           <option value="Hard">Hard</option>
           <option value="Brutal">Brutal</option>
           <option value="Nightmare">Nightmare</option>
         </select>
       </div>
-
       <div class="input-group hidden" id="campaign-stage-group">
         <label class="input-label">Campaign Stage</label>
         <select id="campaign-stage" class="styled-select">
-          <option value="">-- Stage --</option>
+          <option value="">— Stage —</option>
         </select>
       </div>
-
-      <!-- Donjons & Spider & Event Dungeon -->
       <div class="input-group hidden" id="dungeon-difficulty-group">
         <label class="input-label">Dungeon Difficulty</label>
         <select id="dungeon-difficulty" class="styled-select">
-          <option value="">-- Difficulty --</option>
+          <option value="">— Difficulty —</option>
           <option value="normal">Normal</option>
           <option value="hard">Hard</option>
         </select>
       </div>
-
       <div class="input-group hidden" id="dungeon-stage-group">
         <label class="input-label">Dungeon Stage</label>
         <select id="dungeon-stage" class="styled-select">
-          <option value="">-- Stage --</option>
+          <option value="">— Stage —</option>
         </select>
       </div>
     </div>
-  </div>
 
-  <!-- Points Section -->
-  <div class="points-panel">
-    <div class="section-title">Points Tracking</div>
+    <div class="section-divider"></div>
+
+    <!-- Points Tracking -->
+    <div class="section-label">Points Tracking</div>
     <div class="points-grid">
       <div class="points-input-box">
         <label for="current-points">Current Points</label>
@@ -511,72 +685,84 @@
         <span id="points-remaining" class="remaining-value">0</span>
       </div>
     </div>
-  </div>
 
-  <!-- Cost Section (hidden by default) -->
-  <div class="cost-section" id="cost-section">
-    <div class="cost-grid">
-      <div class="cost-box">
-        <div class="cost-icon" style="background-image:url('/style/img/Misc/Energy.webp');"></div>
-        <div class="cost-value" id="energy-value">0</div>
-        <div class="cost-label">Energy</div>
-      </div>
-      <div class="cost-box">
-        <div class="cost-icon" style="background-image:url('/style/img/Misc/Gems.webp');"></div>
-        <div class="cost-value" id="gems-value">0</div>
-        <div class="cost-label">Gems</div>
-      </div>
-      <div class="cost-box">
-        <div class="cost-value" id="runs-value">0</div>
-        <div class="cost-label">Runs</div>
-        <div class="cost-hint" id="runs-hint">Total runs needed</div>
+    <!-- Cost Section -->
+    <div class="cost-section" id="cost-section">
+      <div class="section-divider"></div>
+      <div class="section-label">Estimation</div>
+      <div class="cost-grid">
+        <div class="cost-box">
+          <div class="cost-icon" style="background-image:url('/style/img/Misc/Energy.webp');"></div>
+          <div class="cost-value" id="energy-value">0</div>
+          <div class="cost-label">Energy</div>
+        </div>
+        <div class="cost-box">
+          <div class="cost-icon" style="background-image:url('/style/img/Misc/Gems.webp');"></div>
+          <div class="cost-value" id="gems-value">0</div>
+          <div class="cost-label">Gems</div>
+        </div>
+        <div class="cost-box">
+          <div class="cost-value" id="runs-value">0</div>
+          <div class="cost-label">Runs</div>
+          <div class="cost-hint" id="runs-hint">Total runs needed</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Table Section -->
-  <div id="points-table-container" class="table-panel hidden">
-    <table id="points-table">
-      <thead>
-        <tr>
-          <th>
-            <div class="rarity-cell" id="toggle-cell">
-              <i data-lucide="hash"></i>
-              <span id="toggle-text">Points</span>
-            </div>
-          </th>
-          <th>Rank 1 ⭐</th>
-          <th>Rank 2 ⭐</th>
-          <th>Rank 3 ⭐</th>
-          <th>Rank 4 ⭐</th>
-          <th>Rank 5 ⭐</th>
-          <th>Rank 6 ⭐</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>Common</td></tr>
-        <tr><td>Uncommon</td></tr>
-        <tr><td>Rare</td></tr>
-        <tr><td>Epic</td></tr>
-        <tr><td>Legendary</td></tr>
-        <tr><td>Mythical</td></tr>
-      </tbody>
-    </table>
+    <!-- Points Table -->
+    <div id="points-table-container" class="table-section hidden">
+      <div class="section-divider"></div>
+      <table id="points-table">
+        <thead>
+          <tr>
+            <th>
+              <div class="rarity-cell" id="toggle-cell">
+                <i data-lucide="hash"></i>
+                <span id="toggle-text">Points</span>
+              </div>
+            </th>
+            <th>Rank 1 ⭐</th>
+            <th>Rank 2 ⭐</th>
+            <th>Rank 3 ⭐</th>
+            <th>Rank 4 ⭐</th>
+            <th>Rank 5 ⭐</th>
+            <th>Rank 6 ⭐</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Common</td></tr>
+          <tr><td>Uncommon</td></tr>
+          <tr><td>Rare</td></tr>
+          <tr><td>Epic</td></tr>
+          <tr><td>Legendary</td></tr>
+          <tr><td>Mythical</td></tr>
+        </tbody>
+      </table>
+    </div>
+
   </div>
 </div>
 
-<div class="adsense-container">
-  <div class="ad-label">Advertisement</div>
-  <ins class="adsbygoogle"
-   style="display:block"
-   data-ad-client="ca-pub-8653563887265027"
-   data-ad-slot="9042028911"
-   data-ad-format="auto"
-   data-full-width-responsive="true"></ins>
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
-</div>
+
+<script>
+(function() {
+  const SIZE = 256;
+  const c = document.createElement('canvas');
+  c.width = c.height = SIZE;
+  const ctx = c.getContext('2d');
+  const img = ctx.createImageData(SIZE, SIZE);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = (Math.random() * 255) | 0;
+    img.data[i] = img.data[i+1] = img.data[i+2] = v;
+    img.data[i+3] = (Math.random() * 36) | 0;
+  }
+  ctx.putImageData(img, 0, 0);
+  const el = document.getElementById('df-noise');
+  el.style.backgroundImage  = 'url(' + c.toDataURL() + ')';
+  el.style.backgroundRepeat = 'repeat';
+  el.style.backgroundSize   = SIZE + 'px ' + SIZE + 'px';
+})();
+</script>
 
 <script>
 const rarities = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythical'];
@@ -606,13 +792,11 @@ const toggleText = document.getElementById('toggle-text');
 let pointsData = {};
 let displayMode = 'points';
 
-// --- Chargement du JSON ---
 fetch('/tools/efficiency-lab/points-data.json')
   .then(res => res.json())
   .then(data => pointsData = data)
   .catch(err => console.error('Erreur chargement points:', err));
 
-// --- Table ---
 function generateEmptyPointsTable() {
   pointsTableBody.innerHTML = '';
   rarities.forEach(rarity => {
@@ -630,30 +814,22 @@ function generateEmptyPointsTable() {
 }
 
 function fillPointsTable(eventType) {
-  if (!pointsData.points?.[eventType]) {
-    console.log('No points data for event type:', eventType);
-    return;
-  }
-
+  if (!pointsData.points?.[eventType]) return;
   rarities.forEach((rarity, rowIndex) => {
     const tr = pointsTableBody.rows[rowIndex];
     if (!tr) return;
-
     const values = pointsData.points[eventType][rarity];
     if (!values) return;
-
     for (let col = 1; col <= 6; col++) {
       const cell = tr.cells[col];
       if (!cell) continue;
-
       cell.textContent = values[col-1] || 0;
       cell.style.backgroundColor = '';
-      cell.style.color = 'var(--text)';
+      cell.style.color = '#e8e0d2';
     }
   });
 }
 
-// --- Loot ---
 function getCampaignStageData(difficulty, stage) {
   if (!difficulty || !stage) return null;
   const campaignData = pointsData.loot.campaign?.[difficulty];
@@ -672,31 +848,26 @@ function getCampaignStageData(difficulty, stage) {
 function getLoot() {
   const zone = zoneSelect.value;
   if (!pointsData.loot) return null;
-
   if (zone === 'campaign') {
     const difficulty = campaignDifficultySelect.value;
     const stage = Number(campaignStageSelect.value);
     if (difficulty && stage) return getCampaignStageData(difficulty, stage);
     return null;
-
   } else if (zone === 'dungeons') {
     const difficulty = dungeonDifficultySelect.value;
     const stage = dungeonStageSelect.value;
     if (difficulty && stage) return pointsData.loot.dungeons?.[difficulty]?.[stage] || null;
     return null;
-
   } else if (zone === 'spider') {
     const difficulty = dungeonDifficultySelect.value;
     const stage = dungeonStageSelect.value;
     if (difficulty && stage) return pointsData.loot.spider?.[difficulty]?.[stage] || null;
     return null;
-
   } else if (zone === 'eventdungeon') {
     const stage = dungeonStageSelect.value;
     if (stage) return pointsData.loot.eventdungeon?.normal?.[stage] || null;
     return null;
   }
-
   return null;
 }
 
@@ -707,29 +878,16 @@ function getEnergy() {
 
 function fillLootTable() {
   const loot = getLoot();
-  if (!loot) {
-    console.log('No loot data available');
-    return;
-  }
-
+  if (!loot) return;
   rarities.forEach((rarity, rowIndex) => {
     const tr = pointsTableBody.rows[rowIndex];
-    if (!tr) {
-      console.log('No table row for', rarity);
-      return;
-    }
-
+    if (!tr) return;
     const arr = loot[rarity] || [];
     for (let i=0; i<6; i++){
       const cell = tr.cells[i+1];
-      if (!cell) {
-        console.log('No cell at index', i+1, 'for', rarity);
-        continue;
-      }
-
+      if (!cell) continue;
       const value = arr[i] || 0;
       cell.textContent = (value*100).toFixed(2)+'%';
-
       if(value === 0){
         cell.style.setProperty('color', '#444', 'important');
         cell.style.setProperty('background-color', 'transparent', 'important');
@@ -742,95 +900,53 @@ function fillLootTable() {
   });
 }
 
-// --- Dropdowns with animation ---
 function updateDropdowns() {
   const zone = zoneSelect.value;
-
   const isCampaign = zone === 'campaign';
   const isDungeonOrSpider = ['dungeons','spider'].includes(zone);
   const isEventDungeon = zone === 'eventdungeon';
-
-  const campaignDiffGroup = document.getElementById('campaign-difficulty-group');
-  const campaignStageGroup = document.getElementById('campaign-stage-group');
-  const dungeonDiffGroup = document.getElementById('dungeon-difficulty-group');
-  const dungeonStageGroup = document.getElementById('dungeon-stage-group');
-
-  // Animation d'apparition/disparition
-  if (isCampaign) {
-    campaignDiffGroup.classList.remove('hidden');
-    campaignStageGroup.classList.remove('hidden');
-  } else {
-    campaignDiffGroup.classList.add('hidden');
-    campaignStageGroup.classList.add('hidden');
-  }
-
-  if (isDungeonOrSpider) {
-    dungeonDiffGroup.classList.remove('hidden');
-  } else {
-    dungeonDiffGroup.classList.add('hidden');
-  }
-
-  if (isDungeonOrSpider || isEventDungeon) {
-    dungeonStageGroup.classList.remove('hidden');
-  } else {
-    dungeonStageGroup.classList.add('hidden');
-  }
+  document.getElementById('campaign-difficulty-group').classList.toggle('hidden', !isCampaign);
+  document.getElementById('campaign-stage-group').classList.toggle('hidden', !isCampaign);
+  document.getElementById('dungeon-difficulty-group').classList.toggle('hidden', !isDungeonOrSpider);
+  document.getElementById('dungeon-stage-group').classList.toggle('hidden', !(isDungeonOrSpider || isEventDungeon));
 }
 
-// --- Calculs ---
 function updateCalculation() {
   const current = Number(currentPointsInput.value) || 0;
   const target = Number(targetPointsInput.value) || 0;
   const remaining = Math.max(target - current, 0);
   pointsRemainingSpan.textContent = remaining;
-
-  if (remaining <= 0) {
-    costSection.classList.remove('visible');
-    return;
-  }
-
+  if (remaining <= 0) { costSection.classList.remove('visible'); return; }
   const energyPerRun = getEnergy();
   const eventType = eventTypeSelect.value;
   const zone = zoneSelect.value;
-  if (!energyPerRun || !pointsData.points?.[eventType]) {
-    costSection.classList.remove('visible');
-    return;
-  }
-
+  if (!energyPerRun || !pointsData.points?.[eventType]) { costSection.classList.remove('visible'); return; }
   let totalAvgPoints = 0;
   const pointValues = pointsData.points[eventType];
   const loot = getLoot();
-
   rarities.forEach(rarity => {
     const pointsForRarity = pointValues[rarity];
     const dropRates = loot[rarity] || [0,0,0,0,0,0];
     for (let i=0; i<6; i++) totalAvgPoints += (dropRates[i]||0)*(pointsForRarity[i]||0);
   });
-
   let uselessLoot = 0;
   if (zone === 'campaign') {
     uselessLoot = (loot["Mystery Shard"] || 0) + (loot["Champions"] || 0);
   } else {
     uselessLoot = (loot["Mystery Shard"] || 0) + (loot["Ancient Shard"] || 0) + (loot["Brews"] || 0);
   }
-
-  const gearFactor = 1 - uselessLoot;
-  totalAvgPoints *= gearFactor;
-
+  totalAvgPoints *= (1 - uselessLoot);
   const runsNeeded = Math.ceil(remaining / totalAvgPoints);
   const superrunsNeeded = Math.ceil(remaining / totalAvgPoints / 2);
   const totalEnergy = runsNeeded * energyPerRun;
   const gems = (totalEnergy / 3.25).toFixed(2);
-
   energyValue.textContent = Math.round(totalEnergy);
   gemsValue.textContent = Math.round(gems);
   runsValue.textContent = runsNeeded;
   runsHint.textContent = `or ${superrunsNeeded} super raids`;
-
   costSection.classList.add('visible');
 }
 
-// --- Table update ---
 function updateTable() {
   const eventType = eventTypeSelect.value;
   if (!eventType) {
@@ -839,26 +955,19 @@ function updateTable() {
     return;
   }
   pointsTableContainer.classList.remove('hidden');
+
   generateEmptyPointsTable();
   if(displayMode==='points') fillPointsTable(eventType);
   else fillLootTable();
   updateCalculation();
 }
 
-// --- Toggle ---
 toggleCell.addEventListener('click', () => {
   displayMode = displayMode === 'points' ? 'percent' : 'points';
   const icon = displayMode === 'points' ? 'hash' : 'bar-chart-3';
-  const text = displayMode === 'points' ? 'Points' : 'Loot %';
-
-  toggleText.textContent = text;
-
+  toggleText.textContent = displayMode === 'points' ? 'Points' : 'Loot %';
   const iconElement = toggleCell.querySelector('i');
-  if (iconElement) {
-    iconElement.setAttribute('data-lucide', icon);
-    lucide.createIcons();
-  }
-
+  if (iconElement) { iconElement.setAttribute('data-lucide', icon); lucide.createIcons(); }
   const eventType = eventTypeSelect.value;
   if (eventType) {
     generateEmptyPointsTable();
@@ -867,7 +976,6 @@ toggleCell.addEventListener('click', () => {
   }
 });
 
-// --- Listeners ---
 [currentPointsInput, targetPointsInput].forEach(input => input.addEventListener('input', updateCalculation));
 [eventTypeSelect, zoneSelect, dungeonDifficultySelect, dungeonStageSelect, campaignDifficultySelect].forEach(el => {
   el.addEventListener('change', ()=>{updateDropdowns();updateTable();});
@@ -878,49 +986,33 @@ function updateDungeonStages() {
   const zone = zoneSelect.value;
   const diff = dungeonDifficultySelect.value;
   let maxStages = 0;
-
-  if (zone === 'dungeons' || zone === 'spider')
-    maxStages = diff === 'normal' ? 25 : 10;
-  else if (zone === 'eventdungeon')
-    maxStages = 30;
-
-  dungeonStageSelect.innerHTML = '<option value="">-- Stage --</option>';
+  if (zone === 'dungeons' || zone === 'spider') maxStages = diff === 'normal' ? 25 : 10;
+  else if (zone === 'eventdungeon') maxStages = 30;
+  dungeonStageSelect.innerHTML = '<option value="">— Stage —</option>';
   for (let i = 1; i <= maxStages; i++) {
     const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = `Stage ${i}`;
+    opt.value = i; opt.textContent = `Stage ${i}`;
     dungeonStageSelect.appendChild(opt);
   }
   updateTable();
 }
 
 dungeonDifficultySelect.addEventListener('change', updateDungeonStages);
-zoneSelect.addEventListener('change', () => {
-  updateDropdowns();
-  updateDungeonStages();
-  updateTable();
-});
+zoneSelect.addEventListener('change', () => { updateDropdowns(); updateDungeonStages(); updateTable(); });
 
 campaignDifficultySelect.addEventListener('change', () => {
-  const maxStages = 7;
-  campaignStageSelect.innerHTML = '<option value="">-- Stage --</option>';
-  for(let i=1;i<=maxStages;i++){
+  campaignStageSelect.innerHTML = '<option value="">— Stage —</option>';
+  for(let i=1;i<=7;i++){
     const opt = document.createElement('option');
-    opt.value=i;
-    opt.textContent=`Stage ${i}`;
+    opt.value=i; opt.textContent=`Stage ${i}`;
     campaignStageSelect.appendChild(opt);
   }
   updateTable();
 });
 
-// --- Initial setup ---
 generateEmptyPointsTable();
 updateDropdowns();
-
-// Initialize Lucide icons
-document.addEventListener('DOMContentLoaded', () => {
-  lucide.createIcons();
-});
+document.addEventListener('DOMContentLoaded', () => { lucide.createIcons(); });
 </script>
 
 <script src="/script.js"></script>

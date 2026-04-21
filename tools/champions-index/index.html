@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HNK5S7EBCJ"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -13,25 +12,152 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- External libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
   <script src="https://unpkg.com/lucide@latest" defer></script>
 
-  <!-- Site configuration -->
   <script src="/config/site-config.js"></script>
-    <script src="/config/ad-banner.js" defer></script>
+  <script src="/config/ad-banner.js" defer></script>
   <script>document.title = "Champions Index | " + window.siteConfig.title;</script>
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="../../style/style.css">
+  <link rel="stylesheet" href="/style/style.css">
   <link rel="stylesheet" href="/tools/champions-index/style.css">
   <link rel="preload" href="/menu.html" as="fetch" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    @font-face {
+      font-family: "Middle Ages";
+      src: url('/style/MiddAges.ttf') format('truetype');
+      font-display: swap;
+    }
+
+    * { box-sizing: border-box; }
+
+    /* ── Background animé ── */
+    .df-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .df-orb { position: absolute; border-radius: 50%; }
+    .df-orb-1 { width: 70vmax; height: 70vmax; top: -15%; left: -15%; background: radial-gradient(circle, rgba(201,169,106,0.10) 0%, transparent 65%); filter: blur(65px); animation: orbDrift1 28s ease-in-out infinite alternate; }
+    .df-orb-2 { width: 55vmax; height: 55vmax; bottom: -10%; right: -10%; background: radial-gradient(circle, rgba(90,70,145,0.08) 0%, transparent 65%); filter: blur(75px); animation: orbDrift2 35s ease-in-out infinite alternate; }
+    .df-orb-3 { width: 45vmax; height: 45vmax; top: 30%; left: 35%; background: radial-gradient(circle, rgba(160,88,38,0.07) 0%, transparent 60%); filter: blur(55px); animation: orbDrift3 22s ease-in-out infinite alternate; }
+    .df-scratches {
+      position: absolute; inset: -5%;
+      background-image:
+        repeating-linear-gradient(58deg, transparent 0px, transparent 172px, rgba(255,255,255,0.028) 172px, rgba(255,255,255,0.028) 172.5px),
+        repeating-linear-gradient(45deg, transparent 0px, transparent 157px, rgba(255,255,255,0.032) 157px, rgba(255,255,255,0.032) 158px),
+        repeating-linear-gradient(67deg, transparent 0px, transparent 167px, rgba(201,169,106,0.034) 167px, rgba(201,169,106,0.034) 167.5px),
+        repeating-linear-gradient(78deg, transparent 0px, transparent 193px, rgba(201,169,106,0.030) 193px, rgba(201,169,106,0.030) 193.5px);
+      animation: scratchShimmer 28s ease-in-out infinite alternate;
+    }
+    .df-noise { position: absolute; inset: 0; opacity: 0.4; mix-blend-mode: overlay; }
+    .df-beam { position: absolute; top: -100%; left: -60%; width: 38%; height: 300%; background: linear-gradient(90deg, transparent 0%, rgba(201,169,106,0.014) 35%, rgba(201,169,106,0.028) 50%, rgba(201,169,106,0.014) 65%, transparent 100%); transform: rotate(15deg) translateX(-80vw); animation: beamSweep 24s ease-in-out infinite; }
+    .df-embers { position: absolute; inset: 0; background-image: radial-gradient(circle at 12% 68%, rgba(201,169,106,0.18) 0 1px, transparent 2px), radial-gradient(circle at 76% 20%, rgba(201,169,106,0.15) 0 1px, transparent 2px), radial-gradient(circle at 52% 12%, rgba(201,169,106,0.12) 0 1.5px, transparent 2.5px), radial-gradient(circle at 88% 80%, rgba(201,169,106,0.10) 0 1px, transparent 2px); animation: embersFloat 11s ease-in-out infinite alternate; }
+
+    @keyframes orbDrift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(4%,3%) scale(1.06); } }
+    @keyframes orbDrift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-3%,-4%) scale(1.08); } }
+    @keyframes orbDrift3 { from { transform: translate(0,0) scale(1); } to { transform: translate(5%,-3%) scale(0.95); } }
+    @keyframes scratchShimmer { from { opacity: 0.7; transform: translate(0,0); } to { opacity: 1; transform: translate(1px,1px); } }
+    @keyframes beamSweep { 0% { transform: rotate(15deg) translateX(-80vw); } 100% { transform: rotate(15deg) translateX(200vw); } }
+    @keyframes embersFloat { from { transform: translate(0,0); } to { transform: translate(2px,-4px); } }
+
+    body::before { display: none; }
+    body { background: radial-gradient(circle at 20% 20%, rgba(110,85,45,0.08), transparent 30%), radial-gradient(circle at 80% 30%, rgba(80,70,120,0.08), transparent 28%), linear-gradient(160deg, #050505, #0c0b0a 45%, #14110f); }
+
+    .header-wrapper { text-align: center; }
+
+    /* ── Page title ── */
+
+    /* ── Ornements modal ── */
+    .modal-ornament { position: absolute; width: 60px; height: 60px; pointer-events: none; filter: drop-shadow(0 0 5px rgba(201,169,106,0.45)); z-index: 10; }
+    .modal-ornament.top-left     { top: -16px; left: -16px; }
+    .modal-ornament.top-right    { top: -16px; right: -16px; transform: scaleX(-1); }
+    .modal-ornament.bottom-left  { bottom: -16px; left: -16px; transform: scaleY(-1); }
+    .modal-ornament.bottom-right { bottom: -16px; right: -16px; transform: scale(-1); }
+    .mo-sh { stroke-dasharray: 28 96; animation: moShimOut 3s linear infinite; opacity: 0; }
+    @keyframes moShimOut { 0% { stroke-dashoffset: 28; opacity: 0; } 8% { opacity: 0.6; } 88% { opacity: 0.6; } 100% { stroke-dashoffset: -96; opacity: 0; } }
+    .mo-gem { animation: gemPulse 2.5s ease-in-out infinite; }
+    @keyframes gemPulse { 0%, 100% { opacity: 0.85; } 50% { opacity: 1; } }
+    .modal-ornament.top-right .mo-sh  { animation-delay: -0.75s; }
+    .modal-ornament.bottom-left .mo-sh  { animation-delay: -1.5s; }
+    .modal-ornament.bottom-right .mo-sh { animation-delay: -2.25s; }
+    .modal-ornament.top-right .mo-gem  { animation-delay: -0.625s; }
+    .modal-ornament.bottom-left .mo-gem  { animation-delay: -1.25s; }
+    .modal-ornament.bottom-right .mo-gem { animation-delay: -1.875s; }
+
+    /* ── Panel filtres (df-panel) ── */
+    .filters-df-panel {
+      position: relative;
+      padding: 28px;
+      margin-bottom: 28px;
+      background: linear-gradient(180deg, rgba(22,18,16,0.96), rgba(8,7,7,0.94)), linear-gradient(135deg, rgba(201,169,106,0.06), rgba(255,255,255,0.03) 40%, transparent 70%);
+      border: 1px solid rgba(255,228,170,0.14);
+      box-shadow: 0 25px 70px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 0 30px rgba(201,169,106,0.05);
+      overflow: visible;
+    }
+    .filters-df-panel::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(201,169,106,0.65);
+      box-shadow: 0 0 8px rgba(201,169,106,0.22), 0 0 20px rgba(201,169,106,0.08), inset 0 0 10px rgba(201,169,106,0.06);
+      animation: borderGlow 4.8s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes borderGlow { 0%,100% { box-shadow: 0 0 8px rgba(201,169,106,0.22), 0 0 20px rgba(201,169,106,0.08), inset 0 0 10px rgba(201,169,106,0.06); opacity:0.85; } 50% { box-shadow: 0 0 12px rgba(201,169,106,0.38), 0 0 35px rgba(201,169,106,0.14), inset 0 0 18px rgba(201,169,106,0.10); opacity:1; } }
+    .filters-df-panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      padding: 1px;
+      background: linear-gradient(120deg, rgba(255,255,255,0.05), rgba(201,169,106,0.35), rgba(255,255,255,0.02), rgba(143,106,47,0.35));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    /* Ornements panel filtres */
+    .f-ornament { position: absolute; width: 70px; height: 70px; pointer-events: none; filter: drop-shadow(0 0 6px rgba(201,169,106,0.45)); z-index: 2; }
+    .f-ornament.top-left     { top: -20px; left: -20px; }
+    .f-ornament.top-right    { top: -20px; right: -20px; transform: scaleX(-1); }
+    .f-ornament.bottom-left  { bottom: -20px; left: -20px; transform: scaleY(-1); }
+    .f-ornament.bottom-right { bottom: -20px; right: -20px; transform: scale(-1); }
+    .f-sh { stroke-dasharray: 32 106; animation: shimOut 3s linear infinite; opacity: 0; }
+    @keyframes shimOut { 0% { stroke-dashoffset: 32; opacity: 0; } 8% { opacity: 0.65; } 88% { opacity: 0.65; } 100% { stroke-dashoffset: -106; opacity: 0; } }
+    .f-gem { animation: fGemPulse 2.5s ease-in-out infinite; }
+    @keyframes fGemPulse { 0%, 100% { opacity: 0.88; } 50% { opacity: 1; } }
+    .f-ornament.top-right .f-sh    { animation-delay: -0.75s; }
+    .f-ornament.bottom-left .f-sh  { animation-delay: -1.5s; }
+    .f-ornament.bottom-right .f-sh { animation-delay: -2.25s; }
+    .f-ornament.top-right .f-gem    { animation-delay: -0.625s; }
+    .f-ornament.bottom-left .f-gem  { animation-delay: -1.25s; }
+    .f-ornament.bottom-right .f-gem { animation-delay: -1.875s; }
+
+    /* ── Ad banner override ── */
+    .ad-banner-footer {
+      background: rgba(8,6,5,0.97) !important;
+      border-top: 1px solid rgba(201,169,106,0.45) !important;
+      box-shadow: 0 -4px 20px rgba(201,169,106,0.07) !important;
+      box-sizing: content-box !important;
+    }
+  </style>
 </head>
 
 <body>
+
+<!-- Dark fantasy background -->
+<div class="df-bg">
+  <div class="df-orb df-orb-1"></div>
+  <div class="df-orb df-orb-2"></div>
+  <div class="df-orb df-orb-3"></div>
+  <div class="df-scratches"></div>
+  <div class="df-beam"></div>
+  <div class="df-embers"></div>
+  <canvas class="df-noise" id="noiseCanvas"></canvas>
+</div>
 
 <div id="menu-container"></div>
 
@@ -40,9 +166,35 @@
 </div>
 
 <div class="container">
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Search a champion...">
-  </div>
+
+  <!-- Panel filtres avec ornements -->
+  <div class="filters-df-panel">
+
+    <!-- Ornements -->
+    <svg class="f-ornament top-left" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/>
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="f-sh"/>
+      <rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="f-gem"/>
+    </svg>
+    <svg class="f-ornament top-right" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/>
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="f-sh"/>
+      <rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="f-gem"/>
+    </svg>
+    <svg class="f-ornament bottom-left" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/>
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="f-sh"/>
+      <rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="f-gem"/>
+    </svg>
+    <svg class="f-ornament bottom-right" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/>
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="f-sh"/>
+      <rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="f-gem"/>
+    </svg>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search a champion...">
+    </div>
 
 <div class="filters-section">
 
@@ -327,9 +479,11 @@
 
 </div><!-- /filters-section -->
 
-  <div class="reset-wrapper">
-    <button id="resetFilters" class="reset-btn">⟳ Reset Filters</button>
-  </div>
+    <div class="reset-wrapper">
+      <button id="resetFilters" class="reset-btn">⟳ Reset Filters</button>
+    </div>
+
+  </div><!-- /filters-df-panel -->
 
   <div class="counter" id="championCount"></div>
   <div id="championGrid" class="champion-grid"></div>
@@ -339,6 +493,28 @@
 <div id="championModal" class="modal-overlay">
   <button class="modal-nav prev"><i data-lucide="chevron-left"></i></button>
   <div class="modal-content">
+
+    <!-- Ornements -->
+    <svg class="modal-ornament top-left" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/>
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="mo-sh"/>
+      <rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="mo-gem"/>
+    </svg>
+    <svg class="modal-ornament top-right" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/>
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="mo-sh"/>
+      <rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="mo-gem"/>
+    </svg>
+    <svg class="modal-ornament bottom-left" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/>
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="mo-sh"/>
+      <rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="mo-gem"/>
+    </svg>
+    <svg class="modal-ornament bottom-right" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/>
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="mo-sh"/>
+      <rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="mo-gem"/>
+    </svg>
 
     <button class="modal-close">
       <i data-lucide="x"></i>
@@ -447,24 +623,31 @@
   <button class="modal-nav next"><i data-lucide="chevron-right"></i></button>
 </div>
 
-<!-- Adsense -->
-<div class="adsense-container">
-  <div class="ad-label">Advertisement</div>
-
-  <ins class="adsbygoogle"
-   style="display:block"
-   data-ad-client="ca-pub-8653563887265027"
-   data-ad-slot="9042028911"
-   data-ad-format="auto"
-   data-full-width-responsive="true"></ins>
-
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
-</div>
-
-<!-- Scripts -->
 <script src="/tools/champions-index/script.js"></script>
-<script src="../../script.js"></script>
+<script src="/script.js"></script>
+
+<script>
+  // Noise canvas
+  (function() {
+    const canvas = document.getElementById('noiseCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    function drawNoise() {
+      const w = canvas.width, h = canvas.height;
+      const img = ctx.createImageData(w, h);
+      for (let i = 0; i < img.data.length; i += 4) {
+        const v = Math.random() * 255 | 0;
+        img.data[i] = img.data[i+1] = img.data[i+2] = v;
+        img.data[i+3] = 18;
+      }
+      ctx.putImageData(img, 0, 0);
+      setTimeout(drawNoise, 80);
+    }
+    drawNoise();
+  })();
+</script>
 </body>
 </html>

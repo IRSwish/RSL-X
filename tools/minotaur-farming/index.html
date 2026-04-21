@@ -1,117 +1,290 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HNK5S7EBCJ"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-HNK5S7EBCJ');
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://unpkg.com/lucide@latest" defer></script>
   <meta charset="UTF-8">
+  <script src="https://unpkg.com/lucide@latest" defer></script>
   <script src="/config/site-config.js"></script>
-    <script src="/config/ad-banner.js" defer></script>
-  <script>document.title =  "Minotaur Farming | " + window.siteConfig.title;</script>
-  <link rel="stylesheet" href="../../style/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="/config/ad-banner.js" defer></script>
+  <script>document.title = "Minotaur Farming | " + window.siteConfig.title;</script>
+  <link rel="stylesheet" href="/style/style.css">
   <link rel="preload" href="/menu.html" as="fetch" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
   <style>
-    /* Safety: avoid layout surprises */
+    @font-face {
+      font-family: "Middle Ages";
+      src: url('/style/MiddAges.ttf') format('truetype');
+      font-display: swap;
+    }
+
     * { box-sizing: border-box; }
 
+    /* ── Background animé ── */
+    .df-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .df-orb { position: absolute; border-radius: 50%; }
+    .df-orb-1 {
+      width: 70vmax; height: 70vmax;
+      top: -15%; left: -15%;
+      background: radial-gradient(circle, rgba(201,169,106,0.10) 0%, transparent 65%);
+      filter: blur(65px);
+      animation: orbDrift1 28s ease-in-out infinite alternate;
+    }
+    .df-orb-2 {
+      width: 55vmax; height: 55vmax;
+      bottom: -10%; right: -10%;
+      background: radial-gradient(circle, rgba(90,70,145,0.08) 0%, transparent 65%);
+      filter: blur(75px);
+      animation: orbDrift2 35s ease-in-out infinite alternate;
+    }
+    .df-orb-3 {
+      width: 45vmax; height: 45vmax;
+      top: 30%; left: 35%;
+      background: radial-gradient(circle, rgba(160,88,38,0.07) 0%, transparent 60%);
+      filter: blur(55px);
+      animation: orbDrift3 22s ease-in-out infinite alternate;
+    }
+
+    .df-scratches {
+      position: absolute;
+      inset: -5%;
+      background-image:
+        repeating-linear-gradient(58deg,  transparent 0px, transparent 172px, rgba(255,255,255,0.028) 172px, rgba(255,255,255,0.028) 172.5px),
+        repeating-linear-gradient(72deg,  transparent 0px, transparent 241px, rgba(201,169,106,0.014) 241px, rgba(201,169,106,0.014) 241.5px),
+        repeating-linear-gradient(45deg,  transparent 0px, transparent 157px, rgba(255,255,255,0.032) 157px, rgba(255,255,255,0.032) 158px),
+        repeating-linear-gradient(80deg,  transparent 0px, transparent 211px, rgba(201,169,106,0.022) 211px, rgba(201,169,106,0.022) 211.5px),
+        repeating-linear-gradient(35deg,  transparent 0px, transparent 283px, rgba(255,255,255,0.012) 283px, rgba(255,255,255,0.012) 284px),
+        repeating-linear-gradient(67deg,  transparent 0px, transparent 167px, rgba(201,169,106,0.034) 167px, rgba(201,169,106,0.034) 167.5px),
+        repeating-linear-gradient(52deg,  transparent 0px, transparent 227px, rgba(255,255,255,0.018) 227px, rgba(255,255,255,0.018) 228px),
+        repeating-linear-gradient(78deg,  transparent 0px, transparent 193px, rgba(201,169,106,0.030) 193px, rgba(201,169,106,0.030) 193.5px);
+      animation: scratchShimmer 28s ease-in-out infinite alternate;
+    }
+
+    .df-noise {
+      position: absolute;
+      inset: 0;
+      opacity: 0.4;
+      mix-blend-mode: overlay;
+    }
+
+    .df-beam {
+      position: absolute;
+      top: -100%; left: -60%;
+      width: 38%; height: 300%;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(201,169,106,0.014) 35%,
+        rgba(201,169,106,0.028) 50%,
+        rgba(201,169,106,0.014) 65%,
+        transparent 100%
+      );
+      transform: rotate(15deg) translateX(-80vw);
+      animation: beamSweep 24s ease-in-out infinite;
+    }
+
+    .df-embers {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 12% 68%, rgba(201,169,106,0.18) 0 1px, transparent 2px),
+        radial-gradient(circle at 76% 20%, rgba(201,169,106,0.15) 0 1px, transparent 2px),
+        radial-gradient(circle at 52% 12%, rgba(201,169,106,0.12) 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 30% 52%, rgba(201,169,106,0.10) 0 1px, transparent 2px),
+        radial-gradient(circle at 88% 80%, rgba(201,169,106,0.10) 0 1px, transparent 2px);
+      animation: embersFloat 11s ease-in-out infinite alternate;
+    }
+
+    body::before { display: none; }
+
     body {
-      font-family: 'Inter', sans-serif;
-      color: var(--text-color);
-      background-color: #0e0e0e;
-      margin: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(110,85,45,0.08), transparent 30%),
+        radial-gradient(circle at 80% 30%, rgba(80,70,120,0.08), transparent 28%),
+        radial-gradient(circle at 50% 80%, rgba(145,110,45,0.06), transparent 32%),
+        linear-gradient(160deg, #050505, #0c0b0a 45%, #14110f);
     }
 
-    #page-title {
-      font-family: 'American Captain', Impact, sans-serif;
-      letter-spacing: 2px;
-      font-size: 42px;
-      color: var(--text-color);
-      text-shadow: 0 0 12px rgba(212,175,55,0.25);
+    .header-wrapper { text-align: center; }
+
+    /* ── Layout ── */
+    .main-container {
+      position: relative;
+      width: min(900px, 96%);
+      margin: 32px auto 56px;
+      padding: 0 20px;
     }
 
+    /* ── Panel ── */
+    .df-panel {
+      position: relative;
+      padding: 28px 32px;
+      background:
+        linear-gradient(180deg, rgba(22,18,16,0.96), rgba(8,7,7,0.94)),
+        linear-gradient(135deg, rgba(201,169,106,0.06), rgba(255,255,255,0.03) 40%, transparent 70%);
+      border: 1px solid rgba(255,228,170,0.14);
+      box-shadow:
+        0 25px 70px rgba(0,0,0,0.75),
+        inset 0 0 0 1px rgba(255,255,255,0.04),
+        inset 0 0 30px rgba(201,169,106,0.05);
+      overflow: visible;
+    }
+
+    .df-panel::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(201,169,106,0.72);
+      box-shadow:
+        0 0 8px rgba(201,169,106,0.22),
+        0 0 20px rgba(201,169,106,0.08),
+        inset 0 0 10px rgba(201,169,106,0.06);
+      animation: borderGlow 4.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .df-panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      padding: 1px;
+      background: linear-gradient(
+        120deg,
+        rgba(255,255,255,0.05),
+        rgba(201,169,106,0.35),
+        rgba(255,255,255,0.02),
+        rgba(143,106,47,0.35)
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    /* ── Ornements coins ── */
+    .ornament {
+      position: absolute;
+      width: 70px; height: 70px;
+      pointer-events: none;
+      filter: drop-shadow(0 0 6px rgba(201,169,106,0.45));
+    }
+    .top-left     { top: -20px;    left: -20px; }
+    .top-right    { top: -20px;    right: -20px;  transform: scaleX(-1); }
+    .bottom-left  { bottom: -20px; left: -20px;   transform: scaleY(-1); }
+    .bottom-right { bottom: -20px; right: -20px;  transform: scale(-1); }
+
+    .sh-out {
+      stroke-dasharray: 32 106;
+      animation: shimOut 3s linear infinite;
+      opacity: 0;
+    }
+    @keyframes shimOut {
+      0%   { stroke-dashoffset: 32;   opacity: 0; }
+      8%   { opacity: 0.65; }
+      88%  { opacity: 0.65; }
+      100% { stroke-dashoffset: -106; opacity: 0; }
+    }
+    .gem { animation: gemPulse 2.5s ease-in-out infinite; }
+    @keyframes gemPulse {
+      0%, 100% { opacity: 0.88; }
+      50%      { opacity: 1; }
+    }
+    .top-right    .sh-out { animation-delay: -0.75s; }
+    .bottom-left  .sh-out { animation-delay: -1.5s; }
+    .bottom-right .sh-out { animation-delay: -2.25s; }
+    .top-right    .gem    { animation-delay: -0.625s; }
+    .bottom-left  .gem    { animation-delay: -1.25s; }
+    .bottom-right .gem    { animation-delay: -1.875s; }
+
+    /* ── Section label ── */
+    .section-label {
+      font-family: "Middle Ages", "Cormorant Garamond", serif;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: rgba(241,221,177,0.75);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(201,169,106,0.5), transparent);
+    }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,169,106,0.35), transparent);
+      margin: 28px 0;
+    }
+
+    /* ── Cache info ── */
     .cache-info {
-      color: var(--text-color);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 12px;
+      color: rgba(232,224,210,0.4);
       font-style: italic;
       text-align: center;
-      margin: 6px auto 24px;
-      opacity: 0.85;
-      font-size: 14px;
+      margin: 0 0 24px;
     }
 
-    .mastery-card {
-        background: var(--event-bg);
-        border: 2px solid var(--event-border);
-        border-radius: 16px;
-        box-shadow: 0 0 18px rgba(212,175,55,0.25);
-        width: min(1100px, 95%);
-        margin: 0 auto 40px;
-        padding: 22px;
-        overflow: hidden; /* sécurité visuelle */
-    }
-
+    /* ── Scroll grid ── */
     .scrolls-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 28px;
-        align-items: center;
-        justify-items: center;
-        justify-content: center;
-    }
-
-    @media (max-width: 900px) {
-      .scrolls-grid { grid-template-columns: 1fr; }
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      justify-items: center;
     }
 
     .scroll-block {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        width: 100%;
-        max-width: 340px;      /* réduit légèrement */
-        padding: 14px 14px;
-        border: 1px solid rgba(212,175,55,0.35);
-        border-radius: 12px;
-        background: linear-gradient(145deg, #141414, #1b1b1b);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 16px;
+      border: 1px solid rgba(201,169,106,0.22);
+      background: rgba(0,0,0,0.3);
+      width: 100%;
+      transition: border-color 0.2s, opacity 0.3s, filter 0.3s;
     }
+    .scroll-block:hover { border-color: rgba(201,169,106,0.45); }
 
     .scroll-img {
-        width: 90px;
-        height: 90px;
-        object-fit: contain;
-        margin-right: 16px;
-        filter: drop-shadow(0 0 6px rgba(212,175,55,0.25));
-        flex-shrink: 0;
+      width: 72px; height: 72px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(201,169,106,0.3));
     }
 
-    .right-side {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        flex: 1 1 auto;
-        min-width: 0;
-    }
-
-    /* Circle */
+    /* ── Circle ── */
     .circle-container {
       position: relative;
       width: 120px; height: 120px;
-      margin: 6px auto 8px;
-      overflow: visible; /* IMPORTANT: pas de rognage */
+      overflow: visible;
     }
 
     .progress-ring {
       transform: rotate(-90deg);
       width: 120px; height: 120px;
-      overflow: visible; /* IMPORTANT: pas de rognage */
+      overflow: visible;
       display: block;
     }
 
@@ -121,121 +294,260 @@
       stroke-linecap: round;
     }
 
-    .progress-ring .background { stroke: rgba(255,255,255,0.12); }
-    .progress-ring .progress   { stroke: var(--line-color); transition: stroke-dashoffset 0.25s ease; }
+    .progress-ring .background { stroke: rgba(255,255,255,0.10); }
+    .progress-ring .progress   { stroke: #c9a96a; transition: stroke-dashoffset 0.25s ease; }
 
     .circle-input {
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       width: 64px; text-align: center;
       font-size: 18px; font-weight: 700;
-      border: none; background: transparent; color: var(--text-color); outline: none;
+      border: none; background: transparent;
+      color: #f1ddb1; outline: none;
+      font-family: 'Inter', system-ui, sans-serif;
     }
 
+    /* ── Progress info ── */
     .progress-info {
-      text-align: center; font-size: 14px; color: var(--text-color); font-weight: 600;
-      white-space: nowrap; /* évite le wrap qui écrase le cercle */
+      text-align: center;
+      font-size: 13px;
+      color: rgba(232,224,210,0.7);
+      font-weight: 600;
+      font-family: 'Inter', system-ui, sans-serif;
+      white-space: nowrap;
     }
 
     .progress-info input {
-      background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.18);
-      color: var(--text-color); font: inherit; font-weight: inherit;
-      text-align: right; width: 56px; outline: none; transition: border-color 0.2s ease; padding-bottom: 2px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(201,169,106,0.25);
+      color: #e8e0d2;
+      font: inherit;
+      font-weight: inherit;
+      text-align: right;
+      width: 50px;
+      outline: none;
+      transition: border-color 0.2s;
+      padding-bottom: 2px;
     }
+    .progress-info input.max { text-align: left; width: 56px; }
+    .progress-info input:focus { border-color: #c9a96a; }
 
-    .progress-info input.max { text-align: left; width: 64px; }
-
-    .progress-info input:focus { border-color: var(--line-color); }
-
-    .actions-row { display: flex; justify-content: center; margin-top: 18px; }
+    /* ── Reset button ── */
+    .actions-row { display: flex; justify-content: center; margin-top: 4px; }
 
     .reset-btn {
-      background: transparent; border: 1px solid var(--line-color); color: var(--line-color);
-      border-radius: 10px; font-weight: 700; font-size: 14px; padding: 8px 14px;
-      cursor: pointer; transition: all 0.2s ease;
+      background: transparent;
+      border: 1px solid rgba(201,169,106,0.45);
+      color: #c9a96a;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
     }
-    .reset-btn:hover { background: var(--line-color); color: #0e0e0e; }
+    .reset-btn:hover {
+      background: rgba(201,169,106,0.12);
+      border-color: #c9a96a;
+      color: #f1ddb1;
+    }
 
+    /* ── Results ── */
     .results {
-      margin-top: 22px; padding-top: 16px; border-top: 1px dashed rgba(212,175,55,0.35);
-      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
     }
-
-    @media (max-width: 700px) { .results { grid-template-columns: 1fr; } }
 
     .result-card {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px; border: 1px solid rgba(212,175,55,0.35);
-      border-radius: 12px; background: linear-gradient(145deg, #141414, #1b1b1b);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 16px;
+      border: 1px solid rgba(201,169,106,0.18);
+      background: rgba(0,0,0,0.3);
+      transition: border-color 0.2s;
+    }
+    .result-card:hover { border-color: rgba(201,169,106,0.45); }
+
+    .result-card img {
+      width: 36px; height: 36px;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 6px rgba(201,169,106,0.25));
     }
 
-    .result-card img { width: 34px; height: 34px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 0 6px rgba(212,175,55,0.25)); }
+    .result-text { display: flex; flex-direction: column; line-height: 1.3; }
+    .result-label {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: rgba(201,169,106,1);
+    }
+    .result-value {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: #f1ddb1;
+    }
+    .muted {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 11px;
+      color: rgba(232,224,210,0.4);
+      font-style: italic;
+    }
 
-    .result-text { display: flex; flex-direction: column; line-height: 1.25; }
-    .result-label { font-size: 13px; opacity: 0.85; }
-    .result-value { font-size: 20px; font-weight: 800; letter-spacing: 0.3px; color: var(--text-color); }
-    .muted { opacity: 0.7; font-style: italic; font-size: 13px; }
+    /* ── Ad banner ── */
+    .ad-banner-footer {
+      background: rgba(8,6,5,0.97) !important;
+      border-top: 1px solid rgba(201,169,106,0.45) !important;
+      box-shadow: 0 -4px 20px rgba(201,169,106,0.07) !important;
+      box-sizing: content-box !important;
+    }
+
+    /* ── Keyframes ── */
+    @keyframes orbDrift1 {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(12%,18%) scale(1.12); }
+    }
+    @keyframes orbDrift2 {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(-18%,-12%) scale(1.18); }
+    }
+    @keyframes orbDrift3 {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(-10%,8%) scale(0.88); }
+    }
+    @keyframes scratchShimmer {
+      0%   { opacity: 0.55; }
+      100% { opacity: 1; }
+    }
+    @keyframes beamSweep {
+      0%   { transform: rotate(15deg) translateX(-80vw); opacity: 0; }
+      8%   { opacity: 1; }
+      92%  { opacity: 1; }
+      100% { transform: rotate(15deg) translateX(200vw); opacity: 0; }
+    }
+    @keyframes embersFloat {
+      0%   { opacity: 0.4; transform: translate(0,0); }
+      100% { opacity: 0.9; transform: translate(0.5%,-0.5%); }
+    }
+    @keyframes borderGlow {
+      0%, 100% { opacity: 0.55; box-shadow: 0 0 6px rgba(201,169,106,0.15), inset 0 0 8px rgba(201,169,106,0.04); }
+      50%       { opacity: 1;    box-shadow: 0 0 14px rgba(201,169,106,0.35), inset 0 0 14px rgba(201,169,106,0.10); }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .scrolls-grid { grid-template-columns: 1fr; }
+      .results      { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
-
 <body>
-  <div id="menu-container"></div>
 
-  <div class="header-wrapper">
-    <header id="page-title">MINOTAUR MASTERY CALCULATOR</header>
-    <p class="cache-info">Data is not saved. Adjust your scrolls and values update dynamically.</p>
-  </div>
+<!-- Background animé -->
+<div class="df-bg">
+  <div class="df-orb df-orb-1"></div>
+  <div class="df-orb df-orb-2"></div>
+  <div class="df-orb df-orb-3"></div>
+  <div class="df-noise" id="df-noise"></div>
+  <div class="df-scratches"></div>
+  <div class="df-beam"></div>
+  <div class="df-embers"></div>
+</div>
 
-  <div class="mastery-card">
+<div id="menu-container"></div>
+<div class="header-wrapper">
+  <header id="page-title">Minotaur Mastery Calculator</header>
+</div>
+
+<div class="main-container">
+  <div class="df-panel">
+
+    <!-- Ornements -->
+    <svg class="ornament top-left" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon class="gem" points="9,0 18,9 9,18 0,9" fill="#c9a96a" opacity="0.92"/>
+      <polygon points="9,4 14,9 9,14 4,9" fill="#f1ddb1" opacity="0.35"/>
+      <path d="M 9 78 L 9 9 L 78 9" stroke="#c9a96a" stroke-width="2" stroke-linecap="square" opacity="0.78"/>
+      <path class="sh-out" d="M 9 78 L 9 9 L 78 9" stroke="#f1ddb1" stroke-width="2" stroke-linecap="round"/>
+      <line x1="9" y1="36" x2="18" y2="36" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+      <line x1="36" y1="9" x2="36" y2="18" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+    </svg>
+    <svg class="ornament top-right" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon class="gem" points="9,0 18,9 9,18 0,9" fill="#c9a96a" opacity="0.92"/>
+      <polygon points="9,4 14,9 9,14 4,9" fill="#f1ddb1" opacity="0.35"/>
+      <path d="M 9 78 L 9 9 L 78 9" stroke="#c9a96a" stroke-width="2" stroke-linecap="square" opacity="0.78"/>
+      <path class="sh-out" d="M 9 78 L 9 9 L 78 9" stroke="#f1ddb1" stroke-width="2" stroke-linecap="round"/>
+      <line x1="9" y1="36" x2="18" y2="36" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+      <line x1="36" y1="9" x2="36" y2="18" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+    </svg>
+    <svg class="ornament bottom-left" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon class="gem" points="9,0 18,9 9,18 0,9" fill="#c9a96a" opacity="0.92"/>
+      <polygon points="9,4 14,9 9,14 4,9" fill="#f1ddb1" opacity="0.35"/>
+      <path d="M 9 78 L 9 9 L 78 9" stroke="#c9a96a" stroke-width="2" stroke-linecap="square" opacity="0.78"/>
+      <path class="sh-out" d="M 9 78 L 9 9 L 78 9" stroke="#f1ddb1" stroke-width="2" stroke-linecap="round"/>
+      <line x1="9" y1="36" x2="18" y2="36" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+      <line x1="36" y1="9" x2="36" y2="18" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+    </svg>
+    <svg class="ornament bottom-right" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon class="gem" points="9,0 18,9 9,18 0,9" fill="#c9a96a" opacity="0.92"/>
+      <polygon points="9,4 14,9 9,14 4,9" fill="#f1ddb1" opacity="0.35"/>
+      <path d="M 9 78 L 9 9 L 78 9" stroke="#c9a96a" stroke-width="2" stroke-linecap="square" opacity="0.78"/>
+      <path class="sh-out" d="M 9 78 L 9 9 L 78 9" stroke="#f1ddb1" stroke-width="2" stroke-linecap="round"/>
+      <line x1="9" y1="36" x2="18" y2="36" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+      <line x1="36" y1="9" x2="36" y2="18" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
+    </svg>
+
+    <!-- Scrolls -->
+    <div class="section-label">Mastery Scrolls</div>
+    <p class="cache-info">Values update dynamically — data is not saved.</p>
+
     <div class="scrolls-grid">
       <!-- BASIC -->
       <div class="scroll-block" data-type="Basic" data-max="100">
-        <img src="../../style/img/Misc/Scroll-Basic.webp" alt="Basic Scroll" class="scroll-img">
-        <div class="right-side">
-          <div class="circle-container">
-            <svg class="progress-ring" width="120" height="120">
-              <circle class="background" r="52" cx="60" cy="60"></circle>
-              <circle class="progress" r="52" cx="60" cy="60"></circle>
-            </svg>
-            <input type="number" class="circle-input" value="0" min="0" max="100">
-          </div>
-          <div class="progress-info">
-            <input type="number" class="count" value="0" min="0" max="100"> / <input type="number" class="max" value="100" min="1" max="100">
-          </div>
+        <img src="/style/img/Misc/Scroll-Basic.webp" alt="Basic Scroll" class="scroll-img">
+        <div class="circle-container">
+          <svg class="progress-ring" width="120" height="120">
+            <circle class="background" r="52" cx="60" cy="60"></circle>
+            <circle class="progress" r="52" cx="60" cy="60"></circle>
+          </svg>
+          <input type="number" class="circle-input" value="0" min="0" max="100">
+        </div>
+        <div class="progress-info">
+          <input type="number" class="count" value="0" min="0" max="100"> / <input type="number" class="max" value="100" min="1" max="100">
         </div>
       </div>
 
       <!-- ADVANCED -->
       <div class="scroll-block" data-type="Advanced" data-max="600">
-        <img src="../../style/img/Misc/Scroll-Advanced.webp" alt="Advanced Scroll" class="scroll-img">
-        <div class="right-side">
-          <div class="circle-container">
-            <svg class="progress-ring" width="120" height="120">
-              <circle class="background" r="52" cx="60" cy="60"></circle>
-              <circle class="progress" r="52" cx="60" cy="60"></circle>
-            </svg>
-            <input type="number" class="circle-input" value="0" min="0" max="600">
-          </div>
-          <div class="progress-info">
-            <input type="number" class="count" value="0" min="0" max="600"> / <input type="number" class="max" value="600" min="1" max="600">
-          </div>
+        <img src="/style/img/Misc/Scroll-Advanced.webp" alt="Advanced Scroll" class="scroll-img">
+        <div class="circle-container">
+          <svg class="progress-ring" width="120" height="120">
+            <circle class="background" r="52" cx="60" cy="60"></circle>
+            <circle class="progress" r="52" cx="60" cy="60"></circle>
+          </svg>
+          <input type="number" class="circle-input" value="0" min="0" max="600">
+        </div>
+        <div class="progress-info">
+          <input type="number" class="count" value="0" min="0" max="600"> / <input type="number" class="max" value="600" min="1" max="600">
         </div>
       </div>
 
       <!-- DIVINE -->
       <div class="scroll-block" data-type="Divine" data-max="950">
-        <img src="../../style/img/Misc/Scroll-Divine.webp" alt="Divine Scroll" class="scroll-img">
-        <div class="right-side">
-          <div class="circle-container">
-            <svg class="progress-ring" width="120" height="120">
-              <circle class="background" r="52" cx="60" cy="60"></circle>
-              <circle class="progress" r="52" cx="60" cy="60"></circle>
-            </svg>
-            <input type="number" class="circle-input" value="0" min="0" max="950">
-          </div>
-          <div class="progress-info">
-            <input type="number" class="count" value="0" min="0" max="950"> / <input type="number" class="max" value="950" min="1" max="950">
-          </div>
+        <img src="/style/img/Misc/Scroll-Divine.webp" alt="Divine Scroll" class="scroll-img">
+        <div class="circle-container">
+          <svg class="progress-ring" width="120" height="120">
+            <circle class="background" r="52" cx="60" cy="60"></circle>
+            <circle class="progress" r="52" cx="60" cy="60"></circle>
+          </svg>
+          <input type="number" class="circle-input" value="0" min="0" max="950">
+        </div>
+        <div class="progress-info">
+          <input type="number" class="count" value="0" min="0" max="950"> / <input type="number" class="max" value="950" min="1" max="950">
         </div>
       </div>
     </div>
@@ -244,374 +556,247 @@
       <button class="reset-btn" id="resetAll">Reset</button>
     </div>
 
+    <div class="section-divider"></div>
+
+    <!-- Results -->
+    <div class="section-label">Estimation</div>
     <div class="results">
       <div class="result-card">
-        <img src="../../style/img/Misc/Energy.webp" alt="Energy">
+        <img src="/style/img/Misc/Energy.webp" alt="Energy">
         <div class="result-text">
-          <span class="result-label">Energy needed (Stage 15):</span>
+          <span class="result-label">Energy (Stage 15)</span>
           <span class="result-value" id="energyNeeded">0</span>
           <span class="muted" id="runsHint">Based on average drops per run.</span>
         </div>
       </div>
-
       <div class="result-card">
-        <img src="../../style/img/Misc/Gems.webp" alt="Gems">
+        <img src="/style/img/Misc/Gems.webp" alt="Gems">
         <div class="result-text">
-          <span class="result-label">Gem equivalent:</span>
+          <span class="result-label">Gem equivalent</span>
           <span class="result-value" id="gemsNeeded">0</span>
           <span class="muted">1 refill = 130 energy = 40 gems</span>
         </div>
       </div>
     </div>
+
   </div>
+</div>
 
-  <!-- Your global script -->
-  <script src="../../script.js"></script>
+<script>
+(function() {
+  const SIZE = 256;
+  const c = document.createElement('canvas');
+  c.width = c.height = SIZE;
+  const ctx = c.getContext('2d');
+  const img = ctx.createImageData(SIZE, SIZE);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = (Math.random() * 255) | 0;
+    img.data[i] = img.data[i+1] = img.data[i+2] = v;
+    img.data[i+3] = (Math.random() * 36) | 0;
+  }
+  ctx.putImageData(img, 0, 0);
+  const el = document.getElementById('df-noise');
+  el.style.backgroundImage  = 'url(' + c.toDataURL() + ')';
+  el.style.backgroundRepeat = 'repeat';
+  el.style.backgroundSize   = SIZE + 'px ' + SIZE + 'px';
+})();
+</script>
 
-  <script>
-    const ENERGY_PER_RUN = 14;
-    const AVG_BASIC = 28, AVG_ADV = 13.5, AVG_DIV = 9;
-    const REFILL_ENERGY = 130, REFILL_GEMS = 40;
+<script>
+  const ENERGY_PER_RUN = 14;
+  const AVG_BASIC = 28, AVG_ADV = 13.5, AVG_DIV = 9;
+  const REFILL_ENERGY = 130, REFILL_GEMS = 40;
+  const scrollCaps = { Basic: 100, Advanced: 600, Divine: 950 };
 
-    const scrollCaps = { Basic: 100, Advanced: 600, Divine: 950 };
+  document.querySelectorAll('.scroll-block').forEach(block => {
+    const type = block.dataset.type;
+    const circle = block.querySelector('.progress');
+    const radius = 52;
+    const circumference = 2 * Math.PI * radius;
+    circle.style.strokeDasharray = circumference;
 
-    // Init circles + handlers
-    document.querySelectorAll('.scroll-block').forEach(block => {
-      const type = block.dataset.type;
-      const circle = block.querySelector('.progress');
-      const radius = 52;
-      const circumference = 2 * Math.PI * radius;
-      circle.style.strokeDasharray = circumference;
+    const circleInput = block.querySelector('.circle-input');
+    const countInput  = block.querySelector('.count');
+    const maxInput    = block.querySelector('.max');
 
-      const circleInput = block.querySelector('.circle-input');
-      const countInput  = block.querySelector('.count');
-      const maxInput    = block.querySelector('.max');
-
-      // Hard cap on max input (can't exceed canonical cap)
-      maxInput.addEventListener('input', () => {
-        const hardCap = scrollCaps[type];
-        if (parseFloat(maxInput.value) > hardCap) maxInput.value = hardCap;
-        // If current > new max, clamp it
-        const cur = Math.min(parseFloat(circleInput.value || 0), parseFloat(maxInput.value || hardCap));
-        setValue(type, cur);
-        applyInterlock(type + 'Max', parseFloat(maxInput.value) || 0);
-        calculate();
-      });
-
-      // When editing current value (center or below), clamp to [0,max] and apply logic
-      [circleInput, countInput].forEach(inp => {
-        inp.addEventListener('input', () => {
-          const m = Math.min(parseFloat(maxInput.value || scrollCaps[type]), scrollCaps[type]);
-          let v = parseFloat(inp.value) || 0;
-          if (v > m) v = m;
-          setValue(type, v);
-          applyInterlock(type, v); // grey/green/red logic
-          calculate();
-        });
-      });
-
-      // First paint
-      setValue(type, 0);
-    });
-
-    // Reset
-    document.getElementById('resetAll').addEventListener('click', () => {
-      // Remettre les valeurs à 0 via la logique existante
-      setValue('Basic', 0);
-      setValue('Advanced', 0);
-      setValue('Divine', 0);
-
-      // Remettre les max à leurs caps respectifs
-      document.querySelector('.scroll-block[data-type="Basic"] .max').value = 100;
-      document.querySelector('.scroll-block[data-type="Advanced"] .max').value = 600;
-      document.querySelector('.scroll-block[data-type="Divine"] .max').value = 950;
-
+    maxInput.addEventListener('input', () => {
+      const hardCap = scrollCaps[type];
+      if (parseFloat(maxInput.value) > hardCap) maxInput.value = hardCap;
+      const cur = Math.min(parseFloat(circleInput.value || 0), parseFloat(maxInput.value || hardCap));
+      setValue(type, cur);
+      applyInterlock(type + 'Max', parseFloat(maxInput.value) || 0);
       calculate();
     });
 
-    // Set a block value + update its circle visuals
-    function setValue(type, v) {
-      const block = document.querySelector(`.scroll-block[data-type="${type}"]`);
-      const max = Math.min(parseFloat(block.querySelector('.max').value || scrollCaps[type]), scrollCaps[type]);
-      const circle = block.querySelector('.progress');
-      const circleInput = block.querySelector('.circle-input');
-      const countInput  = block.querySelector('.count');
+    [circleInput, countInput].forEach(inp => {
+      inp.addEventListener('input', () => {
+        const m = Math.min(parseFloat(maxInput.value || scrollCaps[type]), scrollCaps[type]);
+        let v = parseFloat(inp.value) || 0;
+        if (v > m) v = m;
+        setValue(type, v);
+        applyInterlock(type, v);
+        calculate();
+      });
+    });
 
-      const radius = 52;
-      const circumference = 2 * Math.PI * radius;
+    setValue(type, 0);
+  });
 
-      const clamped = Math.max(0, Math.min(max, v));
-      const offset = circumference - (clamped / max) * circumference;
+  document.getElementById('resetAll').addEventListener('click', () => {
+    setValue('Basic', 0);
+    setValue('Advanced', 0);
+    setValue('Divine', 0);
+    document.querySelector('.scroll-block[data-type="Basic"] .max').value = 100;
+    document.querySelector('.scroll-block[data-type="Advanced"] .max').value = 600;
+    document.querySelector('.scroll-block[data-type="Divine"] .max').value = 950;
+    calculate();
+  });
 
-      circle.style.strokeDashoffset = offset;
-      circleInput.value = clamped;
-      countInput.value  = clamped;
-    }
-
-function applyInterlock(changedType, newValue) {
-  const setTo = (t, val) => setValue(t, val);
-
-  const basic = document.querySelector('.scroll-block[data-type="Basic"]');
-  const adv   = document.querySelector('.scroll-block[data-type="Advanced"]');
-  const div   = document.querySelector('.scroll-block[data-type="Divine"]');
-
-  const BmaxInput = basic.querySelector('.max');
-  const AmaxInput = adv.querySelector('.max');
-  const DmaxInput = div.querySelector('.max');
-
-  const BvalInput = basic.querySelector('.count');
-  const AvalInput = adv.querySelector('.count');
-  const DvalInput = div.querySelector('.count');
-
-  const Bcap = 100, Acap = 600, Dcap = 950;
-
-  let Bmax = parseFloat(BmaxInput.value) || 0;
-  let Amax = parseFloat(AmaxInput.value) || 0;
-  let Dmax = parseFloat(DmaxInput.value) || 0;
-
-  let Bval = parseFloat(BvalInput.value) || 0;
-  let Aval = parseFloat(AvalInput.value) || 0;
-  let Dval = parseFloat(DvalInput.value) || 0;
-
-  // ======================
-  // 1️⃣ — MAX modifié
-  // ======================
-  if (changedType === "BasicMax") {
-    if (Bmax < 100) {
-      // gris incomplet → reset tout au-dessus
-      AmaxInput.value = 0;
-      DmaxInput.value = 0;
-      setTo('Advanced', 0);
-      setTo('Divine', 0);
-    }
+  function setValue(type, v) {
+    const block = document.querySelector(`.scroll-block[data-type="${type}"]`);
+    const max = Math.min(parseFloat(block.querySelector('.max').value || scrollCaps[type]), scrollCaps[type]);
+    const circle = block.querySelector('.progress');
+    const circleInput = block.querySelector('.circle-input');
+    const countInput  = block.querySelector('.count');
+    const radius = 52;
+    const circumference = 2 * Math.PI * radius;
+    const clamped = Math.max(0, Math.min(max, v));
+    const offset = circumference - (clamped / max) * circumference;
+    circle.style.strokeDashoffset = offset;
+    circleInput.value = clamped;
+    countInput.value  = clamped;
   }
 
-  else if (changedType === "AdvancedMax") {
-    if (Bmax < 100) {
-      // gris pas complet → reset tout au-dessus
-      AmaxInput.value = 0;
-      DmaxInput.value = 0;
-      setTo('Advanced', 0);
-      setTo('Divine', 0);
-    } else if (Amax < 600) {
-      // vert incomplet → reset rouge
-      DmaxInput.value = 0;
-      setTo('Divine', 0);
+  function applyInterlock(changedType, newValue) {
+    const setTo = (t, val) => setValue(t, val);
+    const basic = document.querySelector('.scroll-block[data-type="Basic"]');
+    const adv   = document.querySelector('.scroll-block[data-type="Advanced"]');
+    const div   = document.querySelector('.scroll-block[data-type="Divine"]');
+    const BmaxInput = basic.querySelector('.max');
+    const AmaxInput = adv.querySelector('.max');
+    const DmaxInput = div.querySelector('.max');
+    const BvalInput = basic.querySelector('.count');
+    const AvalInput = adv.querySelector('.count');
+    const DvalInput = div.querySelector('.count');
+    let Bmax = parseFloat(BmaxInput.value) || 0;
+    let Amax = parseFloat(AmaxInput.value) || 0;
+    let Dmax = parseFloat(DmaxInput.value) || 0;
+    let Bval = parseFloat(BvalInput.value) || 0;
+    let Aval = parseFloat(AvalInput.value) || 0;
+    let Dval = parseFloat(DvalInput.value) || 0;
+
+    if (changedType === "BasicMax") {
+      if (Bmax < 100) { AmaxInput.value = 0; DmaxInput.value = 0; setTo('Advanced', 0); setTo('Divine', 0); }
+    } else if (changedType === "AdvancedMax") {
+      if (Bmax < 100) { AmaxInput.value = 0; DmaxInput.value = 0; setTo('Advanced', 0); setTo('Divine', 0); }
+      else if (Amax < 600) { DmaxInput.value = 0; setTo('Divine', 0); }
+    } else if (changedType === "DivineMax") {
+      if (Bmax < 100 || Amax < 600) { DmaxInput.value = 0; setTo('Divine', 0); }
     }
+    if (changedType === "Basic") { setTo('Advanced', 0); setTo('Divine', 0); }
+    else if (changedType === "Advanced") {
+      if (newValue > 0) { if (Bval < 100) setTo('Basic', 100); setTo('Divine', 0); }
+      if (newValue === 0) setTo('Divine', 0);
+    } else if (changedType === "Divine") {
+      if (newValue > 0) { if (Aval < 600) setTo('Advanced', 600); if (Bval < 100) setTo('Basic', 100); }
+    }
+    calculate();
   }
 
-  else if (changedType === "DivineMax") {
-    // rouge max ne peut exister que si verts et gris complets
-    if (Bmax < 100 || Amax < 600) {
-      DmaxInput.value = 0;
-      setTo('Divine', 0);
-    }
-  }
-
-  // ======================
-  // 2️⃣ — VALEUR modifiée
-  // ======================
-
-  if (changedType === "Basic") {
-    // monter ou baisser du gris => reset verts et rouges
-    setTo('Advanced', 0);
-    setTo('Divine', 0);
-  }
-
-  else if (changedType === "Advanced") {
-    // Monter du vert → monte gris à 100 + reset rouges
-    if (newValue > 0) {
-      if (Bval < 100) setTo('Basic', 100);
-      setTo('Divine', 0);
-    }
-    // Baisser du vert → reset rouges
-    if (newValue === 0) setTo('Divine', 0);
-  }
-
-  else if (changedType === "Divine") {
-    // Monter du rouge → monte verts + gris
-    if (newValue > 0) {
-      if (Aval < 600) setTo('Advanced', 600);
-      if (Bval < 100) setTo('Basic', 100);
-    }
-  }
-
-  calculate();
-}
-
-
-    function getMax(type) {
-      const block = document.querySelector(`.scroll-block[data-type="${type}"]`);
-      return parseFloat(block.querySelector('.max').value) || scrollCaps[type];
-    }
-
-    function getMissing(type) {
+  function getMissing(type) {
     const block = document.querySelector(`.scroll-block[data-type="${type}"]`);
     const cur = parseFloat(block.querySelector('.count').value) || 0;
     const max = parseFloat(block.querySelector('.max').value) || 0;
-
     const bMax = parseFloat(document.querySelector('.scroll-block[data-type="Basic"] .max').value) || 0;
     const aMax = parseFloat(document.querySelector('.scroll-block[data-type="Advanced"] .max').value) || 0;
-
-    // 🔹 Catégorie désactivée = ignorée totalement
     if (max === 0) return 0;
-
-    // 🔹 Verts actifs seulement si gris complet
     if (type === 'Advanced' && bMax < 100) return 0;
-
-    // 🔹 Rouges actifs seulement si gris = 100 et verts = 600
     if (type === 'Divine' && (bMax < 100 || aMax < 600)) return 0;
-
-    // 🔹 Si valeur = 0 et max = 0 => ignoré
     if (cur === 0 && max === 0) return 0;
-
     return Math.max(0, max - cur);
   }
 
+  function calculate() {
+    const b = getMissing('Basic');
+    const bMax = parseFloat(document.querySelector('.scroll-block[data-type="Basic"] .max').value) || 0;
+    let a = 0;
+    if (bMax >= 100) a = getMissing('Advanced');
+    const aMax = parseFloat(document.querySelector('.scroll-block[data-type="Advanced"] .max').value) || 0;
+    let d = 0;
+    if (bMax >= 100 && aMax >= 600) d = getMissing('Divine');
 
-    function calculate() {
-      const b = getMissing('Basic');
+    const runsB = Math.ceil(b / AVG_BASIC);
+    const runsA = Math.ceil(a / AVG_ADV);
+    const runsD = Math.ceil(d / AVG_DIV);
+    const totalRuns = runsB + runsA + runsD;
+    const energy = totalRuns * ENERGY_PER_RUN;
+    const gems = (energy / REFILL_ENERGY) * REFILL_GEMS;
 
-      // Advanced ne compte que si les Basic sont complets
-      let a = 0;
-      const bMax = parseFloat(document.querySelector('.scroll-block[data-type="Basic"] .max').value) || 0;
-      if (bMax >= 100) {
-        a = getMissing('Advanced');
-      }
+    document.getElementById('energyNeeded').textContent = Math.round(energy);
+    document.getElementById('gemsNeeded').textContent = Math.round(gems);
+    document.getElementById('runsHint').textContent = `≈ ${totalRuns} runs total`;
 
-      // Divine ne compte que si Basic & Advanced sont complets
-      let d = 0;
-      const aMax = parseFloat(document.querySelector('.scroll-block[data-type="Advanced"] .max').value) || 0;
-      if (bMax >= 100 && aMax >= 600) {
-        d = getMissing('Divine');
-      }
+    document.querySelectorAll('.scroll-block').forEach(block => {
+      const type = block.dataset.type;
+      const bMaxV = parseFloat(document.querySelector('.scroll-block[data-type="Basic"] .max').value) || 0;
+      const aMaxV = parseFloat(document.querySelector('.scroll-block[data-type="Advanced"] .max').value) || 0;
+      let active = true;
+      if (type === 'Advanced' && bMaxV < 100) active = false;
+      if (type === 'Divine' && (bMaxV < 100 || aMaxV < 600)) active = false;
+      block.style.opacity = active ? '1' : '0.4';
+      block.style.filter  = active ? 'none' : 'grayscale(100%)';
+    });
+  }
 
-      const runsB = Math.ceil(b / AVG_BASIC);
-      const runsA = Math.ceil(a / AVG_ADV);
-      const runsD = Math.ceil(d / AVG_DIV);
-      const totalRuns = runsB + runsA + runsD;
+  document.querySelectorAll('.scroll-block').forEach(block => {
+    const type = block.dataset.type;
+    const circleContainer = block.querySelector('.circle-container');
+    const maxInput = block.querySelector('.max');
+    const centerInput = block.querySelector('.circle-input');
+    let isDragging = false;
+    const RADIUS = 52, STROKE_WIDTH = 10;
+    const INNER = RADIUS - STROKE_WIDTH * 0.75;
+    const OUTER = RADIUS + STROKE_WIDTH * 0.75;
+    const getMax = () => Math.min(parseFloat(maxInput.value) || scrollCaps[type], scrollCaps[type]);
+    const setVal = v => { setValue(type, v); applyInterlock(type, v); calculate(); };
 
-      const energy = totalRuns * ENERGY_PER_RUN;
-      const gems = (energy / REFILL_ENERGY) * REFILL_GEMS;
-
-      document.getElementById('energyNeeded').textContent = Math.round(energy);
-      document.getElementById('gemsNeeded').textContent = Math.round(gems);
-      document.getElementById('runsHint').textContent = `≈ ${totalRuns} runs total`;
-
-      // === Mise à jour visuelle des blocs actifs/inactifs ===
-      function updateBlockState() {
-        const blocks = document.querySelectorAll('.scroll-block');
-
-        const bMax = parseFloat(document.querySelector('.scroll-block[data-type="Basic"] .max').value) || 0;
-        const aMax = parseFloat(document.querySelector('.scroll-block[data-type="Advanced"] .max').value) || 0;
-
-        blocks.forEach(block => {
-          const type = block.dataset.type;
-          let active = true;
-
-          if (type === 'Advanced' && bMax < 100) active = false;
-          if (type === 'Divine' && (bMax < 100 || aMax < 600)) active = false;
-
-          block.style.opacity = active ? '1' : '0.4';
-          block.style.filter = active ? 'none' : 'grayscale(100%)';
-        });
-}
-
-// Appel à la fin du calcul
-updateBlockState();
+    function isOnStroke(e) {
+      const rect = circleContainer.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+      const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+      return dist >= INNER && dist <= OUTER;
+    }
+    function updateFromPointer(e) {
+      const rect = circleContainer.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+      let angle = Math.atan2(e.clientY - cy, e.clientX - cx) * (180 / Math.PI) + 90;
+      if (angle < 0) angle += 360;
+      setVal(Math.round(Math.min(1, Math.max(0, angle / 360)) * getMax()));
     }
 
-// === Contrôle circulaire : interaction uniquement sur le stroke (pas au centre) ===
-document.querySelectorAll('.scroll-block').forEach(block => {
-  const type = block.dataset.type;
-  const circleContainer = block.querySelector('.circle-container');
-  const maxInput = block.querySelector('.max');
-  const centerInput = block.querySelector('.circle-input'); // l’input au milieu
-  let isDragging = false;
-
-  const getMax = () => Math.min(parseFloat(maxInput.value) || scrollCaps[type], scrollCaps[type]);
-  const setVal = v => { setValue(type, v); applyInterlock(type, v); calculate(); };
-
-  // ⚙️ rayon/épaisseur (doivent matcher ton SVG/CSS)
-  const RADIUS = 52;        // <circle r="52">
-  const STROKE_WIDTH = 10;  // .progress-ring circle { stroke-width: 10; }
-  const INNER = RADIUS - STROKE_WIDTH * 0.75; // tolérance serrée
-  const OUTER = RADIUS + STROKE_WIDTH * 0.75;
-
-  function isOnStroke(e) {
-    const rect = circleContainer.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = e.clientX - cx;
-    const dy = e.clientY - cy;
-    const dist = Math.hypot(dx, dy);
-    return dist >= INNER && dist <= OUTER;
-  }
-
-  function updateFromPointer(e) {
-    const rect = circleContainer.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = e.clientX - cx;
-    const dy = e.clientY - cy;
-    let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-    if (angle < 0) angle += 360;
-    const percent = Math.min(1, Math.max(0, angle / 360));
-    const newValue = Math.round(percent * getMax());
-    setVal(newValue);
-  }
-
-  // --- Souris ---
-  circleContainer.addEventListener('mousedown', e => {
-    // 🔒 on ne démarre pas si on a cliqué sur l'input du centre
-    if (e.target === centerInput) return;
-    if (!isOnStroke(e)) return;        // ne démarre que sur le trait
-    e.preventDefault();
-    isDragging = true;
-    updateFromPointer(e);              // MAJ immédiate
+    circleContainer.addEventListener('mousedown', e => {
+      if (e.target === centerInput) return;
+      if (!isOnStroke(e)) return;
+      e.preventDefault(); isDragging = true; updateFromPointer(e);
+    });
+    window.addEventListener('mousemove', e => { if (!isDragging || !isOnStroke(e)) return; updateFromPointer(e); });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    circleContainer.addEventListener('touchstart', e => {
+      const t = e.touches[0];
+      if (e.target === centerInput || !isOnStroke(t)) return;
+      isDragging = true; updateFromPointer(t);
+    }, { passive: true });
+    window.addEventListener('touchmove', e => {
+      if (!isDragging) return;
+      const t = e.touches[0];
+      if (!isOnStroke(t)) return; updateFromPointer(t);
+    }, { passive: true });
+    window.addEventListener('touchend', () => { isDragging = false; });
   });
 
-  window.addEventListener('mousemove', e => {
-    if (!isDragging) return;
-    if (!isOnStroke(e)) return;        // rester sur le trait pendant le drag
-    updateFromPointer(e);
-  });
+  calculate();
+</script>
 
-  window.addEventListener('mouseup', () => { isDragging = false; });
-
-  // --- Tactile ---
-  circleContainer.addEventListener('touchstart', e => {
-    const t = e.touches[0];
-    if (e.target === centerInput) return;
-    if (!isOnStroke(t)) return;
-    isDragging = true;
-    updateFromPointer(t);
-  }, { passive: true });
-
-  window.addEventListener('touchmove', e => {
-    if (!isDragging) return;
-    const t = e.touches[0];
-    if (!isOnStroke(t)) return;
-    updateFromPointer(t);
-  }, { passive: true });
-
-  window.addEventListener('touchend', () => { isDragging = false; });
-});
-    calculate();
-  </script>
-  <div class="adsense-container">
-    <div class="ad-label">Advertisement</div>
-
-    <ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-8653563887265027"
-     data-ad-slot="9042028911"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  </div>
+<script src="/script.js"></script>
 </body>
 </html>

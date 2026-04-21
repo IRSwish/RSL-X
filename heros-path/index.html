@@ -1,66 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HNK5S7EBCJ"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-HNK5S7EBCJ');
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hero's Path - RSL-X</title>
   <script src="https://unpkg.com/lucide@latest" defer></script>
   <script src="/config/site-config.js"></script>
   <script src="/config/sessions.js"></script>
   <script src="/config/ad-banner.js" defer></script>
   <link rel="stylesheet" href="/style/style.css">
   <link rel="stylesheet" href="/heros-path/heros-path.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="preload" href="/menu.html" as="fetch" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    @font-face {
+      font-family: "Middle Ages";
+      src: url('/style/MiddAges.ttf') format('truetype');
+      font-display: swap;
+    }
+
+    * { box-sizing: border-box; }
+
+    /* ── Background animé ── */
+    .df-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .df-orb { position: absolute; border-radius: 50%; }
+    .df-orb-1 { width: 70vmax; height: 70vmax; top: -15%; left: -15%; background: radial-gradient(circle, rgba(201,169,106,0.10) 0%, transparent 65%); filter: blur(65px); animation: orbDrift1 28s ease-in-out infinite alternate; }
+    .df-orb-2 { width: 55vmax; height: 55vmax; bottom: -10%; right: -10%; background: radial-gradient(circle, rgba(90,70,145,0.08) 0%, transparent 65%); filter: blur(75px); animation: orbDrift2 35s ease-in-out infinite alternate; }
+    .df-orb-3 { width: 45vmax; height: 45vmax; top: 30%; left: 35%; background: radial-gradient(circle, rgba(160,88,38,0.07) 0%, transparent 60%); filter: blur(55px); animation: orbDrift3 22s ease-in-out infinite alternate; }
+    .df-scratches { position: absolute; inset: -5%; background-image: repeating-linear-gradient(58deg, transparent 0px, transparent 172px, rgba(255,255,255,0.028) 172px, rgba(255,255,255,0.028) 172.5px), repeating-linear-gradient(45deg, transparent 0px, transparent 157px, rgba(255,255,255,0.032) 157px, rgba(255,255,255,0.032) 158px), repeating-linear-gradient(67deg, transparent 0px, transparent 167px, rgba(201,169,106,0.034) 167px, rgba(201,169,106,0.034) 167.5px); animation: scratchShimmer 28s ease-in-out infinite alternate; }
+    .df-noise { position: absolute; inset: 0; opacity: 0.4; mix-blend-mode: overlay; }
+    .df-beam { position: absolute; top: -100%; left: -60%; width: 38%; height: 300%; background: linear-gradient(90deg, transparent 0%, rgba(201,169,106,0.014) 35%, rgba(201,169,106,0.028) 50%, rgba(201,169,106,0.014) 65%, transparent 100%); transform: rotate(15deg) translateX(-80vw); animation: beamSweep 24s ease-in-out infinite; }
+    .df-embers { position: absolute; inset: 0; background-image: radial-gradient(circle at 12% 68%, rgba(201,169,106,0.18) 0 1px, transparent 2px), radial-gradient(circle at 76% 20%, rgba(201,169,106,0.15) 0 1px, transparent 2px), radial-gradient(circle at 52% 12%, rgba(201,169,106,0.12) 0 1.5px, transparent 2.5px); animation: embersFloat 11s ease-in-out infinite alternate; }
+
+    @keyframes orbDrift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(4%,3%) scale(1.06); } }
+    @keyframes orbDrift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-3%,-4%) scale(1.08); } }
+    @keyframes orbDrift3 { from { transform: translate(0,0) scale(1); } to { transform: translate(5%,-3%) scale(0.95); } }
+    @keyframes scratchShimmer { from { opacity: 0.7; } to { opacity: 1; } }
+    @keyframes beamSweep { 0% { transform: rotate(15deg) translateX(-80vw); } 100% { transform: rotate(15deg) translateX(200vw); } }
+    @keyframes embersFloat { from { transform: translate(0,0); } to { transform: translate(2px,-4px); } }
+
+    body::before { display: none; }
+    body { background: radial-gradient(circle at 20% 20%, rgba(110,85,45,0.08), transparent 30%), radial-gradient(circle at 80% 30%, rgba(80,70,120,0.08), transparent 28%), linear-gradient(160deg, #050505, #0c0b0a 45%, #14110f); }
+
+    .header-wrapper { text-align: center; }
+
+
+    /* ── Ornements board ── */
+    @keyframes shimOut { 0% { stroke-dashoffset: 32; opacity: 0; } 8% { opacity: 0.65; } 88% { opacity: 0.65; } 100% { stroke-dashoffset: -106; opacity: 0; } }
+    @keyframes gemPulse { 0%, 100% { opacity: 0.88; } 50% { opacity: 1; } }
+    .b-orn { position: absolute; width: 70px; height: 70px; pointer-events: none; filter: drop-shadow(0 0 6px rgba(201,169,106,0.45)); z-index: 10; }
+    .b-orn.tl { top: -20px; left: -20px; }
+    .b-orn.tr { top: -20px; right: -20px; transform: scaleX(-1); }
+    .b-orn.bl { bottom: -20px; left: -20px; transform: scaleY(-1); }
+    .b-orn.br { bottom: -20px; right: -20px; transform: scale(-1); }
+    .b-sh { stroke-dasharray: 32 106; animation: shimOut 3s linear infinite; opacity: 0; }
+    .b-gem { animation: gemPulse 2.5s ease-in-out infinite; }
+    .b-orn.tr .b-sh  { animation-delay: -0.75s; }
+    .b-orn.bl .b-sh  { animation-delay: -1.5s; }
+    .b-orn.br .b-sh  { animation-delay: -2.25s; }
+    .b-orn.tr .b-gem { animation-delay: -0.625s; }
+    .b-orn.bl .b-gem { animation-delay: -1.25s; }
+    .b-orn.br .b-gem { animation-delay: -1.875s; }
+
+    .ad-banner-footer {
+      background: rgba(8,6,5,0.97) !important;
+      border-top: 1px solid rgba(201,169,106,0.45) !important;
+      box-shadow: 0 -4px 20px rgba(201,169,106,0.07) !important;
+      box-sizing: content-box !important;
+    }
+  </style>
 </head>
 <body>
-  <div id="menu-container"></div>
 
-  <!-- Info button -->
-  <button id="info-btn" class="info-btn" aria-label="Info">
-    <i data-lucide="info"></i>
-  </button>
+<!-- Dark fantasy background -->
+<div class="df-bg">
+  <div class="df-orb df-orb-1"></div>
+  <div class="df-orb df-orb-2"></div>
+  <div class="df-orb df-orb-3"></div>
+  <div class="df-scratches"></div>
+  <div class="df-beam"></div>
+  <div class="df-embers"></div>
+  <canvas class="df-noise" id="noiseCanvas"></canvas>
+</div>
 
-  <div class="header-wrapper">
-    <header id="page-title">HALLOWEEN PATH</header>
-  </div> 
+<div id="menu-container"></div>
 
-  <div class="board">
-    <svg class="connections" id="connections"></svg>
-    <div class="reward-container" id="rewardContainer"></div>
-  </div>
+<!-- Info button -->
+<button id="info-btn" class="info-btn" aria-label="Info">
+  <i data-lucide="info"></i>
+</button>
 
-  <!-- Scripts -->
-  <script>
-    document.write('<script src="/heros-path/heros-path-config.js?v=' + Date.now() + '"><\/script>');
-  </script>
-  <script src="/heros-path/script.js"></script>
-  <script src="/script.js"></script>
-  <script src="/config/session-widget.js"></script>
+<div class="header-wrapper">
+  <header id="page-title">HERO'S PATH</header>
+</div>
 
-  <div class="adsense-container">
-    <div class="ad-label">Advertisement</div>
+<div class="board">
+  <svg class="b-orn tl" viewBox="0 0 70 70" fill="none"><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="b-sh"/><rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="b-gem"/></svg>
+  <svg class="b-orn tr" viewBox="0 0 70 70" fill="none"><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="b-sh"/><rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="b-gem"/></svg>
+  <svg class="b-orn bl" viewBox="0 0 70 70" fill="none"><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="b-sh"/><rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="b-gem"/></svg>
+  <svg class="b-orn br" viewBox="0 0 70 70" fill="none"><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/><path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="b-sh"/><rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="b-gem"/></svg>
 
-    <ins class="adsbygoogle"
-      style="display:block"
-      data-ad-client="ca-pub-8653563887265027"
-      data-ad-slot="9042028911"
-      data-ad-format="auto"
-      data-full-width-responsive="true"></ins>
+  <svg class="connections" id="connections"></svg>
+  <div class="reward-container" id="rewardContainer"></div>
+</div>
 
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  </div>
-
+<script>
+  document.write('<script src="/heros-path/heros-path-config.js?v=' + Date.now() + '"><\/script>');
+</script>
+<script src="/heros-path/script.js"></script>
+<script src="/script.js"></script>
+<script src="/config/session-widget.js"></script>
+<script>
+  (function() {
+    const canvas = document.getElementById('noiseCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    function drawNoise() {
+      const w = canvas.width, h = canvas.height;
+      const img = ctx.createImageData(w, h);
+      for (let i = 0; i < img.data.length; i += 4) {
+        const v = Math.random() * 255 | 0;
+        img.data[i] = img.data[i+1] = img.data[i+2] = v;
+        img.data[i+3] = 18;
+      }
+      ctx.putImageData(img, 0, 0);
+      setTimeout(drawNoise, 80);
+    }
+    drawNoise();
+  })();
+</script>
 </body>
 </html>

@@ -1,154 +1,236 @@
-/* Info button */
-.info-btn {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  background: none;
-  border: none;
-  color: #fcf6ff;
-  font-size: 34px;
-  cursor: pointer;
-  z-index: 10001;
-  transition: color 0.25s ease, transform 0.2s ease;
-}
-.info-btn:hover { color: #d4af37; transform: scale(1.08); }
-.info-btn svg { width: 34px; height: 34px; stroke-width: 2; vertical-align: middle; }
+/* ============================================================
+   RSL-X — Fusion page V2  |  Dark Fantasy
+   ============================================================ */
 
-/* Sidebar */
-#info-sidebar {
-  position: fixed;
-  top: 0;
-  width: 400px;
-  height: 100vh;
-  background: var(--bg2);
-  border-left: 2px solid var(--gold);
-  color: var(--text);
-  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.6);
-  z-index: 9999;
-  transition: right 0.4s ease;
+/* ── Fusion Banner (top) ─────────────────────────────────── */
+#fusion-banner {
+  display: flex;
+  gap: 20px;
+  width: 92%;
+  margin: 20px auto 24px;
+  padding: 18px 24px;
+  background: linear-gradient(180deg, rgba(22,18,16,0.96), rgba(8,7,7,0.94));
+  border: 1px solid rgba(201,169,106,0.22);
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  align-items: center;
+}
+
+.banner-champion {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.banner-champ-img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border: 1px solid rgba(201,169,106,0.4);
+  background: rgba(0,0,0,0.4);
+  flex: 0 0 auto;
+}
+
+.banner-champ-info {
+  display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 80px 25px 40px 25px;
-  box-sizing: border-box;
-  -webkit-overflow-scrolling: touch;
-  direction: rtl;
-  scrollbar-gutter: stable both-edges;
-  right: -400px;
+  gap: 6px;
+  min-width: 0;
 }
 
-#info-sidebar * { direction: ltr; }
-#info-sidebar.open { right: 0; }
-
-#info-sidebar::-webkit-scrollbar { width: 10px; }
-#info-sidebar::-webkit-scrollbar-track {
-  background: #0e0e0e;
-  border-left: 1px solid rgba(212, 175, 55, 0.2);
-}
-#info-sidebar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #d4af37 0%, #f52584 100%);
-  border-radius: 10px;
-  border: 2px solid #0e0e0e;
-  box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
-  transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-#info-sidebar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #f52584 0%, #00c9ff 100%);
-  box-shadow: 0 0 12px rgba(0, 201, 255, 0.4);
-}
-#info-sidebar { scrollbar-width: thin; scrollbar-color: #d4af37 #0e0e0e; }
-
-@media (max-width: 700px) {
-  #info-sidebar {
-    width: 100%;
-    right: calc(-100% - 2px);
-    padding: 16px;
-  }
-  #info-sidebar.open { right: 0; }
-}
-
-/* Panels */
-.panel {
-  background: rgba(0,0,0,0.35);
-  border: 2px solid var(--gold, #d4af37);
-  border-radius: 10px;
-  margin-bottom: 18px;
+.banner-champ-name {
+  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #f1ddb1;
+  text-transform: uppercase;
+    text-shadow: 0 0 6px rgba(201,169,106,0.3);
+  line-height: 1.1;
+  white-space: nowrap;
   overflow: hidden;
-  box-shadow: 0 0 12px rgba(212,175,55,0.25);
-}
-.panel-header {
-  background: var(--gold, #d4af37);
-  color: #1a1a1a;
-  text-align: center;
-  font-weight: 700;
-  padding: 10px 0;
-  font-size: 16px;
-  border-bottom: 2px solid #000;
-}
-.panel-body {
-  padding: 12px 15px;
-  background: rgba(10,10,10,0.7);
-  border-radius: 0 0 8px 8px;
-  font-size: 15px;
-  color: var(--text, #fcf6ff);
+  text-overflow: ellipsis;
 }
 
-/* Legend */
-.legend {
+.banner-champ-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.banner-type-pill {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #c9a96a;
+  padding: 3px 10px;
+  border: 1px solid rgba(201,169,106,0.35);
+  background: rgba(201,169,106,0.06);
+}
+
+.banner-datespan {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(232,224,210,0.75);
+  letter-spacing: 0.5px;
+}
+
+.banner-champ-attrs {
+  display: flex;
+  gap: 14px;
+  margin-top: 2px;
+}
+
+.banner-attr {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e8e0d2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.banner-attr img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.banner-progress {
+  flex: 1 1 360px;
+  max-width: 480px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 4px;
-  font-size: 14px;
+  min-width: 0;
 }
-.legend div { display: flex; align-items: center; gap: 6px; }
+
+.banner-progress-header {
+  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #c9a96a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(201,169,106,0.2);
+}
+
+.banner-progress-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  #fusion-banner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .banner-champion { width: 100%; }
+  .banner-progress {
+    max-width: 100%;
+    width: 100%;
+    flex: 0 0 auto; /* évite que flex-basis 360px devienne hauteur en mode column */
+  }
+}
+
+/* ── Legend strip (below calendar) ────────────────────────── */
+#legend-strip {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  width: 92%;
+  margin: 0 auto 20px;
+  padding: 10px 20px;
+  background: rgba(12,10,9,0.7);
+  border: 1px solid rgba(201,169,106,0.18);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #e8e0d2;
+}
+
+#legend-strip > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .legend-dot {
-  width: 10px; height: 10px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   display: inline-block;
 }
-.legend-dot.skipped { background-color: #ff3333; }
-.legend-dot.in-progress { background-color: #ffa500; }
-.legend-dot.done { background-color: #4caf50; }
-.legend-dot.not-started { background-color: #e0e0e0; }
+.legend-dot.skipped     { background: #ff3333; }
+.legend-dot.in-progress { background: #ffa500; }
+.legend-dot.done        { background: #4caf50; }
+.legend-dot.not-started { background: #e0e0e0; }
 
-/* Progress / Stat cards */
-.progress-panel { display: flex; flex-direction: column; gap: 10px; }
+/* ── Resources panel (below legend) ───────────────────────── */
+#resources-panel-wrapper {
+  width: 92%;
+  margin: 0 auto 40px;
+  background: linear-gradient(180deg, rgba(22,18,16,0.96), rgba(8,7,7,0.94));
+  border: 1px solid rgba(201,169,106,0.22);
+  padding: 16px 20px 20px;
+}
+
+.resources-header {
+  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #c9a96a;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(201,169,106,0.2);
+  margin-bottom: 12px;
+}
+
+#resources-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 12px;
+}
+
+/* ── Progress stat cards (inside banner) ──────────────────── */
+.progress-panel { display: flex; flex-direction: column; gap: 8px; }
+
 .stat {
   display: flex; align-items: center; gap: 12px;
-  background: rgba(255,255,255,0.05);
-  border: 2px solid rgba(212,175,55,0.2);
-  border-radius: 8px;
-  padding: 8px 12px;
-  transition: transform .2s ease, background .3s ease, box-shadow .3s ease, border-color .3s ease;
+  background: rgba(0,0,0,0.32);
+  border: 1px solid rgba(201,169,106,0.15);
+  padding: 6px 10px;
+  transition: background .3s ease, border-color .3s ease;
 }
-.stat:hover {
-  background: rgba(212,175,55,0.15);
-  transform: scale(1.02);
-  box-shadow: 0 0 12px rgba(212,175,55,0.25);
-}
-.stat .label { font-size:13px; opacity:.85; }
-.stat .value { font-size:18px; font-weight:700; color: var(--text); }
-.stat img.stat-icon {
-  width: 48px; height: 48px;
-  border-radius: 6px; object-fit: contain;
-}
-.stat.status-green {
-  border-color: #00ff66;
-  box-shadow: 0 0 10px rgba(0,255,100,.35);
-}
+.stat:hover { background: rgba(201,169,106,0.08); border-color: rgba(201,169,106,0.4); }
+.stat .label { font-size:13px; opacity:.85; font-family: "Cormorant Garamond", serif; }
+.stat .value { font-size:17px; font-weight:700; color: #e8e0d2; font-family: "Cormorant Garamond", serif; }
+.stat img.stat-icon { width: 42px; height: 42px; object-fit: contain; }
+.stat.status-green { border-color: #00ff66; box-shadow: 0 0 10px rgba(0,255,100,.35); }
+.stat.status-red   { border-color: #ff4444; box-shadow: 0 0 10px rgba(255,80,80,.25); }
 
-/* Progress Grid */
 .progress-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
 }
 @media (max-width: 700px) {
   .progress-grid { grid-template-columns: 1fr; }
 }
 
-/* Progress bar (fragments) */
 .frag-bar {
   position: relative;
   width: 100%;
@@ -162,29 +244,16 @@
   position: absolute;
   left: 0; top: 0;
   height: 100%;
-  background: linear-gradient(90deg, #d4af37, #f8e16c);
-  box-shadow: 0 0 8px rgba(212,175,55,0.6);
+  background: linear-gradient(90deg, #c9a96a, #f8e16c);
+  box-shadow: 0 0 8px rgba(201,169,106,0.6);
   border-radius: 3px;
   transition: width 0.4s ease;
 }
 
-/* Resources */
-#resources-panel-wrapper {
-  flex: 1;
-  min-height: 0;
-}
-
-#resources-panel {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 12px;
-  padding: 10px;
-}
-
+/* ── Resources cards ──────────────────────────────────────── */
 .res-card {
-  background: rgba(255,255,255,0.05);
-  border: 2px solid var(--gold);
-  border-radius: 10px;
+  background: rgba(0,0,0,0.32);
+  border: 1px solid rgba(201,169,106,0.25);
   padding: 8px;
   display: flex;
   flex-direction: column;
@@ -194,37 +263,60 @@
 }
 .res-card img.champ {
   width: 64px; height: 64px;
-  border-radius: 8px; object-fit: cover;
+  object-fit: cover;
 }
 
-.res-stars { display:flex; gap:4px; }
+.res-stars { display: flex; gap: 1px; }
 .star-btn {
-  border:none; background:transparent; padding:0; cursor:pointer;
-  width:20px; height:20px; display:grid; place-items:center;
-  transition:transform .12s ease, opacity .12s ease;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  width: 18px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 1;
+  display: inline-block;
+  color: transparent;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 1.5px #000;
+  transition: color 0.15s ease, transform 0.1s ease;
 }
+.star-btn:hover { transform: scale(1.1); }
 
-.rank-star svg { color: gold; fill: none;}
-.rank-star.active svg { color: gold; fill: gold;}
-.asc-star  svg { color: #f52584; fill: none; }
-.asc-star.active  svg { color: #f52584; fill: #f52584;}
+.rank-star { color: rgba(241, 221, 177, 0.12); }
+.rank-star.active { color: gold; }
+
+.asc-star { color: rgba(139, 46, 46, 0.18); }
+.asc-star.active { color: #a8324a; }
 
 .res-reset {
   background: transparent;
-  border: 1px solid #f52584;
-  color: #f52584;
+  border: 1px solid rgba(201,169,106,0.5);
+  color: #c9a96a;
   padding: 3px 6px;
-  border-radius: 6px;
   font-size: 12px;
+  line-height: 1;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  transition: all 0.15s ease;
 }
-.res-reset:hover { opacity: .9; }
+.res-reset:hover {
+  color: #0a0a0a;
+  background: #c9a96a;
+  border-color: #c9a96a;
+}
+.res-reset svg { width: 14px; height: 14px; }
 
-.mini-line { font-weight:600; color: var(--gold); }
+.mini-line { font-weight: 600; color: #c9a96a; font-family: "Cormorant Garamond", serif; }
 
-/* Champions built (compact mode) */
 .res-card.compact {
-  background: linear-gradient(90deg, rgba(0, 180, 50, 0.4), rgba(0, 255, 100, 0.25));
+  background: linear-gradient(90deg, rgba(0,180,50,0.4), rgba(0,255,100,0.25));
   border: 2px solid #00c95c;
   display: flex;
   align-items: center;
@@ -234,394 +326,336 @@
   padding: 5px 10px;
   height: 40px;
 }
-
 .res-card.compact .mini-line { display: none; }
 .res-card.compact img.champ {
-  width: 90px;
-  height: 30px;
+  width: 90px; height: 30px;
   border-radius: 6px;
   object-fit: cover;
-  border: none;
 }
-.res-card.compact .res-reset {
-  border: none;
-  background: transparent;
-  color: #fcf6ff;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-.res-card.compact .res-reset:hover {
-  transform: rotate(-20deg) scale(1.2);
-  opacity: 0.9;
-}
-.res-card.compact .res-reset svg {
-  width: 20px;
-  height: 20px;
-}
+/* Compact mode : reset conserve son look outline-gold (même design que '−') */
 
-/* Resources summary */
-#resources-summary {
-  display: flex;
-  flex-direction: column;
+/* Global header card inside resources grid */
+.res-card.global {
+  grid-column: 1 / -1;
   align-items: center;
-  text-align: center;
-  margin-bottom: 12px;
-}
-#resources-global {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
   gap: 10px;
-  padding: 10px 0;
-  background: rgba(255,255,255,0.05);
-  border: 2px solid rgba(212,175,55,0.3);
-  border-radius: 10px;
-  box-shadow: 0 0 12px rgba(212,175,55,0.25);
+  padding: 12px;
 }
-#resources-global .global-line {
+.res-card.global .global-line {
+  font-family: "Cormorant Garamond", serif;
   font-weight: 700;
   font-size: 16px;
-  color: #fcf6ff;
+  color: #e8e0d2;
   text-align: center;
 }
-#resources-global .total-icons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px 16px;
-  margin-top: 6px;
+.total-icons {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 10px 14px; margin-top: 4px;
 }
-#resources-global .total-icons .ico {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #fcf6ff;
+.total-icons .ico {
+  display: flex; align-items: center; gap: 6px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 15px; font-weight: 600; color: #e8e0d2;
 }
-.global { grid-column: 1 / -1; align-items:center; }
-.total-icons { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
-.total-icons .ico { display:flex; align-items:center; gap:4px; font-size:13px; }
-.total-icons img { width:48px; height:48px;}
-#resources-global .total-icons img {
-  width: 64px;
-  height: 64px;
-  border-radius: 6px;
-  object-fit: contain;
-}
+.total-icons img { width: 48px; height: 48px; object-fit: contain; }
 
-/* Extra Rewards (1st/2nd place rankings) */
-.extra-choices {
-  margin-top: 6px;
-  padding: 6px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(245, 37, 132, 0.5);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.extra-choices .extra-title {
+.res-card.global .glob-phantom {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 8px;
   font-size: 13px;
   font-weight: 600;
-  color: #fcf6ff;
-  opacity: 0.9;
+  color: #a8324a;
+  border: 1px solid rgba(168,50,74,0.5);
+  background: rgba(168,50,74,0.08);
+  font-family: "Cormorant Garamond", serif;
 }
 
-.extra-choice {
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid #f52584;
-  color: #fcf6ff;
-  border-radius: 6px;
-  padding: 4px 8px;
+/* ── Section labels (Rares / Epics) ─────────────────────────── */
+.res-section-label {
+  grid-column: 1 / -1;
+  font-family: "MedievalSharp", "Cinzel", serif;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: #c9a96a;
+  text-transform: uppercase;
+  padding: 8px 0 4px;
+  border-bottom: 1px solid rgba(201,169,106,0.3);
+  margin-top: 4px;
+}
+
+/* ── Champion name on each card ─────────────────────────────── */
+.res-card-name {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
   font-size: 13px;
-  cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
-  text-align: left;
+  color: #e8e0d2;
+  text-align: center;
+  line-height: 1.15;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+.res-card.compact .res-card-name { display: none; }
 
-.extra-choice:hover {
-  transform: translateY(-1px);
-  border-color: #d4af37;
+/* ── Phantom cards (épic pas encore obtenu) ─────────────────── */
+.res-card.phantom {
+  opacity: 0.55;
+  border: 1px dashed rgba(168,50,74,0.5);
+  background: rgba(0,0,0,0.35);
 }
-
-.extra-choice.active {
-  background: linear-gradient(90deg, #f52584, #00c9ff);
-  border-color: #d4af37;
-  box-shadow: 0 0 8px rgba(245, 37, 132, 0.5);
+.res-card.phantom img.champ {
+  filter: grayscale(1) brightness(0.8);
 }
-
-/* Event reset button */
-.event-reset {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  z-index: 6;
-  transition: 0.2s ease;
+.phantom-badge {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #a8324a;
+  padding: 2px 6px;
+  border: 1px solid rgba(168,50,74,0.5);
+  background: rgba(0,0,0,0.4);
 }
-
-.event-reset svg {
-  color:#fff;
-  width: 14px;
-  height: 14px;
-  stroke-width: 2;
-}
-
-/* Extra rewards corner (compact medals) */
-.extra-corner {
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
+.phantom-frag {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 3px;
-  z-index: 5;
+  align-items: center;
+}
+.phantom-frag-bar {
+  width: 90%;
+  height: 5px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(201,169,106,0.3);
+  overflow: hidden;
+}
+.phantom-frag-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c9a96a, #f8e16c);
+  transition: width 0.4s ease;
+}
+.phantom-frag-text {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 11px;
+  color: #c9a96a;
+  font-weight: 600;
 }
 
+/* ── Add-extra card (+1 after shard summon) ─────────────────── */
+.res-card.add-card {
+  opacity: 0.7;
+  border: 1px dashed rgba(201,169,106,0.45);
+  background: rgba(201,169,106,0.04);
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+.res-card.add-card:hover {
+  opacity: 1;
+  background: rgba(201,169,106,0.1);
+}
+.res-card.add-card img.champ {
+  filter: grayscale(0.6) brightness(0.9);
+}
+.res-add-btn {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #c9a96a;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(201,169,106,0.5);
+  padding: 3px 10px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.15s ease;
+}
+.res-add-btn:hover {
+  color: #0a0a0a;
+  background: #c9a96a;
+  transform: scale(1.05);
+}
+
+.res-card-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+/* ── Extra copies (user-added) ──────────────────────────────── */
+.res-card.extra {
+  border-left: 3px solid #c9a96a;
+}
+/* Même look que .res-reset, inline (pas de position absolute) */
+.res-extra-remove {
+  background: transparent;
+  border: 1px solid rgba(201,169,106,0.5);
+  color: #c9a96a;
+  padding: 3px 6px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  transition: all 0.15s ease;
+}
+.res-extra-remove:hover {
+  color: #0a0a0a;
+  background: #c9a96a;
+  border-color: #c9a96a;
+}
+
+/* Compact mode : '−' conserve son look outline-gold (même design qu'en mode normal) */
+
+/* ── Extra rewards (medals) — inline flex item ────────────── */
+.extra-corner {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+}
 .extra-corner-btn {
   display: flex;
   align-items: center;
   gap: 3px;
   background: rgba(0,0,0,0.6);
-  border: 2px solid rgba(255,255,255,0.15);
-  padding: 2px 5px;
-  font-size: 11px;
-  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 1px 4px;
+  font-size: 10px;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
 }
-
-.extra-corner-btn:hover {
-  border-color: #d4af37;
-}
-
+.extra-corner-btn:hover { border-color: #c9a96a; }
 .extra-corner-btn.active {
   border-color: #4caf50;
-  box-shadow: 0 0 8px rgba(94, 255, 0, 0.35);
+  box-shadow: 0 0 8px rgba(94,255,0,0.35);
 }
+.extra-corner-btn .medal { font-size: 13px; }
+.extra-corner-btn .frag-mini { width: 12px; height: 12px; object-fit: contain; }
+.extra-corner-btn .frag-val { font-size: 10px; color: #e8e0d2; }
 
-.extra-corner-btn .medal {
-  font-size: 14px;
-}
-
-.extra-corner-btn .frag-mini {
-  width: 14px;
-  height: 14px;
-  object-fit: contain;
-}
-
-.extra-corner-btn .frag-val {
-  font-size: 11px;
-  color: #fcf6ff;
-}
-
-/* ——— Pin Toggle Buttons (bottom-left) ——— */
-#pin-toggles {
-  position: fixed;
-  bottom: 130px;
-  left: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 1000;
-}
-
-.pin-toggle-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(10, 10, 10, 0.85);
-  border: 2px solid rgba(212, 175, 55, 0.3);
-  color: var(--text, #fcf6ff);
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(10px);
-}
-
-.pin-toggle-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
-.pin-toggle-btn:hover {
-  border-color: var(--gold, #d4af37);
-  background: rgba(212, 175, 55, 0.15);
-}
-
-.pin-toggle-btn.active {
-  border-color: var(--gold, #d4af37);
-  background: rgba(212, 175, 55, 0.2);
-  color: var(--gold, #d4af37);
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
-}
-
-/* ——— Pinned Panels (bottom-left, above buttons) ——— */
-#pinned-area {
-  position: fixed;
-  bottom: 220px;
-  left: 16px;
-  z-index: 9998;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-width: 320px;
-  max-height: calc(100vh - 120px);
-}
-
-.pinned-panel {
-  opacity: 0;
-  max-height: 0;
-  overflow: hidden;
-  transform: translateY(20px) scale(0.95);
-  transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease;
-  pointer-events: none;
-}
-
-.pinned-panel.visible {
-  opacity: 1;
-  max-height: 500px;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
-}
-
-#pinned-area .panel {
-  margin-bottom: 0;
-  font-size: 13px;
-}
-
-#pinned-area .panel-header {
-  padding: 7px 0;
-  font-size: 14px;
-}
-
-#pinned-area .panel-body {
-  padding: 10px 12px;
-  font-size: 13px;
-}
-
-#pinned-area .legend {
-  font-size: 12px;
-  gap: 5px;
-}
-
-#pinned-area .stat {
-  padding: 6px 10px;
-  gap: 8px;
-}
-
-#pinned-area .stat .label { font-size: 11px; }
-#pinned-area .stat .value { font-size: 15px; }
-#pinned-area .stat img.stat-icon { width: 36px; height: 36px; }
-
-@media (max-width: 700px) {
-  #pin-toggles {
-    bottom: 70px;
-    left: 10px;
-  }
-  #pinned-area {
-    bottom: 150px;
-    left: 10px;
-    max-width: calc(100vw - 20px);
-  }
-}
-
-/* ——— Event blocks ——— */
+/* ——— Event blocks V2 — inline (name + rewards on one line) ——— */
 .event-block {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  padding: 6px 8px;
+  padding: 4px 6px;
+  gap: 8px;
   overflow: hidden;
+  height: 40px;
 }
 
-/* Tournament — fond bleu subtil */
 .event-block.type-tournament {
   background: rgba(30, 60, 140, 0.18);
   border-color: rgba(90, 140, 220, 0.5);
 }
-.event-block.type-tournament .event-name {
-  color: #8aaee0;
-}
+.event-block.type-tournament .event-name { color: #8aaee0; }
 
-/* Event — fond vert subtil */
 .event-block.type-event {
   background: rgba(15, 90, 40, 0.18);
   border-color: rgba(60, 170, 100, 0.5);
 }
-.event-block.type-event .event-name {
-  color: #72c497;
-}
+.event-block.type-event .event-name { color: #72c497; }
 
-/* Titres des blocs */
+/* Titres des blocs — flex left, ellipsis, centré vertical */
 .event-name {
+  flex: 1 1 auto;
+  min-width: 0;
   font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  text-align: center;
-  width: 100%;
+  text-align: left;
+  font-family: "Cormorant Garamond", serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 32px;
+  margin: 0;
 }
 
-/* ——— Reward boxes — mini cards horizontales ——— */
+/* Points — flex right, ne pas écraser */
 .points-container {
-  gap: 5px;
+  flex: 0 0 auto;
+  display: flex;
+  gap: 4px;
   flex-wrap: nowrap;
+  justify-content: flex-end;
 }
 
 .point-box {
-  flex-direction: row;
-  align-items: stretch;
+  position: relative;
   flex: 0 0 auto;
-  width: 48px;
-  max-width: none;
-  min-width: unset;
-  height: 30px;
-  padding: 0;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  padding: 2px;
   overflow: hidden;
-  border: 2px solid rgba(212, 175, 55, 0.25);
+  border: none;
+  border-radius: 0 !important;
+  background: rgba(0,0,0,0.45);
   box-shadow: none;
 }
 
 .event-block .point-box img {
-  width: 26px;
+  width: 100%;
   height: 100% !important;
+  min-width: unset;
+  max-width: unset;
   min-height: unset !important;
-  max-height: none !important;
-  min-width: 26px;
-  max-width: 26px;
-  align-self: stretch;
-  object-fit: cover;
+  max-height: unset !important;
+  object-fit: contain;
   flex: none;
+  display: block;
 }
 
 .point-box span {
-  margin-top: 0;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 6px;
-  font-size: 12px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: 9px;
   font-weight: 700;
+  line-height: 12px;
+  padding: 0 2px;
+  background: rgba(0,0,0,0.72);
+  color: #e8e0d2;
   white-space: nowrap;
-  background: #d0d0d0;
-  color: #111;
 }
 
-.point-box.state-validated span { background: #4caf50; color: #111; }
-.point-box.state-ongoing span   { background: #ffa500; color: #111; }
-.point-box.state-passed span    { background: #ff3333; color: #fff; }
-.point-box.state-upcoming span  { background: #d0d0d0; color: #111; }
+.point-box.state-validated { border: 1px solid rgba(76,175,80,0.7); }
+.point-box.state-validated span { background: rgba(76,175,80,0.88); color: #fff; }
+.point-box.state-ongoing { border: 1px solid rgba(255,165,0,0.7); }
+.point-box.state-ongoing span   { background: rgba(255,165,0,0.88); color: #111; }
+.point-box.state-passed { border: 1px solid rgba(220,40,40,0.7); }
+.point-box.state-passed span    { background: rgba(220,40,40,0.88); color: #fff; }
+.point-box.state-upcoming { border: 1px solid rgba(223,223,223,0.5); }
+.point-box.state-upcoming span  { background: rgba(0,0,0,0.72); color: #e8e0d2; }
+
+/* Event reset — inline flex item, à gauche */
+.event-reset {
+  flex: 0 0 auto;
+  position: static;
+  background: transparent;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: opacity 0.2s ease;
+  display: grid;
+  place-items: center;
+}
+.event-reset:hover { opacity: 1; }
+.event-reset svg {
+  color: #c9a96a;
+  width: 11px;
+  height: 11px;
+  stroke-width: 2;
+  display: block;
+}
 
 /* ——— Section separators ——— */
 .section-separator {
@@ -643,38 +677,50 @@
   top: 50%;
   height: 1px;
 }
-.section-separator[data-section="tournament"]::before {
-  background: rgba(90, 140, 220, 0.3);
-}
-.section-separator[data-section="event"]::before {
-  background: rgba(60, 170, 100, 0.3);
-}
+.section-separator[data-section="tournament"]::before { background: rgba(90,140,220,0.3); }
+.section-separator[data-section="event"]::before      { background: rgba(60,170,100,0.3); }
+
 .section-separator-label {
   position: relative;
-  background: #111;
+  background: #090807;
   padding: 3px 14px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  border-radius: 20px;
+  font-family: "Cormorant Garamond", serif;
 }
 .section-separator[data-section="tournament"] .section-separator-label {
-  color: rgba(90, 140, 220, 0.7);
-  border: 1px solid rgba(90, 140, 220, 0.25);
+  color: rgba(90,140,220,0.7);
+  border: 1px solid rgba(90,140,220,0.25);
 }
 .section-separator[data-section="event"] .section-separator-label {
-  color: rgba(60, 170, 100, 0.7);
-  border: 1px solid rgba(60, 170, 100, 0.25);
+  color: rgba(60,170,100,0.7);
+  border: 1px solid rgba(60,170,100,0.25);
 }
 
-/* ——— Potion Keep pills ——— */
+/* Timeline horizontal line */
+.timeline-line { top: 65px; }
+
+/* Date columns */
+.date-column .day {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 700;
+  font-size: 17px;
+}
+.date-column .date {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+/* Potion keep pills */
 .keep-pill {
   display: block;
   width: 70%;
   height: 8px;
   border-radius: 4px;
-  margin: 5px auto 0;
+  margin: 5px auto 8px;
   position: relative;
   z-index: 1;
   cursor: default;
@@ -684,7 +730,7 @@
 .keep-magic  { background: rgba(40, 120, 190, 0.45); }
 .keep-void   { background: rgba(110, 55, 145, 0.45); }
 
-/* ——— Events terminés : override des couleurs type-tournament/type-event ——— */
+/* ——— Events terminés — overrides ——— */
 .event-block.event-ended,
 .event-block.event-ended.type-tournament,
 .event-block.event-ended.type-event {
@@ -698,7 +744,6 @@
   border-color: rgba(255, 50, 50, 0.4);
   box-shadow: 0 0 10px rgba(255, 50, 50, 0.2);
 }
-
 .event-block.event-ended .event-name,
 .event-block.event-ended.type-tournament .event-name,
 .event-block.event-ended.type-event .event-name {
@@ -719,7 +764,6 @@
   border-color: rgba(0, 201, 27, 0.4);
   box-shadow: 0 0 10px rgba(0, 201, 27, 0.2);
 }
-
 .event-block.event-ended.validated .event-name,
 .event-block.event-ended.validated.type-tournament .event-name,
 .event-block.event-ended.validated.type-event .event-name {
@@ -732,18 +776,17 @@
 .event-block.event-ended.partial.type-event {
   background: repeating-linear-gradient(
     135deg,
-    rgba(245, 37, 37, 0.12) 0px,
-    rgba(245, 37, 37, 0.12) 4px,
+    rgba(255, 140, 0, 0.12) 0px,
+    rgba(255, 140, 0, 0.12) 4px,
     rgba(75, 75, 75, 0.1) 4px,
     rgba(75, 75, 75, 0.1) 8px
   );
-  border-color: rgba(255, 50, 50, 0.4);
-  box-shadow: 0 0 10px rgba(255, 50, 50, 0.2);
+  border-color: rgba(255, 140, 0, 0.45);
+  box-shadow: 0 0 10px rgba(255, 140, 0, 0.2);
 }
-
 .event-block.event-ended.partial .event-name,
 .event-block.event-ended.partial.type-tournament .event-name,
 .event-block.event-ended.partial.type-event .event-name {
-  color: rgba(255, 80, 80, 0.9);
+  color: rgba(255, 160, 0, 0.9);
   text-shadow: none;
 }

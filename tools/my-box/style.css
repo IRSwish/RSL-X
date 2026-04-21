@@ -509,7 +509,7 @@
 .edit-champ-info { flex: 1; }
 
 .edit-champ-name {
-  font-family: 'American Captain', sans-serif;
+  font-family: "Middle Ages", "Cormorant Garamond", serif;
   font-size: 26px;
   background: linear-gradient(to bottom, #feeec1, #e09f40);
   -webkit-background-clip: text;
@@ -535,7 +535,7 @@
 .edit-section:last-child { border-bottom: none; }
 
 .edit-section-title {
-  font-family: 'American Captain', sans-serif;
+  font-family: "Middle Ages", "Cormorant Garamond", serif;
   font-size: 16px;
   letter-spacing: .08em;
   background: linear-gradient(to bottom, #feeec1, #e09f40);
@@ -841,7 +841,7 @@ input[type=number] { -moz-appearance: textfield; }
 }
 
 .bpick-title {
-  font-family: 'American Captain', sans-serif;
+  font-family: "Middle Ages", "Cormorant Garamond", serif;
   font-size: 22px;
   background: linear-gradient(to bottom, #feeec1, #e09f40);
   -webkit-background-clip: text;
@@ -876,7 +876,7 @@ input[type=number] { -moz-appearance: textfield; }
 .bpick-section { margin-bottom: 18px; }
 
 .bpick-section-title {
-  font-family: 'American Captain', sans-serif;
+  font-family: "Middle Ages", "Cormorant Garamond", serif;
   font-size: 16px;
   background: linear-gradient(to bottom, #feeec1, #e09f40);
   -webkit-background-clip: text;
@@ -959,7 +959,7 @@ input[type=number] { -moz-appearance: textfield; }
   position: relative;
 }
 .add-modal-header span {
-  font-family: 'American Captain', sans-serif;
+  font-family: "Middle Ages", "Cormorant Garamond", serif;
   font-size: 20px;
   background: linear-gradient(to bottom, #feeec1, #e09f40);
   -webkit-background-clip: text;

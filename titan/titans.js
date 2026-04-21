@@ -69,14 +69,11 @@
 
     timeline.innerHTML = '';
 
-    // Titre
-    const pageTitle = document.getElementById('page-title');
-    if (pageTitle) {
-      pageTitle.innerHTML = `
-        <div class="fusion-title-line">
-          ${data.title || ''}
-        </div>
-      `;
+    // Bannière (titre + datespan)
+    if (typeof window.fillTitanBanner === 'function') {
+      const hash = window.location.hash.replace(/^#+/, '').replace(/^\/+/, '');
+      const fusionName = (window.fusions && window.fusions[hash]) ? window.fusions[hash].name : '';
+      window.fillTitanBanner(fusionName, data);
     }
 
     const events = Array.isArray(data.events) ? data.events : [];
@@ -206,7 +203,7 @@
       const sepTop = document.createElement('div');
       sepTop.className = 'section-separator';
       sepTop.dataset.section = 'tournament';
-      sepTop.style.top = '62px';
+      sepTop.style.top = '70px';
       sepTop.innerHTML = `<span class="section-separator-label">Tournaments</span>`;
       timeline.appendChild(sepTop);
     }
@@ -215,13 +212,13 @@
       const tournamentMaxTrack = placedTournaments.length > 0
         ? Math.max(...placedTournaments.map(i => i.top))
         : 0;
-      evtOffset = tournamentMaxTrack + 82 + sectionGap;
+      evtOffset = tournamentMaxTrack + 46 + sectionGap;
 
       if (eventEvts.length > 0) {
         const sep = document.createElement('div');
         sep.className = 'section-separator';
         sep.dataset.section = 'event';
-        sep.style.top = `${100 + tournamentMaxTrack + 82 + 10}px`;
+        sep.style.top = `${118 + tournamentMaxTrack + 46 + 10}px`;
         sep.innerHTML = `<span class="section-separator-label">Events</span>`;
         timeline.appendChild(sep);
       }
@@ -232,7 +229,7 @@
 
     placedEvents.forEach((item) => {
       const event = item.event;
-      const top = item.top + 100;
+      const top = item.top + 118;
       const start = parseLocal(event.start_date);
       const end = parseLocal(event.end_date);
 
@@ -289,8 +286,8 @@
       }).join('');
 
       block.innerHTML = `
+        <button class="event-reset" title="Reset"><i data-lucide="rotate-cw"></i></button>
         <div class="event-name">${event.name}</div>
-        <button class="event-reset" title="Reset this event">↺</button>
         <div class="points-container">${pointsHTML}</div>
       `;
 
@@ -422,6 +419,7 @@
       });
     });
 
+    if (window.lucide && lucide.createIcons) lucide.createIcons();
     highlightByDates();
     updateSummary();
     updateProgressPanelFromData(timelineData);
@@ -443,14 +441,14 @@
         const line = tracks[i];
         if (!line.some(e => (startPx < e.endPx && endPx > e.startPx))) {
           line.push({ startPx, endPx });
-          placedEvents.push({ event, top: i * 110 });
+          placedEvents.push({ event, top: i * 46 });
           placed = true;
           break;
         }
       }
       if (!placed) {
         tracks.push([{ startPx, endPx }]);
-        placedEvents.push({ event, top: (tracks.length - 1) * 110 });
+        placedEvents.push({ event, top: (tracks.length - 1) * 46 });
       }
     });
 

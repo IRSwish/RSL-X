@@ -636,6 +636,11 @@ function layoutByX(callback) {
   }
 
   // --- sinon, on applique le placement absolu comme avant ---
+
+  // Reset board inline size so CSS media queries can apply first
+  const boardEl = document.querySelector('.board');
+  if (boardEl) { boardEl.style.width = ''; boardEl.style.maxWidth = ''; }
+
   const allBoxes = Array.from(document.querySelectorAll(".reward-box"));
   let maxCols = 0;
   allBoxes.forEach(b => {
@@ -673,9 +678,17 @@ function layoutByX(callback) {
   // Force un reflow après avoir changé les styles des rows
   void rows[0]?.offsetHeight;
 
+  // Constrain board to actual content width so df-panel wraps tightly
+  const totalGridW = maxCols * cellW - gap;
+  const boardPad = 60;
+  if (boardEl) {
+    boardEl.style.width = (totalGridW + boardPad * 2) + 'px';
+    boardEl.style.maxWidth = (totalGridW + boardPad * 2) + 'px';
+    void boardEl.offsetHeight; // force reflow so rows adopt new width
+  }
+
   rows.forEach(row => {
     const rowWidth = row.clientWidth || row.getBoundingClientRect().width;
-    const totalGridW = maxCols * cellW - gap;
     const offsetLeft = Math.max(0, (rowWidth - totalGridW) / 2);
 
     const boxes = Array.from(row.querySelectorAll(".reward-box"));

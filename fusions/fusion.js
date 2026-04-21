@@ -40,6 +40,51 @@
   }
 
 
+  // Remplit le bandeau du haut avec les infos champion (depuis champions.db) + datespan + type
+  function fillBanner(data) {
+    const typePill = document.getElementById('banner-type-pill');
+    const dateEl = document.getElementById('banner-datespan');
+    if (typePill) typePill.textContent = (data.type || '').toUpperCase() + ' FUSION';
+    if (dateEl) dateEl.textContent = data.datespan || '';
+
+    const nameEl = document.getElementById('banner-champ-name');
+    const imgEl = document.getElementById('banner-champ-img');
+    const attrsEl = document.getElementById('banner-champ-attrs');
+
+    if (nameEl) nameEl.textContent = data.title || '';
+    if (attrsEl) attrsEl.innerHTML = '';
+    if (imgEl) { imgEl.removeAttribute('src'); imgEl.alt = data.title || ''; }
+
+    if (typeof window.loadChampions !== 'function') return;
+    window.loadChampions().then(list => {
+      if (!Array.isArray(list) || list.length === 0) return;
+      const target = (data.title || '').trim().toUpperCase();
+      const champ = list.find(c => (c.name || '').trim().toUpperCase() === target);
+      if (!champ) return;
+
+      if (imgEl) imgEl.src = `/tools/champions-index/img/champions/${champ.image || champ.name}.webp`;
+      if (nameEl) nameEl.textContent = champ.name;
+
+      if (attrsEl) {
+        const factionSlug = (champ.faction || '').toLowerCase().replace(/\s+/g, '');
+        attrsEl.innerHTML = `
+          <span class="banner-attr" title="${champ.faction}">
+            <img src="/tools/champions-index/img/factions/${factionSlug}.webp" alt=""/>
+            <span>${champ.faction}</span>
+          </span>
+          <span class="banner-attr" title="${champ.affinity}">
+            <img src="/tools/champions-index/img/affinity/${champ.affinity}.webp" alt=""/>
+            <span>${champ.affinity}</span>
+          </span>
+          <span class="banner-attr" title="${champ.type}">
+            <img src="/tools/champions-index/img/roles/${champ.type}.webp" alt=""/>
+            <span>${champ.type}</span>
+          </span>
+        `;
+      }
+    });
+  }
+
   function fetchAndRenderTimeline() {
     const timelineContainer = document.querySelector('.timeline-container');
     if (!timelineContainer) return;
@@ -94,18 +139,7 @@
 
     timeline.innerHTML = '';
 
-    const pageTitle = document.getElementById('page-title');
-    if (pageTitle) {
-      const type = (data.type || '').toUpperCase();
-      const dateSpan = data.datespan || '';
-      const typeLabel = type ? `${type} FUSION` : 'FUSION';
-
-      pageTitle.innerHTML = `
-        <div class="fusion-title-line">
-          ${data.title || ''}${typeLabel ? ` • ${typeLabel}` : ''}${dateSpan ? ` • ${dateSpan}` : ''}
-        </div>
-      `;
-    }
+    fillBanner(data);
 
     const events = Array.isArray(data.events) ? data.events : [];
     if (events.length === 0) return;
@@ -238,7 +272,7 @@
       const sepTop = document.createElement('div');
       sepTop.className = 'section-separator';
       sepTop.dataset.section = 'tournament';
-      sepTop.style.top = '62px';
+      sepTop.style.top = '70px';
       sepTop.innerHTML = `<span class="section-separator-label">Tournaments</span>`;
       timeline.appendChild(sepTop);
     }
@@ -247,13 +281,13 @@
       const tournamentMaxTrack = placedTournaments.length > 0
         ? Math.max(...placedTournaments.map(i => i.top))
         : 0;
-      evtOffset = tournamentMaxTrack + 82 + sectionGap;
+      evtOffset = tournamentMaxTrack + 46 + sectionGap;
 
       if (eventEvts.length > 0) {
         const sep = document.createElement('div');
         sep.className = 'section-separator';
         sep.dataset.section = 'event';
-        sep.style.top = `${100 + tournamentMaxTrack + 82 + 10}px`;
+        sep.style.top = `${118 + tournamentMaxTrack + 46 + 10}px`;
         sep.innerHTML = `<span class="section-separator-label">Events</span>`;
         timeline.appendChild(sep);
       }
@@ -264,7 +298,7 @@
 
     placedEvents.forEach((item) => {
       const event = item.event;
-      const top = item.top + 100;
+      const top = item.top + 118;
       const start = parseLocal(event.start_date);
       const end = parseLocal(event.end_date);
 
@@ -322,8 +356,8 @@
       }).join('');
 
             block.innerHTML = `
-        <div class="event-name">${event.name}</div>
         <button class="event-reset" title="Reset"><i data-lucide="rotate-cw"></i></button>
+        <div class="event-name">${event.name}</div>
         <div class="points-container">${pointsHTML}</div>
       `;
 
@@ -588,14 +622,14 @@
         const line = tracks[i];
         if (!line.some(e => (startPx < e.endPx && endPx > e.startPx))) {
           line.push({ startPx, endPx });
-          placedEvents.push({ event, top: i * 82 });
+          placedEvents.push({ event, top: i * 46 });
           placed = true;
           break;
         }
       }
       if (!placed) {
         tracks.push([{ startPx, endPx }]);
-        placedEvents.push({ event, top: (tracks.length - 1) * 82 });
+        placedEvents.push({ event, top: (tracks.length - 1) * 46 });
       }
     });
     return placedEvents;
@@ -862,6 +896,17 @@ function buildResourcesPanel(data) {
   const epicAff = (data.EpicAff || 'magic').toLowerCase();
   const counts = collectTimelineCounts();
   let phantomEpicCount = 0;
+  let phantomEpicName = '';
+  let hybridFragProgress = null; // { have, need } for first phantom in HYBRID
+
+  // Extras = copies obtained outside timeline events (e.g. shard summoning)
+  const getExtra = (name) => parseInt(LS.getItem(`resExtra_${fusionKey}_${name}`) || '0', 10);
+  const pushExtras = (name, kind, aff, starsMax) => {
+    const extra = getExtra(name);
+    for (let i = 1; i <= extra; i++) {
+      entries.push({ id: `${name}-extra-${i}`, name, kind, aff, starsMax, isExtra: true });
+    }
+  };
 
   // --- Construire la liste d’instances individuelles (1 carte = 1 exemplaire) ---
   const entries = [];
@@ -871,23 +916,23 @@ function buildResourcesPanel(data) {
     }
   };
 
-  if (type === 'CLASSIC') {
-    const rareKeys = Object.keys(data).filter(k => /^Rare\d*$/i.test(k));
-    const rareNames = rareKeys.map(k => data[k]).filter(Boolean);
+  // Noms uniques pour le rendu des "+1" (accessibles partout, extras compris)
+  const rareKeys = Object.keys(data).filter(k => /^Rare\d*$/i.test(k));
+  const rareNames = rareKeys.map(k => data[k]).filter(Boolean);
+  const epicKeys = Object.keys(data).filter(k => /^Epic\d*$/i.test(k));
+  const allEpicNames = epicKeys.map(k => data[k]).filter(Boolean);
+  const hybridEpicName = (type === 'HYBRID' && data.Epic) ? data.Epic : null;
 
+  if (type === 'CLASSIC') {
     let totalRareCopies = 0;
 
     rareNames.forEach(name => {
-      const c = counts.get(name);
-      if (!c) return;
+      const c = counts.get(name) || { validated: 0, planned: 0 };
       const total = (c.validated || 0) + (c.planned || 0);
       totalRareCopies += total;
-      pushCopies(name, 'RARE', rareAff, 4, total);
+      if (total > 0) pushCopies(name, 'RARE', rareAff, 4, total);
+      pushExtras(name, 'RARE', rareAff, 4);
     });
-
-    // ⚙️ Épics obtenus (gère Epic, Epic1, Epic2, etc.)
-    const epicKeys = Object.keys(data).filter(k => /^Epic\d*$/i.test(k));
-    const allEpicNames = epicKeys.map(k => data[k]).filter(Boolean);
 
     // Comptage des rares réellement BUILT (rank max + asc max)
     let raresBuilt = 0;
@@ -909,27 +954,48 @@ function buildResourcesPanel(data) {
       const ce = counts.get(epicName);
       const fromEvents = ce ? (ce.validated || 0) + (ce.planned || 0) : 0;
       const epicsTotal = fromEvents + (idx === 0 ? fromRares : 0);
-      totalEarnedEpics += epicsTotal;
+      const extrasCount = getExtra(epicName);
+      totalEarnedEpics += epicsTotal + extrasCount;
       if (epicsTotal > 0) {
         pushCopies(epicName, 'EPIC', epicAff, 5, epicsTotal);
       }
+      pushExtras(epicName, 'EPIC', epicAff, 5);
     });
     phantomEpicCount = Math.max(0, 4 - totalEarnedEpics);
+    phantomEpicName = allEpicNames[0] || '';
   } else if (type === 'HYBRID' && data.Epic) {
     const cf = counts.get('Fragments') || { validated: 0, planned: 0 };
-    const totalEpics = Math.floor(((cf.validated || 0) + (cf.planned || 0)) / 100);
-    if (totalEpics > 0) pushCopies(data.Epic, 'EPIC', epicAff, 5, totalEpics);
+    const totalFragments = (cf.validated || 0) + (cf.planned || 0);
+    const totalEpicsFromFrags = Math.floor(totalFragments / 100);
+    const extrasCount = getExtra(data.Epic);
+    const totalEpics = totalEpicsFromFrags + extrasCount;
+    if (totalEpicsFromFrags > 0) pushCopies(data.Epic, 'EPIC', epicAff, 5, totalEpicsFromFrags);
+    pushExtras(data.Epic, 'EPIC', epicAff, 5);
     phantomEpicCount = Math.max(0, 4 - totalEpics);
+    phantomEpicName = data.Epic;
+    hybridFragProgress = { have: totalFragments % 100, need: 100 };
   }
 
-  // 🟦 HYBRID : toujours afficher le panneau, même si tu n'as pas encore 100 fragments
-  if (type === 'HYBRID') {
-    wrap.style.display = ''; // panneau visible
-  } else {
-    // CLASSIC et FRAGMENT : comportement normal
-    if (entries.length === 0) {
-      wrap.style.display = 'none';
-      return;
+  // CLASSIC & HYBRID: panel is always visible (so "+1" extras are reachable even with no copies yet)
+  // Hide if truly nothing to show (no rare/epic names and no entries)
+  if (entries.length === 0 && rareNames.length === 0 && allEpicNames.length === 0 && !hybridEpicName) {
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = '';
+
+  // Push phantom epic entries (épics pas encore obtenus) — visibles mais désactivés
+  if (phantomEpicCount > 0 && phantomEpicName) {
+    for (let i = 0; i < phantomEpicCount; i++) {
+      entries.push({
+        id: `${phantomEpicName}-phantom-${i}`,
+        name: phantomEpicName,
+        kind: 'EPIC',
+        aff: epicAff,
+        starsMax: 5,
+        phantom: true,
+        fragProgress: (type === 'HYBRID' && i === 0) ? hybridFragProgress : null,
+      });
     }
   }
 
@@ -939,9 +1005,53 @@ function buildResourcesPanel(data) {
   // on construit d’abord toutes les cartes, puis on fera le résumé global
   const cards = [];
 
-  entries.forEach(e => {
+  // Séparer rares / epics pour afficher des sections distinctes
+  const rareEntries = entries.filter(e => e.kind === 'RARE');
+  const epicEntries = entries.filter(e => e.kind === 'EPIC');
+
+  const makeSectionLabel = (text) => {
+    const label = document.createElement('div');
+    label.className = 'res-section-label';
+    label.textContent = text;
+    return label;
+  };
+
+  // "+1" add card : une carte par champion distinct pour ajouter une copie extra (shard summon)
+  const makeAddCard = (name) => {
+    const card = document.createElement('div');
+    card.className = 'res-card add-card';
+
+    const img = document.createElement('img');
+    img.className = 'champ';
+    img.src = imgPath(name);
+    img.alt = name;
+    card.appendChild(img);
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'res-card-name';
+    nameEl.textContent = name;
+    card.appendChild(nameEl);
+
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.className = 'res-add-btn';
+    addBtn.textContent = '+1';
+    addBtn.title = 'Add an extra copy (shard summon)';
+    addBtn.addEventListener('click', () => {
+      const key = `resExtra_${fusionKey}_${name}`;
+      const cur = parseInt(LS.getItem(key) || '0', 10);
+      LS.setItem(key, String(cur + 1));
+      buildResourcesPanel(data);
+    });
+    card.appendChild(addBtn);
+
+    return card;
+  };
+
+  const renderEntry = (e) => {
     const card = document.createElement('div');
     card.className = 'res-card';
+    if (e.phantom) card.classList.add('phantom');
 
     // image
     const img = document.createElement('img');
@@ -949,6 +1059,33 @@ function buildResourcesPanel(data) {
     img.src = imgPath(e.name);
     img.alt = e.name;
     card.appendChild(img);
+
+    // nom du champion (sous l'image)
+    const nameEl = document.createElement('div');
+    nameEl.className = 'res-card-name';
+    nameEl.textContent = e.name;
+    card.appendChild(nameEl);
+
+    // carte fantôme : affichage "à obtenir", pas de stars interactives
+    if (e.phantom) {
+      const badge = document.createElement('div');
+      badge.className = 'phantom-badge';
+      badge.textContent = 'To obtain';
+      card.appendChild(badge);
+
+      if (e.fragProgress) {
+        const frag = document.createElement('div');
+        frag.className = 'phantom-frag';
+        const pct = Math.min(100, Math.round((e.fragProgress.have / e.fragProgress.need) * 100));
+        frag.innerHTML = `
+          <div class="phantom-frag-bar"><div class="phantom-frag-fill" style="width:${pct}%"></div></div>
+          <div class="phantom-frag-text">${e.fragProgress.have} / ${e.fragProgress.need} fragments</div>
+        `;
+        card.appendChild(frag);
+      }
+      panel.appendChild(card);
+      return;
+    }
 
     // storage keys (par exemplaire)
     const storeRankKey = `resRank_${fusionKey}_${e.id}`;
@@ -975,9 +1112,7 @@ function buildResourcesPanel(data) {
         btn.type = 'button';
         btn.className = `star-btn ${cls}-star`;
         btn.dataset.i = i;
-        const icon = document.createElement('i');
-        icon.setAttribute('data-lucide', 'star');
-        btn.appendChild(icon);
+        btn.textContent = '★';
 
         btn.addEventListener('click', () => {
         const current = getValue();
@@ -1039,6 +1174,25 @@ function buildResourcesPanel(data) {
       buildResourcesPanel(data);
     });
 
+    // "−" remove button : uniquement sur les copies extra (shard summon)
+    let removeBtn = null;
+    if (e.isExtra) {
+      card.classList.add('extra');
+      removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'res-extra-remove';
+      removeBtn.textContent = '−';
+      removeBtn.title = 'Remove this extra copy';
+      removeBtn.addEventListener('click', () => {
+        const key = `resExtra_${fusionKey}_${e.name}`;
+        const cur = parseInt(LS.getItem(key) || '0', 10);
+        if (cur > 0) LS.setItem(key, String(cur - 1));
+        LS.removeItem(storeRankKey);
+        LS.removeItem(storeAscKey);
+        buildResourcesPanel(data);
+      });
+    }
+
     const render = (uncompact = false) => {
       // maj classes actives
       const rankBtns = rankLine.querySelectorAll('.star-btn');
@@ -1058,6 +1212,8 @@ function buildResourcesPanel(data) {
       const isFull   = fullRank && fullAsc;
 
       card.innerHTML = '';
+      const actions = document.createElement('div');
+      actions.className = 'res-card-actions';
       if (isFull && !uncompact) {
         card.classList.add('compact');
         const mini = document.createElement('div');
@@ -1065,12 +1221,19 @@ function buildResourcesPanel(data) {
         mini.textContent = `${e.name} ✅`;
         card.appendChild(img);
         card.appendChild(mini);
-        card.appendChild(resetBtn);
+        actions.appendChild(resetBtn);
+        if (removeBtn) actions.appendChild(removeBtn);
+        card.appendChild(actions);
       } else {
         card.classList.remove('compact');
         card.appendChild(img);
+        card.appendChild(nameEl);
         card.appendChild(rankLine);
         card.appendChild(ascLine);
+        if (removeBtn) {
+          actions.appendChild(removeBtn);
+          card.appendChild(actions);
+        }
       }
 
       // (re)crée les icônes Lucide à chaque render
@@ -1084,13 +1247,32 @@ function buildResourcesPanel(data) {
     cards.push({ e, card, get rank(){return rankVal;}, get asc(){return ascVal;}, resetBtn });
 
     render();
-  });
+  };
+
+  // Render : Rares section puis Epics section
+  const uniqueRares = [...new Set(rareNames)];
+  const uniqueEpics = hybridEpicName ? [hybridEpicName] : [...new Set(allEpicNames)];
+
+  if (rareEntries.length > 0 || uniqueRares.length > 0) {
+    panel.appendChild(makeSectionLabel('Rares'));
+    rareEntries.forEach(renderEntry);
+    uniqueRares.forEach(n => panel.appendChild(makeAddCard(n)));
+  }
+  if (epicEntries.length > 0 || uniqueEpics.length > 0) {
+    panel.appendChild(makeSectionLabel('Epics'));
+    epicEntries.forEach(renderEntry);
+    uniqueEpics.forEach(n => panel.appendChild(makeAddCard(n)));
+  }
 
   // ——— Résumé global (1ʳᵉ “carte” en tête de grille) ———
+  const realCount = entries.filter(e => !e.phantom).length;
   const header = document.createElement('div');
   header.className = 'res-card global';
   header.innerHTML = `
-    <div class="global-line">Champions built: <span id="glob-built"></span> / ${entries.length}</div>
+    <div class="global-line">
+      Champions built: <span id="glob-built"></span> / ${realCount}
+      ${phantomEpicCount > 0 ? `<span class="glob-phantom">+${phantomEpicCount} to obtain</span>` : ''}
+    </div>
     <div class="total-icons" id="glob-icons"></div>
   `;
   panel.prepend(header);

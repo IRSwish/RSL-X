@@ -1,230 +1,388 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HNK5S7EBCJ"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-HNK5S7EBCJ');
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://unpkg.com/lucide@latest" defer></script>
   <meta charset="UTF-8">
+  <script src="https://unpkg.com/lucide@latest" defer></script>
   <script src="/config/site-config.js"></script>
-    <script src="/config/ad-banner.js" defer></script>
-  <script>document.title =  "Patreon | " + window.siteConfig.title;</script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll(".site-title").forEach(el => {
-        el.textContent = window.siteConfig.title;
-      });
-    });
-  </script>
+  <script src="/config/ad-banner.js" defer></script>
+  <script>document.title = "Patreon | " + window.siteConfig.title;</script>
   <link rel="stylesheet" href="/style/style.css">
-  <link rel="stylesheet" href="/style/menu.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="preload" href="/menu.html" as="fetch" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    :root {
-      --gold:#d4af37;
-      --blue:#00c9ff;
-      --text:#fcf6ff;
-      --bg:#0e0e0e;
-      --bg2:#1a1a1a;
-      --gray:#444;
-    }
-    *{box-sizing:border-box;}
-    html,body{margin:0;padding:0;color:var(--text);font-family:"Inter",sans-serif;}
-
-    body {
-      display:flex;
-      flex-direction:column;
-      align-items:center;
+    @font-face {
+      font-family: "Middle Ages";
+      src: url('/style/MiddAges.ttf') format('truetype');
+      font-display: swap;
     }
 
+    * { box-sizing: border-box; }
+
+    /* ── Background animé ── */
+    .df-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .df-orb { position: absolute; border-radius: 50%; }
+    .df-orb-1 { width: 70vmax; height: 70vmax; top: -15%; left: -15%; background: radial-gradient(circle, rgba(201,169,106,0.10) 0%, transparent 65%); filter: blur(65px); animation: orbDrift1 28s ease-in-out infinite alternate; }
+    .df-orb-2 { width: 55vmax; height: 55vmax; bottom: -10%; right: -10%; background: radial-gradient(circle, rgba(90,70,145,0.08) 0%, transparent 65%); filter: blur(75px); animation: orbDrift2 35s ease-in-out infinite alternate; }
+    .df-orb-3 { width: 45vmax; height: 45vmax; top: 30%; left: 35%; background: radial-gradient(circle, rgba(160,88,38,0.07) 0%, transparent 60%); filter: blur(55px); animation: orbDrift3 22s ease-in-out infinite alternate; }
+    .df-scratches { position: absolute; inset: -5%; background-image: repeating-linear-gradient(58deg, transparent 0px, transparent 172px, rgba(255,255,255,0.028) 172px, rgba(255,255,255,0.028) 172.5px), repeating-linear-gradient(45deg, transparent 0px, transparent 157px, rgba(255,255,255,0.032) 157px, rgba(255,255,255,0.032) 158px), repeating-linear-gradient(67deg, transparent 0px, transparent 167px, rgba(201,169,106,0.034) 167px, rgba(201,169,106,0.034) 167.5px); animation: scratchShimmer 28s ease-in-out infinite alternate; }
+    .df-noise { position: absolute; inset: 0; opacity: 0.4; mix-blend-mode: overlay; }
+    .df-beam { position: absolute; top: -100%; left: -60%; width: 38%; height: 300%; background: linear-gradient(90deg, transparent 0%, rgba(201,169,106,0.014) 35%, rgba(201,169,106,0.028) 50%, rgba(201,169,106,0.014) 65%, transparent 100%); transform: rotate(15deg) translateX(-80vw); animation: beamSweep 24s ease-in-out infinite; }
+    .df-embers { position: absolute; inset: 0; background-image: radial-gradient(circle at 12% 68%, rgba(201,169,106,0.18) 0 1px, transparent 2px), radial-gradient(circle at 76% 20%, rgba(201,169,106,0.15) 0 1px, transparent 2px), radial-gradient(circle at 52% 12%, rgba(201,169,106,0.12) 0 1.5px, transparent 2.5px); animation: embersFloat 11s ease-in-out infinite alternate; }
+
+    @keyframes orbDrift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(4%,3%) scale(1.06); } }
+    @keyframes orbDrift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-3%,-4%) scale(1.08); } }
+    @keyframes orbDrift3 { from { transform: translate(0,0) scale(1); } to { transform: translate(5%,-3%) scale(0.95); } }
+    @keyframes scratchShimmer { from { opacity: 0.7; } to { opacity: 1; } }
+    @keyframes beamSweep { 0% { transform: rotate(15deg) translateX(-80vw); } 100% { transform: rotate(15deg) translateX(200vw); } }
+    @keyframes embersFloat { from { transform: translate(0,0); } to { transform: translate(2px,-4px); } }
+    @keyframes borderGlow { 0%,100% { box-shadow: 0 0 8px rgba(201,169,106,0.22), 0 0 20px rgba(201,169,106,0.08), inset 0 0 10px rgba(201,169,106,0.06); opacity:0.85; } 50% { box-shadow: 0 0 12px rgba(201,169,106,0.38), 0 0 35px rgba(201,169,106,0.14), inset 0 0 18px rgba(201,169,106,0.10); opacity:1; } }
+    @keyframes shimOut { 0% { stroke-dashoffset: 32; opacity: 0; } 8% { opacity: 0.65; } 88% { opacity: 0.65; } 100% { stroke-dashoffset: -106; opacity: 0; } }
+    @keyframes gemPulse { 0%, 100% { opacity: 0.88; } 50% { opacity: 1; } }
+
+    body::before { display: none; }
+    body { background: radial-gradient(circle at 20% 20%, rgba(110,85,45,0.08), transparent 30%), radial-gradient(circle at 80% 30%, rgba(80,70,120,0.08), transparent 28%), linear-gradient(160deg, #050505, #0c0b0a 45%, #14110f); font-family: 'Inter', sans-serif; color: #e8e0d2; margin: 0; }
+
+    .header-wrapper { text-align: center; }
+
+
+    /* ── Layout ── */
+    .main-container {
+      position: relative;
+      width: min(1300px, 96%);
+      margin: 32px auto 56px;
+      padding: 0 16px;
+    }
+
+    /* ── Panel ── */
+    .df-panel {
+      position: relative;
+      padding: 40px 36px;
+      background: linear-gradient(180deg, rgba(22,18,16,0.96), rgba(8,7,7,0.94)), linear-gradient(135deg, rgba(201,169,106,0.06), rgba(255,255,255,0.03) 40%, transparent 70%);
+      border: 1px solid rgba(255,228,170,0.14);
+      box-shadow: 0 25px 70px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 0 30px rgba(201,169,106,0.05);
+      overflow: visible;
+    }
+    .df-panel::before { content: ""; position: absolute; inset: 8px; border: 1px solid rgba(201,169,106,0.72); box-shadow: 0 0 8px rgba(201,169,106,0.22), 0 0 20px rgba(201,169,106,0.08), inset 0 0 10px rgba(201,169,106,0.06); animation: borderGlow 4.8s ease-in-out infinite; pointer-events: none; }
+    .df-panel::after { content: ""; position: absolute; inset: 0; padding: 1px; background: linear-gradient(120deg, rgba(255,255,255,0.05), rgba(201,169,106,0.35), rgba(255,255,255,0.02), rgba(143,106,47,0.35)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0.7; pointer-events: none; }
+
+    /* ── Ornements ── */
+    .ornament { position: absolute; width: 70px; height: 70px; pointer-events: none; filter: drop-shadow(0 0 6px rgba(201,169,106,0.45)); }
+    .top-left     { top: -20px; left: -20px; }
+    .top-right    { top: -20px; right: -20px; transform: scaleX(-1); }
+    .bottom-left  { bottom: -20px; left: -20px; transform: scaleY(-1); }
+    .bottom-right { bottom: -20px; right: -20px; transform: scale(-1); }
+    .sh-out { stroke-dasharray: 32 106; animation: shimOut 3s linear infinite; opacity: 0; }
+    .gem { animation: gemPulse 2.5s ease-in-out infinite; }
+    .top-right .sh-out { animation-delay: -0.75s; } .bottom-left .sh-out { animation-delay: -1.5s; } .bottom-right .sh-out { animation-delay: -2.25s; }
+    .top-right .gem    { animation-delay: -0.625s; } .bottom-left .gem    { animation-delay: -1.25s; } .bottom-right .gem    { animation-delay: -1.875s; }
+
+    /* ── Section label ── */
+    .section-label { font-family: "Middle Ages", "Cormorant Garamond", serif; font-size: 0.85rem; text-transform: uppercase; color: rgba(241,221,177,0.75); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .section-label::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(201,169,106,0.5), transparent); }
+
+    /* ── Tiers grid ── */
     .tiers {
-      padding-top:4%;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center; /* centre tous les éléments horizontalement */
-      gap: 30px;
-      max-width: 1400px;
-      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
       align-items: stretch;
     }
 
+    /* ── Tier card ── */
     .tier {
-      flex: 1 1 300px;
-      max-width: 320px;
-      background: var(--bg2);
-      border: 2px solid var(--gold);
-      border-radius: 12px;
-      padding: 15px 20px 35px; /* réduit l’espace en haut */
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      box-shadow: none;
-      transition: transform .2s, box-shadow .3s;
+      padding: 20px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid transparent;
+      transition: box-shadow 0.25s, transform 0.2s;
+      position: relative;
     }
 
-    .tier:hover {
-      box-shadow: 0 0 15px var(--gold);
-    }
+    .tier:hover { transform: translateY(-3px); }
 
-    .tier h2 {
-      font-size: 24px;
-      color: var(--text);
-      margin: 0 0 10px;
+    /* Rarity colors */
+    .tier.rare       { border-color: #3b82f6; box-shadow: 0 0 10px rgba(59,130,246,0.2); }
+    .tier.epic       { border-color: #a855f7; box-shadow: 0 0 10px rgba(168,85,247,0.2); }
+    .tier.legendary  { border-color: #e8913a; box-shadow: 0 0 10px rgba(232,145,58,0.2); }
+    .tier.mythical   { border-color: #e03030; box-shadow: 0 0 10px rgba(224,48,48,0.2); }
+
+    .tier:hover.rare      { box-shadow: 0 4px 24px rgba(59,130,246,0.4); }
+    .tier:hover.epic      { box-shadow: 0 4px 24px rgba(168,85,247,0.4); }
+    .tier:hover.legendary { box-shadow: 0 4px 24px rgba(232,145,58,0.4); }
+    .tier:hover.mythical  { box-shadow: 0 4px 24px rgba(224,48,48,0.4); }
+
+    /* ── Tier header ── */
+    .tier-name {
+      font-family: "Middle Ages", "Cormorant Garamond", serif;
+      font-size: 1.4rem;
+      color: #f1ddb1;
+      margin: 0 0 6px;
       text-align: center;
     }
 
-    .tier .price {
-      font-size: 20px;
-      color: var(--gold);
-      margin-bottom: 25px;
-      min-height: 30px;
-      text-align: center; /* prix centré */
+    .tier.rare .tier-name      { color: #93bbfd; }
+    .tier.epic .tier-name      { color: #c084fc; }
+    .tier.legendary .tier-name { color: #fdba74; }
+    .tier.mythical .tier-name  { color: #f87171; }
+
+    .tier-price {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: rgba(232,224,210,0.55);
+      text-align: center;
+      margin-bottom: 20px;
     }
 
+    .tier-divider {
+      height: 1px;
+      margin-bottom: 16px;
+    }
+    .tier.rare .tier-divider      { background: linear-gradient(90deg, transparent, rgba(59,130,246,0.5), transparent); }
+    .tier.epic .tier-divider      { background: linear-gradient(90deg, transparent, rgba(168,85,247,0.5), transparent); }
+    .tier.legendary .tier-divider { background: linear-gradient(90deg, transparent, rgba(232,145,58,0.5), transparent); }
+    .tier.mythical .tier-divider  { background: linear-gradient(90deg, transparent, rgba(224,48,48,0.5), transparent); }
+
+    /* ── Tier perks ── */
     .tier ul {
-      list-style:none;
-      padding:0;
-      margin:0 0 25px;
-      line-height:1.6em;
-      flex-grow:1;
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .tier ul li {
-      margin-bottom: 25px; /* espace entre chaque ligne */
+      font-size: 0.85rem;
+      line-height: 1.45;
+      color: rgba(232,224,210,0.8);
+      padding-left: 14px;
+      position: relative;
     }
 
     .tier ul li::before {
-      content:"• ";
-      color:var(--gold);
+      content: "›";
+      position: absolute;
+      left: 0;
+      color: #c9a96a;
+      font-size: 1rem;
+      line-height: 1.3;
     }
 
-    /* === Buttons === */
+    .tier ul li b { color: #f1ddb1; font-weight: 600; }
+
+    /* ── Join button ── */
     .join {
-      background: var(--bg);
-      color: var(--gold);
+      display: block;
       text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
       font-weight: 600;
-      border: 2px solid var(--gold);
-      border-radius: 6px;
       padding: 10px 0;
       text-decoration: none;
-      transition: all 0.3s ease;
+      border: 1px solid;
+      transition: background 0.2s, color 0.2s;
+      margin-top: auto;
     }
 
-    .join:hover {
-      background: var(--gold);
-      color: #000;
+    .tier.rare .join      { color: #3b82f6; border-color: rgba(59,130,246,0.5); }
+    .tier.epic .join      { color: #a855f7; border-color: rgba(168,85,247,0.5); }
+    .tier.legendary .join { color: #e8913a; border-color: rgba(232,145,58,0.5); }
+    .tier.mythical .join  { color: #e03030; border-color: rgba(224,48,48,0.5); }
+
+    .tier.rare .join:hover      { background: rgba(59,130,246,0.15); }
+    .tier.epic .join:hover      { background: rgba(168,85,247,0.15); }
+    .tier.legendary .join:hover { background: rgba(232,145,58,0.15); }
+    .tier.mythical .join:hover  { background: rgba(224,48,48,0.15); }
+
+    /* ── Gift section ── */
+    .gift-block {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(201,169,106,0.2);
+      text-align: center;
+      font-size: 0.85rem;
+      color: rgba(232,224,210,0.6);
     }
 
-    .gift {
-      margin-top:50px;
-      text-align:center;
+    .gift-block a {
+      color: #c9a96a;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
     }
 
-    .gift a {
-      color:var(--blue);
-      text-decoration:none;
-      font-weight:600;
+    .gift-block a:hover { color: #f1ddb1; }
+
+    /* ── Ad banner ── */
+    .ad-banner-footer {
+      background: rgba(8,6,5,0.97) !important;
+      border-top: 1px solid rgba(201,169,106,0.45) !important;
+      box-shadow: 0 -4px 20px rgba(201,169,106,0.07) !important;
+      box-sizing: content-box !important;
     }
 
-    .gift a:hover {
-      color:var(--gold);
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .tiers { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px) {
+      .tiers { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-    <div id="menu-container"></div>
 
-  <div class="header-wrapper">
-    <header id="page-title">SUPPORT RSL-X ON PATREON</header>
-  </div> 
+<!-- Dark fantasy background -->
+<div class="df-bg">
+  <div class="df-orb df-orb-1"></div>
+  <div class="df-orb df-orb-2"></div>
+  <div class="df-orb df-orb-3"></div>
+  <div class="df-scratches"></div>
+  <div class="df-beam"></div>
+  <div class="df-embers"></div>
+  <canvas class="df-noise" id="noiseCanvas"></canvas>
+</div>
 
-  <div class="tiers">
-    <!-- Rare -->
-    <div class="tier">
-      <h2>Rare</h2>
-      <p class="price">3 € / month (+ VAT)</p>
-      <ul>
-        <li>💖 Help keep <b>RSL-X</b> online and growing</li>
-        <li>🏷️ “Rare Supporter” Discord role</li>
-        <li>📜 Your name listed on the <b>Supporters</b> page of the site</li>
-        <li>💌 Access to Patreon updates and behind-the-scenes posts</li>
-        <li>💬 Discord special access 🕹️</li>
-        <li>🏷️ “Rare” Discord role</li>
-      </ul>
-      <a href="https://www.patreon.com/checkout/IRSwish?rid=27241218&vanity=15084718" class="join" target="_blank">Join</a>
+<div id="menu-container"></div>
+
+<div class="header-wrapper">
+  <header id="page-title">SUPPORT RSL-X ON PATREON</header>
+</div>
+
+<div class="main-container">
+  <div class="df-panel">
+
+    <!-- Ornements -->
+    <svg class="ornament top-left" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/>
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="sh-out"/>
+      <rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="gem"/>
+    </svg>
+    <svg class="ornament top-right" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/>
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="sh-out"/>
+      <rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="gem"/>
+    </svg>
+    <svg class="ornament bottom-left" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/>
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="sh-out"/>
+      <rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="gem"/>
+    </svg>
+    <svg class="ornament bottom-right" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.55)" stroke-width="1"/>
+      <path d="M4 66 L4 8 Q4 4 8 4 L66 4" stroke="rgba(201,169,106,0.9)" stroke-width="1" class="sh-out"/>
+      <rect x="1" y="1" width="6" height="6" transform="rotate(45 4 4)" fill="rgba(201,169,106,0.7)" class="gem"/>
+    </svg>
+
+    <div class="section-label">Support Tiers</div>
+
+    <div class="tiers">
+
+      <!-- Rare -->
+      <div class="tier rare">
+        <div class="tier-name">Rare</div>
+        <div class="tier-price">3 € / month (+ VAT)</div>
+        <div class="tier-divider"></div>
+        <ul>
+          <li>Help keep <b>RSL-X</b> online and growing</li>
+          <li><b>"Rare Supporter"</b> Discord role</li>
+          <li>Your name listed on the <b>Supporters</b> page</li>
+          <li>Access to Patreon updates and behind-the-scenes posts</li>
+          <li>Discord special access</li>
+        </ul>
+        <a href="https://www.patreon.com/checkout/IRSwish?rid=27241218&vanity=15084718" class="join" target="_blank">Join</a>
+      </div>
+
+      <!-- Epic -->
+      <div class="tier epic">
+        <div class="tier-name">Epic</div>
+        <div class="tier-price">5 € / month (+ VAT)</div>
+        <div class="tier-divider"></div>
+        <ul>
+          <li><b>Everything from previous tier(s)</b></li>
+          <li>Early access to new tools and features <b>(1–2 days before public)</b></li>
+          <li>Access to the <b>Patreon-only</b> Discord zone</li>
+          <li>Priority suggestions for upcoming tools</li>
+          <li><b>"Epic"</b> Discord role</li>
+        </ul>
+        <a href="https://www.patreon.com/checkout/IRSwish?rid=27241224&vanity=15084718" class="join" target="_blank">Join</a>
+      </div>
+
+      <!-- Legendary -->
+      <div class="tier legendary">
+        <div class="tier-name">Legendary</div>
+        <div class="tier-price">10 € / month (+ VAT)</div>
+        <div class="tier-divider"></div>
+        <ul>
+          <li><b>Everything from previous tier(s)</b></li>
+          <li>Special mention on the site — <b>"Legendary Supporter"</b> with gold effect</li>
+          <li>Private Discord channel with the dev</li>
+          <li>Extended early access <b>(7 days before public)</b></li>
+          <li><b>"Legendary"</b> Discord role</li>
+        </ul>
+        <a href="https://www.patreon.com/checkout/IRSwish?rid=27241228&vanity=15084718" class="join" target="_blank">Join</a>
+      </div>
+
+      <!-- Mythical -->
+      <div class="tier mythical">
+        <div class="tier-name">Mythical</div>
+        <div class="tier-price">20 € / month (+ VAT)</div>
+        <div class="tier-divider"></div>
+        <ul>
+          <li><b>Everything from previous tier(s)</b></li>
+          <li>Direct collaboration on new tools or features</li>
+          <li>Personalized <b>partner spot</b> (logo + link) on the website</li>
+          <li><b>"Mythical"</b> Discord role</li>
+        </ul>
+        <a href="https://www.patreon.com/checkout/IRSwish?rid=27241234&vanity=15084718" class="join" target="_blank">Join</a>
+      </div>
+
+    </div><!-- /tiers -->
+
+    <div class="gift-block">
+      Want to offer a subscription? &nbsp;
+      <a href="https://www.patreon.com/IRSwish/gift" target="_blank">Offer a Patreon Gift →</a>
     </div>
 
-    <!-- Epic -->
-    <div class="tier">
-      <h2>Epic</h2>
-      <p class="price">5 € / month (+ VAT)</p>
-      <ul>
-        <li><b>Everything from previous tier(s)</b></li>
-        <li>⏰ Early access to new tools and features (1–2 days before public release)</li>
-        <li>💫 Access to the Patreon-only Discord zone</li>
-        <li>💡 Priority suggestions for upcoming tools and improvements</li>
-        <li>🏷️ “Epic” Discord role</li>
-      </ul>
-      <a href="https://www.patreon.com/checkout/IRSwish?rid=27241224&vanity=15084718" class="join" target="_blank">Join</a>
-    </div>
+  </div><!-- /df-panel -->
+</div><!-- /main-container -->
 
-    <!-- Legendary -->
-    <div class="tier">
-      <h2>Legendary</h2>
-      <p class="price">10 € / month (+ VAT)</p>
-      <ul>
-        <li><b>Everything from previous tier(s)</b></li>
-        <li>✨ Special mention on the site (“Legendary Supporter” section with glowing gold effect ✨)</li>
-        <li>🔒 Access to a private Discord channel to discuss upcoming features directly with the dev</li>
-        <li>🎁 Extended early access (7 days before public release)</li>
-        <li>🏷️ “Legendary” Discord role</li>
-      </ul>
-      <a href="https://www.patreon.com/checkout/IRSwish?rid=27241228&vanity=15084718" class="join" target="_blank">Join</a>
-    </div>
-
-    <!-- Mythical -->
-    <div class="tier">
-      <h2>Mythical</h2>
-      <p class="price">20 € / month (+ VAT)</p>
-      <ul>
-        <li><b>Everything from previous tier(s)</b></li>
-        <li>🤝 Direct collaboration on new tools or features</li>
-        <li>🎨 Personalized partner spot (logo + link) on the website</li>
-        <li>🏷️ “Mythical” Discord role</li>
-      </ul>
-      <a href="https://www.patreon.com/checkout/IRSwish?rid=27241234&vanity=15084718" class="join" target="_blank">Join</a>
-    </div>
-  </div>
-
-  <div class="gift">
-    🎁 Want to offer a subscription?<br>
-    <a href="https://www.patreon.com/IRSwish/gift" target="_blank">Offer a Patreon Gift</a>
-  </div>
-
-  <div class="adsense-container">
-    <div class="ad-label">Advertisement</div>
-
-    <ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-8653563887265027"
-     data-ad-slot="9042028911"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  </div>
-
-  <script src="/script.js"></script>
+<script src="/script.js"></script>
+<script>
+  (function() {
+    const canvas = document.getElementById('noiseCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    function drawNoise() {
+      const w = canvas.width, h = canvas.height;
+      const img = ctx.createImageData(w, h);
+      for (let i = 0; i < img.data.length; i += 4) {
+        const v = Math.random() * 255 | 0;
+        img.data[i] = img.data[i+1] = img.data[i+2] = v;
+        img.data[i+3] = 18;
+      }
+      ctx.putImageData(img, 0, 0);
+      setTimeout(drawNoise, 80);
+    }
+    drawNoise();
+  })();
+</script>
 </body>
 </html>

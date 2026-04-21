@@ -735,9 +735,7 @@ function displayChampions() {
 
     if (currentSort.stat) {
       const statValue = document.createElement("div");
-      statValue.style.fontSize = "12px";
-      statValue.style.opacity = "0.8";
-      statValue.style.marginTop = "2px";
+      statValue.classList.add("card-sort-value");
       statValue.textContent = c[currentSort.stat];
       card.appendChild(statValue);
     } else if (auraSort && selectedAuraStats.length) {
@@ -745,9 +743,7 @@ function displayChampions() {
       if (auraVal) {
         const isPercent = c.aura && /by\s+\d+(?:\.\d+)?%/i.test(c.aura);
         const statValue = document.createElement("div");
-        statValue.style.fontSize = "12px";
-        statValue.style.opacity = "0.8";
-        statValue.style.marginTop = "2px";
+        statValue.classList.add("card-sort-value");
         statValue.textContent = isPercent ? `${auraVal}%` : `${auraVal}`;
         card.appendChild(statValue);
       }

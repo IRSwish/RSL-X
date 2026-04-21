@@ -73,7 +73,6 @@
   font-family: "Middle Ages", "Cormorant Garamond", serif;
   font-size: 1.35rem;
   color: var(--gold-light);
-  letter-spacing: 0.14em;
   text-transform: uppercase;
   text-shadow: 0 0 14px rgba(201,169,106,0.3);
 }
@@ -101,10 +100,10 @@
   gap: 8px;
   color: var(--text);
   text-decoration: none;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 13.5px;
-  font-weight: 400;
-  letter-spacing: 0.02em;
+  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
   padding: 7px 10px;
   border-radius: 0;
   cursor: pointer;
@@ -150,16 +149,20 @@
 
 .dropdown.open > .dropdown-content { display: block; }
 
+.dropdown-content > li > a {
+  font-size: 15px;
+}
+
+
 /* ── Sous-dropdowns (années) ──────────────────────────────── */
 .dropdown-sub-toggle {
   display: flex;
   align-items: center;
   gap: 8px;
   color: var(--gold);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: "Cormorant Garamond", serif;
   font-weight: 600;
-  font-size: 12px;
-  letter-spacing: 0.08em;
+  font-size: 22px;
   text-transform: uppercase;
   padding: 5px 10px;
   border-radius: 0;
@@ -183,7 +186,10 @@
 
 /* ── Liens feuilles ───────────────────────────────────────── */
 .dropdown-sub-content a {
-  font-size: 12.5px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
   padding: 5px 10px;
   color: var(--text-dim);
   display: block;
@@ -264,12 +270,12 @@ body.no-menu-blur::after {
   .menu-links a,
   .dropdown-toggle,
   .dropdown-sub-toggle {
-    font-size: 16px;
+    font-size: 19px;
     padding: 11px 12px;
   }
 
   .dropdown-sub-content a {
-    font-size: 14.5px;
+    font-size: 15px;
     padding: 9px 12px;
   }
 
