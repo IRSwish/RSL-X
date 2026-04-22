@@ -1,0 +1,125 @@
+{
+  "title": "ANOMALOUS TITAN EVENT",
+  "points": "community",
+  "events": [
+    {
+      "name": "Hero's Path",
+      "type": "Event",
+      "start_date": "2026-04-23",
+      "end_date": "2026-04-27",
+      "points": [400]
+    },
+    {
+      "name": "Champion Training",
+      "type": "Tournament",
+      "start_date": "2026-04-24",
+      "end_date": "2026-04-28",
+      "points": [110]
+    },
+    {
+      "name": "Ice Golem (Special Rules)",
+      "type": "Tournament",
+      "start_date": "2026-04-24",
+      "end_date": "2026-04-26",
+      "points": [60]
+    },
+    {
+      "name": "Dragon",
+      "type": "Tournament",
+      "start_date": "2026-04-26",
+      "end_date": "2026-04-28",
+      "points": [50]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2026-04-25",
+      "end_date": "2026-04-28",
+      "points": [30]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2026-04-23",
+      "end_date": "2026-04-26",
+      "points": [80]
+    },
+    {
+      "name": "Spider",
+      "type": "Tournament",
+      "start_date": "2026-04-28",
+      "end_date": "2026-04-30",
+      "points": [50]
+    },
+    {
+      "name": "Fire Knight (Special Rules)",
+      "type": "Tournament",
+      "start_date": "2026-04-30",
+      "end_date": "2026-05-02",
+      "points": [60]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2026-04-29",
+      "end_date": "2026-04-30",
+      "points": [80]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Event",
+      "start_date": "2026-04-28",
+      "end_date": "2026-05-01",
+      "points": [100]
+    },
+    {
+      "name": "Champion Training",
+      "type": "Event",
+      "start_date": "2026-04-30",
+      "end_date": "2026-05-04",
+      "points": [120]
+    },
+    {
+      "name": "Champion Chase",
+      "type": "Tournament",
+      "start_date": "2026-05-01",
+      "end_date": "2026-05-04",
+      "points": [300]
+    },
+    {
+      "name": "Gear Enhancement",
+      "type": "Event",
+      "start_date": "2026-05-02",
+      "end_date": "2026-05-05",
+      "points": [80]
+    },
+    {
+      "name": "Gear Hunters",
+      "type": "Event",
+      "start_date": "2026-05-03",
+      "end_date": "2026-05-06",
+      "points": [100]
+    },
+    {
+      "name": "Classic Arena",
+      "type": "Tournament",
+      "start_date": "2026-05-03",
+      "end_date": "2026-05-06",
+      "points": [30]
+    },
+    {
+      "name": "Ice Golem",
+      "type": "Tournament",
+      "start_date": "2026-05-02",
+      "end_date": "2026-05-04",
+      "points": [50]
+    },
+    {
+      "name": "Dragon",
+      "type": "Tournament",
+      "start_date": "2026-05-04",
+      "end_date": "2026-05-06",
+      "points": [50]
+    }
+  ]
+}
