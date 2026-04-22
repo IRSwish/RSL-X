@@ -44,3 +44,29 @@
     document.body.appendChild(banner);
   }
 })();
+
+// === Background grain texture (canvas-generated white noise) ===
+(function() {
+  'use strict';
+
+  function generateGrain() {
+    const SIZE = 256;
+    const c = document.createElement('canvas');
+    c.width = c.height = SIZE;
+    const ctx = c.getContext('2d');
+    const img = ctx.createImageData(SIZE, SIZE);
+    for (let i = 0; i < img.data.length; i += 4) {
+      const v = (Math.random() * 255) | 0;
+      img.data[i] = img.data[i+1] = img.data[i+2] = v;
+      img.data[i+3] = (Math.random() * 10) | 0;
+    }
+    ctx.putImageData(img, 0, 0);
+    document.documentElement.style.setProperty('--rslx-grain', `url(${c.toDataURL()})`);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', generateGrain);
+  } else {
+    generateGrain();
+  }
+})();

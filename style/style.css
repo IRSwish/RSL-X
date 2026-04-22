@@ -39,16 +39,23 @@ body {
   flex-direction: column;
 }
 
-/* Fond statique : carte topographique vectorielle */
+/* Fond : grain (canvas JS) + atmosphère warm dark */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: -1;
-  background:
-    url('/style/img/topography.svg') center center / cover no-repeat,
-    #0a0a0a;
+  background-color: #0a0a0a;
+  background-image:
+    radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.55) 100%),
+    var(--rslx-grain, none),
+    radial-gradient(circle at 20% 20%, rgba(110,85,45,0.10), transparent 35%),
+    radial-gradient(circle at 80% 30%, rgba(80,70,120,0.07), transparent 30%),
+    radial-gradient(circle at 50% 80%, rgba(145,110,45,0.08), transparent 35%),
+    linear-gradient(160deg, #050505, #0c0b0a 45%, #14110f);
+  background-size: auto, 256px 256px, auto, auto, auto, auto;
+  background-repeat: no-repeat, repeat, no-repeat, no-repeat, no-repeat, no-repeat;
 }
 
 #page-title {
