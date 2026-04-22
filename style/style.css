@@ -39,7 +39,7 @@ body {
   flex-direction: column;
 }
 
-/* Fond animé : carte topographique vectorielle (lignes 2px gris foncé, pan lent) */
+/* Fond statique : carte topographique vectorielle */
 body::before {
   content: "";
   position: fixed;
@@ -47,21 +47,8 @@ body::before {
   pointer-events: none;
   z-index: -1;
   background:
-    url('/style/img/topography.svg') 0% 0% / cover no-repeat,
+    url('/style/img/topography.svg') center center / cover no-repeat,
     #0a0a0a;
-  animation: bg-topo-drift 100s ease-in-out infinite alternate;
-}
-
-@keyframes bg-topo-drift {
-  0%   { background-position: 0% 0%, 0 0; }
-  100% { background-position: 100% 100%, 0 0; }
-}
-
-/* Respecte les préférences utilisateur (accessibilité) */
-@media (prefers-reduced-motion: reduce) {
-  body::before {
-    animation: none;
-  }
 }
 
 #page-title {
