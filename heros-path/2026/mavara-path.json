@@ -9,14 +9,14 @@
   {
     "id": "t1-2",
     "name": "Silver x100000",
-    "image": "Silver",
+    "image": "silver",
     "cost": 500,
     "x": 3
   },
   {
     "id": "t2-1",
     "name": "Rank 2 Basalt",
-    "image": "Basalt",
+    "image": "basalt",
     "cost": 1000,
     "x": 1,
     "requires": [
@@ -26,7 +26,7 @@
   {
     "id": "t2-2",
     "name": "Rarity Charm x10",
-    "image": "Rarity-Charm",
+    "image": "rarity-charm",
     "cost": 1000,
     "x": 2,
     "requires": [
@@ -36,7 +36,7 @@
   {
     "id": "t2-3",
     "name": "Rank Charm x10",
-    "image": "Rank-Charm",
+    "image": "rank-charm",
     "cost": 1000,
     "x": 3,
     "requires": [
@@ -46,7 +46,7 @@
   {
     "id": "t2-4",
     "name": "Mortal Soulstone",
-    "image": "Mortal-SoulStone",
+    "image": "mortal-soulstone",
     "cost": 1000,
     "x": 4,
     "requires": [
@@ -66,7 +66,7 @@
   {
     "id": "t3-2",
     "name": "Corehammer x10",
-    "image": "Corehammer",
+    "image": "corehammer",
     "cost": 2000,
     "x": 1.5,
     "requires": [
@@ -77,7 +77,7 @@
   {
     "id": "t3-3",
     "name": "Rank 3 Basalt",
-    "image": "Basalt",
+    "image": "basalt",
     "cost": 3500,
     "x": 2.5,
     "requires": [
@@ -88,7 +88,7 @@
   {
     "id": "t3-4",
     "name": "Rare Skill Tome",
-    "image": "SKILL-TOME-RARE",
+    "image": "skill-tome-rare",
     "cost": 2000,
     "x": 3.5,
     "requires": [
@@ -129,7 +129,7 @@
   {
     "id": "t4-3",
     "name": "Immortal Soul Coin x850",
-    "image": "Immortal-soul-coin",
+    "image": "immortal-soul-coin",
     "cost": 6000,
     "x": 2,
     "requires": [
@@ -189,7 +189,7 @@
   {
     "id": "t5-3",
     "name": "Mythical Skill Tome",
-    "image": "SKILL-TOME-mythical",
+    "image": "skill-tome-mythical",
     "cost": 20000,
     "x": 2,
     "requires": [
@@ -249,7 +249,7 @@
   {
     "id": "t6-3",
     "name": "Avatar Frame",
-    "image": "mavaraframe",
+    "image": "MavaraFrame",
     "cost": 5000,
     "x": 2.5,
     "requires": [
@@ -280,7 +280,7 @@
   {
     "id": "t7-1",
     "name": "Legendary Skill Tome",
-    "image": "Skill-Tome-Legendary",
+    "image": "skill-tome-legendary",
     "cost": 10000,
     "x": 1,
     "requires": [
@@ -290,7 +290,7 @@
   {
     "id": "t7-2",
     "name": "Mavara 5* Perfect Soul",
-    "image": "Mavara-5",
+    "image": "mavara-5",
     "cost": 50000,
     "x": 2,
     "requires": [
@@ -300,7 +300,7 @@
   {
     "id": "t7-3",
     "name": "Eternal Soulstone",
-    "image": "Eternal-SoulStone",
+    "image": "eternal-soulstone",
     "cost": 30000,
     "x": 3,
     "requires": [
@@ -310,7 +310,7 @@
   {
     "id": "t7-4",
     "name": "Legendary Skill Tome",
-    "image": "Skill-Tome-Legendary",
+    "image": "skill-tome-legendary",
     "cost": 10000,
     "x": 4,
     "requires": [
