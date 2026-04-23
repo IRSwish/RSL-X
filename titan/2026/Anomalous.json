@@ -7,7 +7,7 @@
       "type": "Event",
       "start_date": "2026-04-23",
       "end_date": "2026-04-27",
-      "points": [400]
+      "points": [100, 100, 100, 100]
     },
     {
       "name": "Champion Training",
