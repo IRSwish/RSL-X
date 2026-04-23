@@ -42,7 +42,7 @@
       "type": "Event",
       "start_date": "2026-04-23",
       "end_date": "2026-04-26",
-      "points": [80]
+      "points": [20,60]
     },
     {
       "name": "Spider",
@@ -63,7 +63,7 @@
       "type": "Event",
       "start_date": "2026-04-27",
       "end_date": "2026-04-30",
-      "points": [80]
+      "points": [20,60]
     },
     {
       "name": "Gear Hunters",
@@ -91,7 +91,7 @@
       "type": "Event",
       "start_date": "2026-05-02",
       "end_date": "2026-05-05",
-      "points": [80]
+      "points": [20,60]
     },
     {
       "name": "Gear Hunters",
