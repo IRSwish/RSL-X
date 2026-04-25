@@ -35,7 +35,10 @@ topPanel.innerHTML = `
       <div class="stat-item">
         <span class="stat-label">Available:</span>
         <span class="stat-value" id="pointsAvailableDisplay">0</span>
-        <input id="pointsAvailable" type="number" value="0" style="display:none; width: 80px; background:#0e0e0e; color:#fcf6ff; border:none; border-radius:4px; padding:4px 8px; text-align:right; font-weight:600;">
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Extra:</span>
+        <input id="pointsAvailable" type="number" value="0" style="width: 90px; background:#0e0e0e; color:#fcf6ff; border:1px solid rgba(212,175,55,0.3); border-radius:4px; padding:4px 8px; text-align:right; font-weight:600;">
       </div>
       <div class="stat-item">
         <span class="stat-label">Spent:</span>
@@ -141,21 +144,16 @@ function computeAvailableFromShards() {
 }
 
 function updateStats() {
-  // Si on a des shardCosts, on calcule l'available depuis les shards,
-  // sinon on lit l'input manuel.
-  let available;
-  const shardTotal = computeAvailableFromShards();
-  if (shardTotal !== null) {
-    available = shardTotal;
-    pointsAvailableInput.value = shardTotal;
-  } else {
-    available = Number(pointsAvailableInput.value || 0);
-  }
+  // Available = total des shards + extra (farmé en donjon, etc.)
+  const shardTotal = computeAvailableFromShards() || 0;
+  const extra = Number(pointsAvailableInput.value || 0);
+  const available = shardTotal + extra;
+
   if (pointsAvailableDisplay) {
     pointsAvailableDisplay.textContent = available.toLocaleString("en-US");
   }
   if (shardsAvailableTotal) {
-    shardsAvailableTotal.textContent = available.toLocaleString("en-US");
+    shardsAvailableTotal.textContent = shardTotal.toLocaleString("en-US");
   }
 
   // 🟩 Points dépensés
@@ -189,8 +187,8 @@ function updateStats() {
   totalPointsDiv.textContent = `Total tree: ${totalTreePoints.toLocaleString("en-US")} pts`;
 
   // Calcul des shards nécessaires pour le planned (en soustrayant les points disponibles)
-  if (currentShardCosts && needed > 0) {
-    shardsSection.style.display = 'block';
+  if (currentShardCosts) {
+    shardsSection.style.display = '';
     updateShardDisplay(needed);
   } else {
     shardsSection.style.display = 'none';
@@ -285,6 +283,7 @@ function resetAll() {
   points = 0;
   shardCounts = { ancient: 0, void: 0, primal: 0, sacred: 0 };
   document.querySelectorAll(".shard-card-input").forEach(inp => { inp.value = 0; });
+  if (pointsAvailableInput) pointsAvailableInput.value = 0;
 
   document.querySelectorAll(".reward-box").forEach(b => {
     b.className = "reward-box locked";
@@ -326,15 +325,9 @@ async function init() {
   // Charge les coûts de shards s'ils existent
   currentShardCosts = fusion.shardCosts || null;
 
-  // Recap : input éditable si pas de shardCosts, sinon display en lecture
-  if (currentShardCosts) {
-    pointsAvailableInput.style.display = "none";
-    if (pointsAvailableDisplay) pointsAvailableDisplay.style.display = "";
-    if (shardsInputSection) shardsInputSection.style.display = "";
-  } else {
-    pointsAvailableInput.style.display = "";
-    if (pointsAvailableDisplay) pointsAvailableDisplay.style.display = "none";
-    if (shardsInputSection) shardsInputSection.style.display = "none";
+  // Section SHARDS : visible uniquement si le path a des shardCosts définis
+  if (shardsInputSection) {
+    shardsInputSection.style.display = currentShardCosts ? "" : "none";
   }
 
   const pageTitleEl = document.getElementById("page-title");
