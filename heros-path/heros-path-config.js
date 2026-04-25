@@ -52,6 +52,17 @@ window.fusions = {
     },
     initialUnlocked: ["t0-1"]
   },
+  "mavara-path": {
+    name: "Mavara Path",
+    json: "/heros-path/2026/mavara-path.json",
+    shardCosts: {
+      ancient: 300,
+      void: 750,
+      primal: 1800,
+      sacred: 4500
+    },
+    initialUnlocked: ["t0-1"]
+  },
   "predators-path": {
     name: "Predator's Path",
     json: "/heros-path/2025/predators-path.json",

@@ -1,0 +1,320 @@
+[
+  {
+    "id": "t1-1",
+    "name": "Mortal Soul Coin x500",
+    "image": "mortal-soul-coin",
+    "cost": 500,
+    "x": 2
+  },
+  {
+    "id": "t1-2",
+    "name": "Silver x100000",
+    "image": "silver",
+    "cost": 500,
+    "x": 3
+  },
+  {
+    "id": "t2-1",
+    "name": "Rank 2 Basalt",
+    "image": "basalt",
+    "cost": 1000,
+    "x": 1,
+    "requires": [
+      "t1-1"
+    ]
+  },
+  {
+    "id": "t2-2",
+    "name": "Rarity Charm x10",
+    "image": "rarity-charm",
+    "cost": 1000,
+    "x": 2,
+    "requires": [
+      "t1-1"
+    ]
+  },
+  {
+    "id": "t2-3",
+    "name": "Rank Charm x10",
+    "image": "rank-charm",
+    "cost": 1000,
+    "x": 3,
+    "requires": [
+      "t1-2"
+    ]
+  },
+  {
+    "id": "t2-4",
+    "name": "Mortal Soulstone",
+    "image": "mortal-soulstone",
+    "cost": 1000,
+    "x": 4,
+    "requires": [
+      "t1-2"
+    ]
+  },
+  {
+    "id": "t3-1",
+    "name": "4* Chicken",
+    "image": "chicken-4",
+    "cost": 2500,
+    "x": 0.5,
+    "requires": [
+      "t2-1"
+    ]
+  },
+  {
+    "id": "t3-2",
+    "name": "Corehammer x10",
+    "image": "corehammer",
+    "cost": 2000,
+    "x": 1.5,
+    "requires": [
+      "t2-2",
+      "t2-3"
+    ]
+  },
+  {
+    "id": "t3-3",
+    "name": "Rank 3 Basalt",
+    "image": "basalt",
+    "cost": 3500,
+    "x": 2.5,
+    "requires": [
+      "t2-2",
+      "t2-3"
+    ]
+  },
+  {
+    "id": "t3-4",
+    "name": "Rare Skill Tome",
+    "image": "skill-tome-rare",
+    "cost": 2000,
+    "x": 3.5,
+    "requires": [
+      "t2-2",
+      "t2-3"
+    ]
+  },
+  {
+    "id": "t3-5",
+    "name": "Immortal Essence x7",
+    "image": "immortal-soul-essence",
+    "cost": 2500,
+    "x": 4.5,
+    "requires": [
+      "t2-4"
+    ]
+  },
+  {
+    "id": "t4-1",
+    "name": "Epic Chaos Ore",
+    "image": "epic-chaos-ore",
+    "cost": 4000,
+    "x": 0,
+    "requires": [
+      "t3-1"
+    ]
+  },
+  {
+    "id": "t4-2",
+    "name": "Lock",
+    "image": "lock",
+    "cost": 1,
+    "x": 1,
+    "requires": [
+      "t3-2"
+    ]
+  },
+  {
+    "id": "t4-3",
+    "name": "Immortal Soul Coin x850",
+    "image": "immortal-soul-coin",
+    "cost": 6000,
+    "x": 2,
+    "requires": [
+      "t3-3"
+    ]
+  },
+  {
+    "id": "t4-4",
+    "name": "Legendary Chaos Ore",
+    "image": "legendary-chaos-ore",
+    "cost": 6000,
+    "x": 3,
+    "requires": [
+      "t3-3"
+    ]
+  },
+  {
+    "id": "t4-5",
+    "name": "Lock",
+    "image": "lock",
+    "cost": 1,
+    "x": 4,
+    "requires": [
+      "t3-4"
+    ]
+  },
+  {
+    "id": "t4-6",
+    "name": "Brews Chest x40",
+    "image": "xp-brew-chest",
+    "cost": 4000,
+    "x": 5,
+    "requires": [
+      "t3-5"
+    ]
+  },
+  {
+    "id": "t5-1",
+    "name": "Titan Points x100",
+    "image": "points-community",
+    "cost": 7500,
+    "x": 0,
+    "requires": [
+      "t4-1"
+    ]
+  },
+  {
+    "id": "t5-2",
+    "name": "Titan Points x100",
+    "image": "points-community",
+    "cost": 7500,
+    "x": 1,
+    "requires": [
+      "t4-2"
+    ]
+  },
+  {
+    "id": "t5-3",
+    "name": "Mythical Skill Tome",
+    "image": "skill-tome-mythical",
+    "cost": 20000,
+    "x": 2,
+    "requires": [
+      "t4-3"
+    ]
+  },
+  {
+    "id": "t5-4",
+    "name": "Eternal Soul Coin x666",
+    "image": "eternal-soul-coin",
+    "cost": 20000,
+    "x": 3,
+    "requires": [
+      "t4-4"
+    ]
+  },
+  {
+    "id": "t5-5",
+    "name": "Titan Points x100",
+    "image": "points-community",
+    "cost": 7500,
+    "x": 4,
+    "requires": [
+      "t4-5"
+    ]
+  },
+  {
+    "id": "t5-6",
+    "name": "Titan Points x100",
+    "image": "points-community",
+    "cost": 7500,
+    "x": 5,
+    "requires": [
+      "t4-6"
+    ]
+  },
+  {
+    "id": "t6-1",
+    "name": "Key",
+    "image": "path-key",
+    "cost": 1000,
+    "x": 0.5,
+    "requires": [
+      "t5-1"
+    ]
+  },
+  {
+    "id": "t6-2",
+    "name": "XP Barrel",
+    "image": "xp-barrel",
+    "cost": 9000,
+    "x": 1.5,
+    "requires": [
+      "t5-2"
+    ]
+  },
+  {
+    "id": "t6-3",
+    "name": "Avatar Frame",
+    "image": "MavaraFrame",
+    "cost": 5000,
+    "x": 2.5,
+    "requires": [
+      "t5-3",
+      "t5-4"
+    ]
+  },
+  {
+    "id": "t6-4",
+    "name": "5* Chicken",
+    "image": "chicken-5",
+    "cost": 9000,
+    "x": 3.5,
+    "requires": [
+      "t5-5"
+    ]
+  },
+  {
+    "id": "t6-5",
+    "name": "Key",
+    "image": "path-key",
+    "cost": 1000,
+    "x": 4.5,
+    "requires": [
+      "t5-6"
+    ]
+  },
+  {
+    "id": "t7-1",
+    "name": "Legendary Skill Tome",
+    "image": "skill-tome-legendary",
+    "cost": 10000,
+    "x": 1,
+    "requires": [
+      "t6-1"
+    ]
+  },
+  {
+    "id": "t7-2",
+    "name": "Mavara 5* Perfect Soul",
+    "image": "mavara-5",
+    "cost": 50000,
+    "x": 2,
+    "requires": [
+      "t6-2"
+    ]
+  },
+  {
+    "id": "t7-3",
+    "name": "Eternal Soulstone",
+    "image": "eternal-soulstone",
+    "cost": 30000,
+    "x": 3,
+    "requires": [
+      "t6-4"
+    ]
+  },
+  {
+    "id": "t7-4",
+    "name": "Legendary Skill Tome",
+    "image": "skill-tome-legendary",
+    "cost": 10000,
+    "x": 4,
+    "requires": [
+      "t6-5"
+    ]
+  }
+]
