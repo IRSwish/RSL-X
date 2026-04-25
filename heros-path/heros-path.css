@@ -38,6 +38,153 @@
   margin: auto;
 }
 
+/* === Top panel above the path === */
+.top-panel {
+  width: 90%;
+  max-width: 1400px;
+  margin: 10px auto 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.top-section {
+  flex: 1 1 0;
+  min-width: 0;
+  background: var(--bg2);
+  border: 1px solid rgba(212,175,55,0.35);
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.4);
+  padding: 12px 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.top-section-title {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(212,175,55,0.25);
+  margin: 0;
+}
+
+.shards-total {
+  text-align: right;
+  font-size: 13px;
+  color: #ccc;
+  margin-top: auto;
+  padding-top: 6px;
+  border-top: 1px solid rgba(212,175,55,0.2);
+}
+.shards-total span {
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.top-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.top-stats .stat-item {
+  margin: 0;
+  justify-content: space-between;
+}
+
+.top-stats .reset-btn {
+  margin: auto auto 0;
+  align-self: center;
+  padding: 6px;
+}
+.top-stats .reset-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.top-stats #totalPoints {
+  margin: 0;
+  padding: 6px 10px;
+  border: none;
+  font-size: 12px;
+  color: #aaa;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.shards-cards-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shard-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(212,175,55,0.2);
+  border-radius: 8px;
+}
+
+.shard-card img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.shard-card-meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.shard-card-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.shard-card-cost {
+  font-size: 11px;
+  color: var(--gold);
+}
+
+.shard-card-input {
+  width: 70px;
+  background: #0e0e0e;
+  color: #fcf6ff;
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 4px;
+  padding: 4px 8px;
+  text-align: right;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.shard-card-input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 4px rgba(212,175,55,0.5);
+}
+
+@media (max-width: 900px) {
+  .top-panel { flex-direction: column; }
+}
+@media (max-width: 520px) {
+  .shard-card-input { width: 60px; }
+}
+
 svg.connections {
   position: absolute;
   top: 0;
@@ -141,6 +288,22 @@ svg.connections {
   color: var(--text);
 }
 
+.top-panel #shardsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Neutralise les styles hérités de l'ancienne sidebar (restaure ceux de .top-section) */
+.top-panel .shards-section {
+  margin-top: 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(212,175,55,0.35);
+}
+
+/* La title interne "Planned Cost in Shards" est remplacée par .top-section-title */
+.top-panel .shards-title { display: none; }
+
 .shards-section {
   margin-top: 15px;
   padding-top: 15px;
@@ -158,11 +321,11 @@ svg.connections {
 .shard-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px;
+  gap: 6px;
+  padding: 6px 10px;
   background: rgba(0,0,0,0.3);
   border-radius: 6px;
-  margin-bottom: 6px;
+  margin-bottom: 0;
 }
 
 .shard-item img {
@@ -192,6 +355,12 @@ svg.connections {
   border-top: 1px solid rgba(212,175,55,0.2);
 }
 
+.top-panel .total-points {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
 .reward-box.available img, .reward-box.active img {
   filter: grayscale(0) brightness(1);
 }
@@ -209,6 +378,37 @@ svg.connections {
   border-color: var(--gray);
   filter: grayscale(1) brightness(0.5);
   cursor: not-allowed;
+}
+
+/* Flash red (lock bloqué) et flash green (keys disponibles) */
+@keyframes flash-red-anim {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(255,0,0,0);
+    border-color: var(--gray);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(255,40,40,0.95), 0 0 32px rgba(255,0,0,0.55);
+    border-color: #ff3030;
+  }
+}
+@keyframes flash-green-anim {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(0,255,100,0);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(0,255,120,0.9), 0 0 30px rgba(0,255,100,0.55);
+    border-color: #00ff66;
+  }
+}
+.reward-box.flash-red,
+.reward-box.flash-green {
+  filter: none !important;
+}
+.reward-box.flash-red {
+  animation: flash-red-anim 0.5s ease-in-out 3;
+}
+.reward-box.flash-green {
+  animation: flash-green-anim 0.5s ease-in-out 3;
 }
 
 .activation-flash {
