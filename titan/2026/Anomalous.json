@@ -70,7 +70,7 @@
       "type": "Event",
       "start_date": "2026-04-28",
       "end_date": "2026-05-01",
-      "points": [100]
+      "points": [10, 20, 70]
     },
     {
       "name": "Champion Training",
@@ -98,7 +98,7 @@
       "type": "Event",
       "start_date": "2026-05-03",
       "end_date": "2026-05-06",
-      "points": [100]
+      "points": [10, 20, 70]
     },
     {
       "name": "Classic Arena",

@@ -80,6 +80,11 @@ Options -Indexes
 # The magic unlock URL serves the unlock helper page
 RewriteRule ^_unlock_${UNLOCK_TOKEN}/?$ /_unlock.html [L]
 
+# Exempt /xtender/ from gating — Velopack auto-update for RSL-Xtender
+# fetches RELEASES / *.nupkg without any cookie. Keep before the gating
+# rules so it short-circuits.
+RewriteRule ^xtender/ - [L]
+
 # If the unlock cookie is set, serve everything normally
 RewriteCond %{HTTP_COOKIE} rslx_unlock=${UNLOCK_TOKEN}
 RewriteRule ^ - [L]
