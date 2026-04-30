@@ -3,6 +3,6 @@ window.siteConfig = {
   adBanner: {
     enabled: true,
     imageUrl: "/Ad_Banner.webp",
-    link: "https://pl.go-ga.me/gsdxwjgj"
+    link: "https://pl.go-ga.me/7syevz3l"
   }
 };
