@@ -84,7 +84,7 @@
       "type": "Tournament",
       "start_date": "2026-05-01",
       "end_date": "2026-05-04",
-      "points": [300]
+      "points": [50,100,150]
     },
     {
       "name": "Gear Enhancement",
