@@ -1,0 +1,16 @@
+{
+  "name": "rsl-x",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "node scripts/deploy.mjs",
+    "deploy:dry": "node scripts/deploy.mjs --dry-run",
+    "deploy:full": "node scripts/deploy.mjs --full",
+    "deploy:bootstrap": "node scripts/deploy.mjs --bootstrap"
+  },
+  "devDependencies": {
+    "basic-ftp": "^5.0.5",
+    "dotenv": "^16.4.5"
+  }
+}
