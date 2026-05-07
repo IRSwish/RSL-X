@@ -1,6 +1,7 @@
 /* === BASE === */
 body { font-family:'Inter',sans-serif; color:#fcf6ff; margin:0; padding:0; }
-body.modal-open {overflow: hidden;}
+html.modal-open,
+body.modal-open { overflow: hidden; }
 .container { width:95%; max-width:1400px; margin:20px auto; }
 
 
@@ -327,7 +328,18 @@ body.modal-open {overflow: hidden;}
 .reset-btn:hover{border:2px solid #d4af37;}
 
 /* === MODAL === */
-.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); display:none; justify-content:center; align-items:center; z-index:99999; }
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); display:none; justify-content:center; align-items:center; z-index:99999; overscroll-behavior: contain; }
+
+/* Drop the GPU-heavy blur for users who asked the OS for less effects */
+@media (prefers-reduced-transparency: reduce), (prefers-reduced-motion: reduce) {
+  .modal-overlay { backdrop-filter: none; background: rgba(0,0,0,.85); }
+}
+
+/* Stop the infinite spin on passive skill rings for reduced-motion users */
+@media (prefers-reduced-motion: reduce) {
+  .skill-icon-wrapper.passive .passive-stroke,
+  .skill-icon-wrapper.passive .passive-glow { animation: none; }
+}
 .modal-overlay.active { display:flex; }
 .modal-content { background:#1a1a1a; border:2px solid #d4af37; border-radius:12px; padding:20px; padding-left:8px; width:900px; display:flex; flex-direction:column; gap:16px; max-height:88vh; overflow:hidden; position:relative; box-shadow:0 0 25px rgba(212,175,55,.4); }
 .modal-top-row { display:flex; gap:20px; align-items:stretch; }
@@ -338,7 +350,7 @@ body.modal-open {overflow: hidden;}
 .modal-col { display:flex; flex-direction:column; align-items:center; width:33%; gap:15px; }
 .modal-divider { width:2px; background:rgba(212,175,55,.4); border-radius:2px; }
 
-.modal-scroll { overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column;scrollbar-width:thin; scrollbar-color:#d4af37 #0e0e0e;direction: rtl; padding-left:12px;position: relative; z-index: 1;}
+.modal-scroll { overflow-y:auto; overflow-x:hidden; overscroll-behavior: contain; display:flex; flex-direction:column;scrollbar-width:thin; scrollbar-color:#d4af37 #0e0e0e;direction: rtl; padding-left:12px;position: relative; z-index: 1;}
 .modal-scroll > * { direction: ltr;}
 .modal-top-row { display:flex; gap:20px; align-items:stretch; flex-shrink:0; }
 

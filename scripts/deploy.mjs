@@ -166,7 +166,30 @@ async function uploadString(client, dirCache, remotePath, content) {
   await client.uploadFrom(Readable.from(Buffer.from(content, 'utf8')), name);
 }
 
+// Files whose mtime should be tracked in a "version.json" sibling file
+// so the client can cache-bust them without re-downloading on every visit.
+const VERSIONED_ASSETS = [
+  { source: 'tools/champions-index/champions.db', output: 'tools/champions-index/db-version.json' },
+];
+
+async function writeVersionFiles() {
+  for (const { source, output } of VERSIONED_ASSETS) {
+    const sourcePath = join(REPO_ROOT, source);
+    const outputPath = join(REPO_ROOT, output);
+    try {
+      const s = await stat(sourcePath);
+      const payload = { version: String(Math.floor(s.mtimeMs)) };
+      await writeFile(outputPath, JSON.stringify(payload));
+    } catch (e) {
+      console.warn(`[deploy] Could not write ${output}: ${e.message}`);
+    }
+  }
+}
+
 async function main() {
+  // Generate version files BEFORE walking so they are picked up for upload
+  await writeVersionFiles();
+
   // Build local index
   const localFiles = [];
   for await (const f of walk(REPO_ROOT)) localFiles.push(f);

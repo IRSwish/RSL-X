@@ -1,6 +1,7 @@
 let currentModalIndex = null;
 let modalNavigationList = [];
 let champions = [];
+let championById = new Map();
 let sintranosData = [];
 let factions = [];
 let filteredChampions = [];
@@ -54,7 +55,12 @@ document.addEventListener("DOMContentLoaded", () => {
     locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
   }).then(SQL => {
 
-    fetch(`/tools/champions-index/champions.db?v=${Date.now()}`)
+    // Fetch the DB version first (small, cacheable short-term) so that
+    // browsers can long-cache the actual 3 MB DB file via a stable ?v=<mtime> URL.
+    fetch('/tools/champions-index/db-version.json', { cache: 'no-cache' })
+      .then(r => r.ok ? r.json() : { version: '0' })
+      .catch(() => ({ version: '0' }))
+      .then(({ version }) => fetch(`/tools/champions-index/champions.db?v=${version}`))
       .then(res => res.arrayBuffer())
       .then(buffer => {
         const db = new SQL.Database(new Uint8Array(buffer));
@@ -98,6 +104,9 @@ document.addEventListener("DOMContentLoaded", () => {
           effects: (r[24] || "").split("\n").map(e => e.trim()).filter(e => e.length > 0)
         }));
 
+        // Index champions by id for O(1) lookup on card clicks
+        championById = new Map(champions.map(c => [String(c.id), c]));
+
         // === Charger la table effects ===
         const effectsResult = db.exec("SELECT * FROM effects;");
         if (effectsResult.length) {
@@ -132,18 +141,34 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // === Pré-calcul des counts sintranos (toutes formes combinées) ===
+        // Done in chunks via requestIdleCallback to avoid blocking the main thread
+        // on weak CPUs (was ~0.5-2s blocking spike on cold load).
         if (sintranosData.length) {
-          champions.forEach(c => {
-            const forms = championForms[c.name] || [c];
-            c.sint_normal = sintranosData.filter(row => {
-              for (let n = 1; n <= 5; n++) if (forms.some(f => isSintEligible(f, row[`normal-${n}`]))) return true;
-              return false;
-            }).length;
-            c.sint_hard = sintranosData.filter(row => {
-              for (let n = 1; n <= 5; n++) if (forms.some(f => isSintEligible(f, row[`hard-${n}`]))) return true;
-              return false;
-            }).length;
-          });
+          const idle = window.requestIdleCallback || (cb => setTimeout(() => cb({ timeRemaining: () => 50 }), 0));
+          let i = 0;
+          const computeChunk = (deadline) => {
+            while (i < champions.length && deadline.timeRemaining() > 1) {
+              const c = champions[i++];
+              const forms = championForms[c.name] || [c];
+              let nCount = 0, hCount = 0;
+              for (const row of sintranosData) {
+                for (let n = 1; n <= 5; n++) {
+                  if (forms.some(f => isSintEligible(f, row[`normal-${n}`]))) { nCount++; break; }
+                }
+                for (let n = 1; n <= 5; n++) {
+                  if (forms.some(f => isSintEligible(f, row[`hard-${n}`]))) { hCount++; break; }
+                }
+              }
+              c.sint_normal = nCount;
+              c.sint_hard = hCount;
+            }
+            if (i < champions.length) {
+              idle(computeChunk);
+            } else if (currentSort.stat === 'sint_normal' || currentSort.stat === 'sint_hard') {
+              displayChampions();
+            }
+          };
+          idle(computeChunk);
         }
 
         // === Populer le select Sintranos ===
@@ -293,13 +318,11 @@ document.addEventListener("DOMContentLoaded", () => {
         // === Toggle Filters panel ===
         document.getElementById("filtersToggle").addEventListener("click", () => {
           document.getElementById("filtersPanel").classList.toggle("collapsed");
-          lucide.createIcons();
         });
 
         // === Toggle Effects panel ===
         document.getElementById("effectsToggle").addEventListener("click", () => {
           document.querySelector(".effects-container").classList.toggle("collapsed");
-          lucide.createIcons();
         });
 
         factions = [...new Set(champions.map(c => c.faction))].sort();
@@ -362,7 +385,7 @@ grid.addEventListener('click', (e) => {
   if (!card || !grid.contains(card)) return;
   const id = card.dataset.championId;
   if (id == null) return;
-  const champ = champions.find(c => String(c.id) === id);
+  const champ = championById.get(id);
   if (champ) openChampionModal(champ);
 });
 
@@ -1189,6 +1212,7 @@ function openChampionModal(champ) {
   // charger la forme 0 (Base)
   loadForm(0);
     document.body.classList.add("modal-open");
+    document.documentElement.classList.add("modal-open");
     modal.classList.add("active");
   }
 
@@ -1298,12 +1322,14 @@ compareInput.addEventListener("keydown", (e) => {
 document.querySelector(".modal-close").addEventListener("click", () => {
   modal.classList.remove("active");
   document.body.classList.remove("modal-open");
+  document.documentElement.classList.remove("modal-open");
 });
 
 modal.addEventListener("click", e => {
   if (e.target === modal) {
     modal.classList.remove("active");
     document.body.classList.remove("modal-open");
+    document.documentElement.classList.remove("modal-open");
   }
 });
 
@@ -1313,6 +1339,7 @@ document.addEventListener("keydown", (e) => {
     if (modal.classList.contains("active")) {
       modal.classList.remove("active");
       document.body.classList.remove("modal-open");
+      document.documentElement.classList.remove("modal-open");
       comparing = false;
       resetCompareUI();
     }
