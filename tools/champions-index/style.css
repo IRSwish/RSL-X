@@ -42,7 +42,17 @@ body.modal-open {overflow: hidden;}
 
 /* === GRID OF CHAMPIONS === */
 .champion-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:15px; justify-items:center; }
-.champion-card { width:100%; max-width:140px; text-align:center; cursor:pointer; }
+.champion-card {
+  width:100%;
+  max-width:140px;
+  text-align:center;
+  cursor:pointer;
+  /* Skip painting cards far outside the viewport — major win on long lists */
+  content-visibility: auto;
+  contain-intrinsic-size: 200px 220px;
+  contain: layout paint style;
+}
+.card-stat-value { font-size:12px; opacity:.8; margin-top:2px; }
 .card-image { position:relative; width:100%; aspect-ratio:140/182; overflow:hidden; }
 .card-image::before { content:""; position:absolute; inset:0; z-index:1; box-shadow:inset 0 0 22px rgba(0,0,0,.8); pointer-events:none; }
 .card-image.mythical::before { box-shadow:inset 0 -2px 2px 12px rgba(0,0,0,.8); }

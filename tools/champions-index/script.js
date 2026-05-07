@@ -348,8 +348,23 @@ function parseAuraValue(auraText) {
   return match ? parseFloat(match[1]) : 0;
 }
 
-searchInput.addEventListener('input', displayChampions);
+// Debounce search input to avoid re-rendering on every keystroke
+let searchDebounceTimer = null;
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(displayChampions, 130);
+});
 invocableCheckbox.addEventListener('change', displayChampions);
+
+// Event delegation: one listener for the whole grid instead of one per card
+grid.addEventListener('click', (e) => {
+  const card = e.target.closest('.champion-card');
+  if (!card || !grid.contains(card)) return;
+  const id = card.dataset.championId;
+  if (id == null) return;
+  const champ = champions.find(c => String(c.id) === id);
+  if (champ) openChampionModal(champ);
+});
 
 rarityButtons.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -700,62 +715,40 @@ function displayChampions() {
   countDisplay.textContent =
   `${unique.length} champion${unique.length !== 1 ? 's' : ''} found`;
 
+  const frag = document.createDocumentFragment();
+  const showStat = !!currentSort.stat;
+  const showAura = !showStat && auraSort && selectedAuraStats.length;
+
   unique.forEach(c => {
     const card = document.createElement('div');
-    card.classList.add('champion-card');
+    card.className = 'champion-card';
+    card.dataset.championId = c.id;
 
-    const imgWrapper = document.createElement('div');
-    imgWrapper.classList.add('card-image', c.rarity.toLowerCase());
-
-    const img = document.createElement('img');
-    img.src = `/tools/champions-index/img/champions/${c.image}.webp`;
-    img.alt = c.name;
-    img.loading = "lazy";
-    img.classList.add('champion-img');
-
-    const frame = document.createElement('img');
-    frame.src = `/tools/champions-index/img/rarity/${c.rarity}.webp`;
-    frame.alt = `${c.rarity} frame`;
-    frame.classList.add('rarity-frame');
-
-    const affinity = document.createElement('img');
-    affinity.src = `/tools/champions-index/img/affinity/${c.affinity}.webp`;
-    affinity.alt = `${c.affinity} affinity`;
-    affinity.classList.add('affinity-icon');
-
-    const name = document.createElement('div');
-    name.classList.add('champion-name');
-    name.textContent = c.name;
-
-    imgWrapper.appendChild(img);
-    imgWrapper.appendChild(frame);
-    imgWrapper.appendChild(affinity);
-    card.appendChild(imgWrapper);
-    card.appendChild(name);
-
-    if (currentSort.stat) {
-      const statValue = document.createElement("div");
-      statValue.style.fontSize = "12px";
-      statValue.style.opacity = "0.8";
-      statValue.style.marginTop = "2px";
-      statValue.textContent = c[currentSort.stat];
-      card.appendChild(statValue);
-    } else if (auraSort && selectedAuraStats.length) {
+    let extraStat = '';
+    if (showStat) {
+      extraStat = `<div class="card-stat-value">${c[currentSort.stat]}</div>`;
+    } else if (showAura) {
       const auraVal = parseAuraValue(c.aura);
       if (auraVal) {
         const isPercent = c.aura && /by\s+\d+(?:\.\d+)?%/i.test(c.aura);
-        const statValue = document.createElement("div");
-        statValue.style.fontSize = "12px";
-        statValue.style.opacity = "0.8";
-        statValue.style.marginTop = "2px";
-        statValue.textContent = isPercent ? `${auraVal}%` : `${auraVal}`;
-        card.appendChild(statValue);
+        extraStat = `<div class="card-stat-value">${isPercent ? auraVal + '%' : auraVal}</div>`;
       }
     }
 
-    card.addEventListener("click", () => openChampionModal(c));
-    grid.appendChild(card);
+    card.innerHTML = `
+      <div class="card-image ${c.rarity.toLowerCase()}">
+        <img class="champion-img" src="/tools/champions-index/img/champions/${c.image}.webp" alt="${c.name}" loading="lazy" decoding="async">
+        <img class="rarity-frame" src="/tools/champions-index/img/rarity/${c.rarity}.webp" alt="${c.rarity} frame" loading="lazy" decoding="async">
+        <img class="affinity-icon" src="/tools/champions-index/img/affinity/${c.affinity}.webp" alt="${c.affinity} affinity" loading="lazy" decoding="async">
+      </div>
+      <div class="champion-name">${c.name}</div>
+      ${extraStat}
+    `;
+
+    frag.appendChild(card);
   });
+
+  grid.appendChild(frag);
 
   if (finalFiltered.length === 0) {
     grid.innerHTML = '<p style="grid-column: 1 / -1; text-align:center;">No champions found.</p>';
