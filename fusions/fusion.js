@@ -228,8 +228,8 @@
     const tournamentEvts = events.filter(isTournament);
     const eventEvts = events.filter(e => !isTournament(e));
 
-    const placedTournaments = computeTracks([...tournamentEvts], minDate, dayWidth);
-    const placedEventEvts = computeTracks([...eventEvts], minDate, dayWidth);
+    const placedTournaments = computeTracksByCategory(tournamentEvts, true, minDate, dayWidth);
+    const placedEventEvts = computeTracksByCategory(eventEvts, false, minDate, dayWidth);
 
     const sectionGap = 60;
     let evtOffset = 0;
@@ -599,6 +599,74 @@
       }
     });
     return placedEvents;
+  }
+
+  // Groupe les events par catégorie (dungeons / arena / champion / par nom) puis
+  // empile les groupes verticalement, chacun obtenant sa(ses) propre(s) ligne(s).
+  const DUNGEON_NAMES = ['Spider', 'Fire Knight', 'Dragon', 'Ice Golem', 'Iron Twins', 'Sand Devil', 'Magic Keep'];
+
+  function getCategoryKey(event, isTourn) {
+    const name = (event.name || '').trim();
+    const lower = name.toLowerCase();
+    if (isTourn) {
+      const isDungeon = DUNGEON_NAMES.some(d => {
+        const dl = d.toLowerCase();
+        return lower === dl || lower.startsWith(dl + ' ') || lower.startsWith(dl + "'");
+      });
+      if (isDungeon) return 'tournament__dungeons';
+      if (/\barena\b/i.test(name)) return 'tournament__arena';
+      if (/^champion\b/i.test(name)) return 'tournament__champion';
+      return 'tournament__' + name;
+    }
+    if (lower === 'gear hunters') return 'event__gear_hunters';
+    if (lower === 'gear enhancement') return 'event__gear_enhancement';
+    return 'event__other';
+  }
+
+  const TOURNAMENT_CATEGORY_PRIORITY = {
+    'tournament__dungeons': 0,
+    'tournament__arena': 1,
+    'tournament__champion': 2,
+  };
+
+  const EVENT_CATEGORY_PRIORITY = {
+    'event__gear_hunters': 0,
+    'event__gear_enhancement': 1,
+    'event__other': 2,
+  };
+
+  function computeTracksByCategory(events, isTourn, minDate, dayWidth) {
+    if (!events.length) return [];
+
+    const groups = new Map();
+    events.forEach(ev => {
+      const key = getCategoryKey(ev, isTourn);
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(ev);
+    });
+
+    const priority = isTourn ? TOURNAMENT_CATEGORY_PRIORITY : EVENT_CATEGORY_PRIORITY;
+    const keys = [...groups.keys()].sort((a, b) => {
+      const pa = priority[a] ?? 99;
+      const pb = priority[b] ?? 99;
+      if (pa !== pb) return pa - pb;
+      return a.localeCompare(b);
+    });
+
+    const placed = [];
+    let yOffset = 0;
+    const TRACK_HEIGHT = 82;
+
+    keys.forEach(key => {
+      const groupPlaced = computeTracks([...groups.get(key)], minDate, dayWidth);
+      const maxTrackInGroup = groupPlaced.length > 0
+        ? Math.max(...groupPlaced.map(p => p.top))
+        : 0;
+      groupPlaced.forEach(p => placed.push({ event: p.event, top: p.top + yOffset }));
+      yOffset += maxTrackInGroup + TRACK_HEIGHT;
+    });
+
+    return placed;
   }
 
   function updateSummary() {

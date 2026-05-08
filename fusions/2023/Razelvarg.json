@@ -40,7 +40,7 @@
     },
     {
       "name": "Gear Hunters",
-      "type": "Tournament",
+      "type": "Event",
       "start_date": "2023-04-14",
       "end_date": "2023-04-17",
       "reward": "Rare",
@@ -100,7 +100,7 @@
     },
     {
       "name": "Gear Hunters",
-      "type": "Tournament",
+      "type": "Event",
       "start_date": "2023-04-20",
       "end_date": "2023-04-23",
       "reward": "Rare",
@@ -150,7 +150,7 @@
     },
     {
       "name": "Gear Hunters",
-      "type": "Tournament",
+      "type": "Event",
       "start_date": "2023-04-25",
       "end_date": "2023-04-29",
       "reward": "Rare",

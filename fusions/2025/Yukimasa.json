@@ -49,7 +49,7 @@
     },
 	{
       "name": "Summon Rush",
-	  "type": "Tournament",
+	  "type": "Event",
       "start_date": "2025-12-19",
       "end_date": "2025-12-22",
       "reward": "Rare, Epic",
@@ -81,7 +81,7 @@
     },
 	{
       "name": "Champion Chase",
-	  "type": "Event",
+	  "type": "Tournament",
       "start_date": "2025-12-26",
       "end_date": "2025-12-29",
       "reward": "Rare",

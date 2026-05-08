@@ -59,6 +59,7 @@
       "name": "Dragon",
       "start_date": "2026-02-19",
       "end_date": "2026-02-22",
+      "type":"Tournament",
       "reward": "Fragments",
       "points": [5]
     },
@@ -74,7 +75,7 @@
       "name": "Fire Knight",
       "start_date": "2026-02-16",
       "end_date": "2026-02-19",
-      "type":"Event",
+      "type":"Tournament",
       "reward": "Fragments",
       "points": [5]
     },
