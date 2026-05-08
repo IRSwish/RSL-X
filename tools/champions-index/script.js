@@ -208,95 +208,76 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         }
 
-        // === Générer les filtres Buffs ===
-        const buffGrid = document.getElementById("buffFilterGrid");
-        EFFECTS.Buff.forEach(e => {
-          const div = document.createElement("div");
-          div.className = "effect-icon";
-          div.dataset.id = e.id;
-          div.dataset.type = "Buff";
-          div.title = e.name;
-          div.innerHTML = `<img src="/tools/champions-index/img/buffs/${e.id}.webp" alt="${e.name}">`;
-          buffGrid.appendChild(div);
-        });
+        // === Filtres Effects : générés seulement au premier ouverture du panel ===
+        // Réduit le DOM initial de plusieurs milliers de nodes (icônes + checklists).
+        let effectsBuilt = false;
+        const buildEffectsFilters = () => {
+          if (effectsBuilt) return;
+          effectsBuilt = true;
 
-        // === Générer les filtres Debuffs ===
-        const debuffGrid = document.getElementById("debuffFilterGrid");
-        EFFECTS.Debuff.forEach(e => {
-          const div = document.createElement("div");
-          div.className = "effect-icon";
-          div.dataset.id = e.id;
-          div.dataset.type = "Debuff";
-          div.title = e.name;
-          div.innerHTML = `<img src="/tools/champions-index/img/debuffs/${e.id}.webp" alt="${e.name}">`;
-          debuffGrid.appendChild(div);
-        });
-
-        // === Générer les filtres Positive Effects ===
-        const posList = document.getElementById("positiveFilterList");
-        EFFECTS.Positive.forEach(e => {
-          const row = document.createElement("label");
-          row.innerHTML = `
-            <input type="checkbox" data-type="Positive" data-id="${e.name}">
-            <span>${e.name}</span>
-          `;
-          posList.appendChild(row);
-        });
-
-        // === Générer les filtres Negative Effects ===
-        const negList = document.getElementById("negativeFilterList");
-        EFFECTS.Negative.forEach(e => {
-          const row = document.createElement("label");
-          row.innerHTML = `
-            <input type="checkbox" data-type="Negative" data-id="${e.name}">
-            <span>${e.name}</span>
-          `;
-          negList.appendChild(row);
-        });
-
-        // === Générer les filtres Ignore Effects ===
-        const ignoreList = document.getElementById("ignoreFilterList");
-        EFFECTS.Ignore.forEach(e => {
-          const row = document.createElement("label");
-          row.innerHTML = `
-            <input type="checkbox" data-type="Ignore" data-id="${e.id}">
-            <span>${e.name}</span>
-          `;
-          ignoreList.appendChild(row);
-        });
-
-        // === Listeners BUFF / DEBUFF (icônes cliquables) ===
-        document.querySelectorAll(".effect-icon").forEach(icon => {
-          icon.addEventListener("click", () => {
-            icon.classList.toggle("active");
-
-            const type = icon.dataset.type;
-            const id   = icon.dataset.id;
-
-            if (icon.classList.contains("active")) {
-              activeEffects[type].push(id);
-            } else {
-              activeEffects[type] = activeEffects[type].filter(x => x !== id);
-            }
-
-            displayChampions();
+          const buffGrid = document.getElementById("buffFilterGrid");
+          let buffHTML = "";
+          EFFECTS.Buff.forEach(e => {
+            buffHTML += `<div class="effect-icon" data-id="${e.id}" data-type="Buff" title="${e.name}"><img src="/tools/champions-index/img/buffs/${e.id}.webp" alt="${e.name}" loading="lazy" decoding="async"></div>`;
           });
+          buffGrid.innerHTML = buffHTML;
+
+          const debuffGrid = document.getElementById("debuffFilterGrid");
+          let debuffHTML = "";
+          EFFECTS.Debuff.forEach(e => {
+            debuffHTML += `<div class="effect-icon" data-id="${e.id}" data-type="Debuff" title="${e.name}"><img src="/tools/champions-index/img/debuffs/${e.id}.webp" alt="${e.name}" loading="lazy" decoding="async"></div>`;
+          });
+          debuffGrid.innerHTML = debuffHTML;
+
+          const posList = document.getElementById("positiveFilterList");
+          let posHTML = "";
+          EFFECTS.Positive.forEach(e => {
+            posHTML += `<label><input type="checkbox" data-type="Positive" data-id="${e.name}"><span>${e.name}</span></label>`;
+          });
+          posList.innerHTML = posHTML;
+
+          const negList = document.getElementById("negativeFilterList");
+          let negHTML = "";
+          EFFECTS.Negative.forEach(e => {
+            negHTML += `<label><input type="checkbox" data-type="Negative" data-id="${e.name}"><span>${e.name}</span></label>`;
+          });
+          negList.innerHTML = negHTML;
+
+          const ignoreList = document.getElementById("ignoreFilterList");
+          let ignoreHTML = "";
+          EFFECTS.Ignore.forEach(e => {
+            ignoreHTML += `<label><input type="checkbox" data-type="Ignore" data-id="${e.id}"><span>${e.name}</span></label>`;
+          });
+          ignoreList.innerHTML = ignoreHTML;
+        };
+
+        // Event delegation sur le container parent : un seul listener au lieu de N par icône
+        const effectsContainer = document.querySelector(".effects-container");
+        effectsContainer.addEventListener("click", (e) => {
+          const icon = e.target.closest(".effect-icon");
+          if (!icon || !effectsContainer.contains(icon)) return;
+          icon.classList.toggle("active");
+          const type = icon.dataset.type;
+          const id   = icon.dataset.id;
+          if (icon.classList.contains("active")) {
+            activeEffects[type].push(id);
+          } else {
+            activeEffects[type] = activeEffects[type].filter(x => x !== id);
+          }
+          displayChampions();
         });
 
-        // === Listeners POSITIVE / NEGATIVE (checkboxes) ===
-        document.querySelectorAll(".effect-checklist input").forEach(input => {
-          input.addEventListener("change", () => {
-            const type = input.dataset.type;
-            const id   = input.dataset.id;
-
-            if (input.checked) {
-              activeEffects[type].push(id);
-            } else {
-              activeEffects[type] = activeEffects[type].filter(x => x !== id);
-            }
-
-            displayChampions();
-          });
+        effectsContainer.addEventListener("change", (e) => {
+          const input = e.target;
+          if (!input.matches('.effect-checklist input[type="checkbox"]')) return;
+          const type = input.dataset.type;
+          const id   = input.dataset.id;
+          if (input.checked) {
+            activeEffects[type].push(id);
+          } else {
+            activeEffects[type] = activeEffects[type].filter(x => x !== id);
+          }
+          displayChampions();
         });
 
         // === Collapse filter boxes (Factions, Attributes, Auras, Advanced) ===
@@ -320,8 +301,9 @@ document.addEventListener("DOMContentLoaded", () => {
           document.getElementById("filtersPanel").classList.toggle("collapsed");
         });
 
-        // === Toggle Effects panel ===
+        // === Toggle Effects panel === (lazy-build des filtres au premier ouvert)
         document.getElementById("effectsToggle").addEventListener("click", () => {
+          buildEffectsFilters();
           document.querySelector(".effects-container").classList.toggle("collapsed");
         });
 
@@ -760,9 +742,9 @@ function displayChampions() {
 
     card.innerHTML = `
       <div class="card-image ${c.rarity.toLowerCase()}">
-        <img class="champion-img" src="/tools/champions-index/img/champions/${c.image}.webp" alt="${c.name}" loading="lazy" decoding="async">
-        <img class="rarity-frame" src="/tools/champions-index/img/rarity/${c.rarity}.webp" alt="${c.rarity} frame" loading="lazy" decoding="async">
-        <img class="affinity-icon" src="/tools/champions-index/img/affinity/${c.affinity}.webp" alt="${c.affinity} affinity" loading="lazy" decoding="async">
+        <img class="champion-img" src="/tools/champions-index/img/champions/${c.image}.webp" alt="${c.name}" loading="lazy" decoding="async" width="140" height="182">
+        <img class="rarity-frame" src="/tools/champions-index/img/rarity/${c.rarity}.webp" alt="${c.rarity} frame" loading="lazy" decoding="async" width="140" height="182">
+        <img class="affinity-icon" src="/tools/champions-index/img/affinity/${c.affinity}.webp" alt="${c.affinity} affinity" loading="lazy" decoding="async" width="28" height="28">
       </div>
       <div class="champion-name">${c.name}</div>
       ${extraStat}
@@ -1120,11 +1102,19 @@ function renderSkills(champ) {
       .replace(/^.*?Multiplier:/gm, '<span class="multiplier-label">$&</span>')
       .replace(/\n/g, "<br>");
 
+    const passiveBlurId = `passiveBlur_${gid}_${p}`;
     const passiveHTML = `
       <div class="skill-entry">
         <div class="skill-icon-wrapper passive">
-          <div class="passive-stroke"></div>
-          <div class="passive-glow"></div>
+          <svg class="passive-rings" viewBox="0 0 100 100" aria-hidden="true" overflow="visible">
+            <defs>
+              <filter id="${passiveBlurId}" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="2"/>
+              </filter>
+            </defs>
+            <circle class="passive-ring-glow" filter="url(#${passiveBlurId})" cx="50" cy="50" r="50" pathLength="1" stroke-dasharray="0.667 0.333"/>
+            <circle class="passive-ring-stroke" cx="50" cy="50" r="50" pathLength="1" stroke-dasharray="0.667 0.333"/>
+          </svg>
             <img class="skill-icon" src="${img}">
         </div>
         <div class="skill-info">

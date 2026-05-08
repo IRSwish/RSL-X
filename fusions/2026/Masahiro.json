@@ -104,8 +104,8 @@
       "start_date": "2026-05-08",
       "end_date": "2026-05-11",
       "type":"Event",
-      "reward": "Fragments",
-      "points": [20]
+      "reward": "Fragments, Fragments, Fragments, Fragments",
+      "points": [5,5,5,5]
     },
     {
       "name": "Gear Enhancement",
