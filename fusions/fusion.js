@@ -304,11 +304,11 @@
         const safeName = event.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
         const id = `${safeName}-${event.start_date}-${event.end_date}-${idx}`;
         let initialState;
-        if (today < start) initialState = 'state-upcoming';
-        else if (today >= start && today <= end) initialState = 'state-ongoing';
-        else initialState = 'state-passed';
+        if (today > end) initialState = 'state-passed';
+        else initialState = 'state-ongoing';
 
-        const saved = savedStates[id] || initialState;
+        let saved = savedStates[id] || initialState;
+        if (saved === 'state-upcoming') saved = 'state-ongoing';
 
         // mapping du token reward -> vrai nom image+compte
         const tokenRaw = rewardTokens[idx] || 'default';
@@ -430,7 +430,7 @@
         const id = box.dataset.id;
 
         if (parentEvent && parentEvent.classList.contains('event-ended')) {
-          const allStates = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+          const allStates = ['state-ongoing', 'state-validated', 'state-passed'];
           const isValidated = box.classList.contains('state-validated');
           allStates.forEach(s => box.classList.remove(s));
           box.classList.add(isValidated ? 'state-passed' : 'state-validated');
@@ -449,7 +449,7 @@
           return;
         }
 
-        const states = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+        const states = ['state-ongoing', 'state-validated', 'state-passed'];
         const currentIndex = states.findIndex(s => box.classList.contains(s));
         const nextIndex = (currentIndex + 1) % states.length;
 
@@ -469,7 +469,7 @@
         const id = box.dataset.id;
 
         if (parentEvent && parentEvent.classList.contains('event-ended')) {
-          const allStates = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+          const allStates = ['state-ongoing', 'state-validated', 'state-passed'];
           const isValidated = box.classList.contains('state-validated');
           allStates.forEach(s => box.classList.remove(s));
           box.classList.add(isValidated ? 'state-passed' : 'state-validated');
@@ -488,7 +488,7 @@
           return;
         }
 
-        const states = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+        const states = ['state-ongoing', 'state-validated', 'state-passed'];
         const currentIndex = states.findIndex(s => box.classList.contains(s));
         const prevIndex = (currentIndex - 1 + states.length) % states.length;
 
@@ -516,9 +516,8 @@
         boxes.forEach(box => {
           const id = box.dataset.id;
           let initialState;
-          if (today < start) initialState = 'state-upcoming';
-          else if (today >= start && today <= end) initialState = 'state-ongoing';
-          else initialState = 'state-passed';
+          if (today > end) initialState = 'state-passed';
+          else initialState = 'state-ongoing';
           box.className = `point-box ${initialState}`;
           savedStates[id] = initialState;
         });
@@ -545,12 +544,10 @@
 
         document.querySelectorAll('.point-box').forEach(box => {
           const parent = box.closest('.event-block');
-          const start = new Date(parent.dataset.start);
           const end = new Date(parent.dataset.end);
           let initialState;
-          if (today < start) initialState = 'state-upcoming';
-          else if (today >= start && today <= end) initialState = 'state-ongoing';
-          else initialState = 'state-passed';
+          if (today > end) initialState = 'state-passed';
+          else initialState = 'state-ongoing';
           box.className = `point-box ${initialState}`;
           savedStates[box.dataset.id] = initialState;
         });
@@ -731,33 +728,43 @@
         });
       }
 
-      const totalVirtual = fragsValidated + fragsOngoing;
+      // total fragments base (sans extras 1st/2nd place) sommé sur tous les events
+      let totalPossibleBase = 0;
+      (data.events || []).forEach(ev => {
+        const rewards = String(ev.reward || '').split(',').map(r => r.trim().toLowerCase());
+        (ev.points || []).forEach((p, idx) => {
+          if ((rewards[idx] || '').includes('frag')) {
+            totalPossibleBase += parseInt(p, 10) || 0;
+          }
+        });
+      });
+
       const target = type === 'HYBRID' ? 400 : 100;
-      const percent = Math.min((fragsValidated / target) * 100, 100);
+      const denom = Math.max(0, totalPossibleBase - fragsSkipped);
+      const scale = totalPossibleBase || 1;
+
+      const donePct = Math.min((fragsValidated / scale) * 100, 100);
+      const plannedPct = Math.min(((fragsValidated + fragsOngoing) / scale) * 100, 100);
+      const skippedPct = Math.min((fragsSkipped / scale) * 100, 100);
+      // Red extends ~6px past its left edge so yellow's rounded end overlaps cleanly
+      const skippedWidth = skippedPct > 0 ? `calc(${skippedPct}% + 6px)` : '0%';
 
       let statusClass = '';
-
-      // 💚 Priorité au vert : si tu as assez de fragments, on s'en fout des skips
       if (fragsValidated >= target) {
         statusClass = 'status-green';
-      } else if (fragsSkipped > 0) {
-        // 🔴 Rouge uniquement si tu n'as PAS encore le total nécessaire
+      } else if (denom < target) {
         statusClass = 'status-red';
       }
 
       panel.innerHTML = `
         <div class="stat ${statusClass}">
           <img class="stat-icon" src="/tools/champions-index/img/champions/Fragments.webp" alt="Fragments"/>
-          <div style="width:100%">
-            <span class="label">${type === 'HYBRID' ? 'Epic Fragments' : 'Fusion Fragments'}</span>
-            <span class="value">${fragsValidated} / ${target}</span>
-            <div class="frag-bar">
-              <div class="frag-fill" style="width:${percent}%"></div>
-            </div>
-            <div style="font-size:12px;opacity:.8">
-              Virtual: ${totalVirtual} • Skipped: ${fragsSkipped}
-            </div>
-          </div>
+          <span class="value">${fragsValidated} / ${denom}</span>
+        </div>
+        <div class="frag-bar frag-bar-full">
+          <div class="frag-fill frag-fill-skipped" style="width:${skippedWidth}"></div>
+          <div class="frag-fill frag-fill-planned" style="width:${plannedPct}%"></div>
+          <div class="frag-fill frag-fill-done" style="width:${donePct}%"></div>
         </div>
       `;
       return;

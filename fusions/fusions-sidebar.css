@@ -110,7 +110,6 @@
 .legend-dot.skipped { background-color: #ff3333; }
 .legend-dot.in-progress { background-color: #ffa500; }
 .legend-dot.done { background-color: #4caf50; }
-.legend-dot.not-started { background-color: #e0e0e0; }
 
 /* Progress / Stat cards */
 .progress-panel { display: flex; flex-direction: column; gap: 10px; }
@@ -148,24 +147,48 @@
   .progress-grid { grid-template-columns: 1fr; }
 }
 
+/* Bar Fragments en pleine largeur du panneau, sortie du cadre .stat */
+.frag-bar-full {
+  margin-top: -4px;
+}
+
 /* Progress bar (fragments) */
 .frag-bar {
   position: relative;
   width: 100%;
-  height: 6px;
-  border-radius: 3px;
+  height: 10px;
+  border-radius: 5px;
   background: rgba(255,255,255,0.1);
   margin: 6px 0 4px;
   overflow: hidden;
 }
 .frag-fill {
   position: absolute;
-  left: 0; top: 0;
+  top: 0;
   height: 100%;
+  transition: width 0.4s ease;
+}
+.frag-fill-planned {
+  left: 0;
   background: linear-gradient(90deg, #d4af37, #f8e16c);
   box-shadow: 0 0 8px rgba(212,175,55,0.6);
-  border-radius: 3px;
-  transition: width 0.4s ease;
+  border-radius: 5px;
+}
+.frag-fill-done {
+  left: 0;
+  background: linear-gradient(90deg, #256d28, #388e3c);
+  box-shadow: 0 0 8px rgba(56,142,60,0.55);
+  border-radius: 5px;
+}
+.frag-fill-skipped {
+  right: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    #ff3333,
+    #ff3333 4px,
+    #b71c1c 4px,
+    #b71c1c 8px
+  );
 }
 
 /* Resources */
@@ -499,6 +522,8 @@
   font-size: 13px;
 }
 
+#pinned-progress .panel { width: 200px; max-width: 100%; }
+
 #pinned-area .panel-header {
   padding: 7px 0;
   font-size: 14px;
@@ -621,7 +646,6 @@
 .point-box.state-validated span { background: #4caf50; color: #111; }
 .point-box.state-ongoing span   { background: #ffa500; color: #111; }
 .point-box.state-passed span    { background: #ff3333; color: #fff; }
-.point-box.state-upcoming span  { background: #d0d0d0; color: #111; }
 
 /* ——— Section separators ——— */
 .section-separator {
