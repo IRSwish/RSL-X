@@ -70,7 +70,7 @@
 }
 
 .sidebar-logo {
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-family: "Transcend", "Cormorant Garamond", serif;
   font-size: 1.35rem;
   color: var(--gold-light);
   text-transform: uppercase;
@@ -100,7 +100,7 @@
   gap: 8px;
   color: var(--text);
   text-decoration: none;
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-family: "Transcend", "Cormorant Garamond", serif;
   font-size: 16px;
   font-weight: 600;
   text-transform: uppercase;

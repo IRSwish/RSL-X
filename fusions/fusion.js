@@ -262,8 +262,8 @@
     const tournamentEvts = events.filter(isTournament);
     const eventEvts = events.filter(e => !isTournament(e));
 
-    const placedTournaments = computeTracks([...tournamentEvts], minDate, dayWidth);
-    const placedEventEvts = computeTracks([...eventEvts], minDate, dayWidth);
+    const placedTournaments = computeTracksByCategory(tournamentEvts, true, minDate, dayWidth);
+    const placedEventEvts = computeTracksByCategory(eventEvts, false, minDate, dayWidth);
 
     const sectionGap = 60;
     let evtOffset = 0;
@@ -338,11 +338,11 @@
         const safeName = event.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
         const id = `${safeName}-${event.start_date}-${event.end_date}-${idx}`;
         let initialState;
-        if (today < start) initialState = 'state-upcoming';
-        else if (today >= start && today <= end) initialState = 'state-ongoing';
-        else initialState = 'state-passed';
+        if (today > end) initialState = 'state-passed';
+        else initialState = 'state-ongoing';
 
-        const saved = savedStates[id] || initialState;
+        let saved = savedStates[id] || initialState;
+        if (saved === 'state-upcoming') saved = 'state-ongoing';
 
         // mapping du token reward -> vrai nom image+compte
         const tokenRaw = rewardTokens[idx] || 'default';
@@ -464,7 +464,7 @@
         const id = box.dataset.id;
 
         if (parentEvent && parentEvent.classList.contains('event-ended')) {
-          const allStates = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+          const allStates = ['state-ongoing', 'state-validated', 'state-passed'];
           const isValidated = box.classList.contains('state-validated');
           allStates.forEach(s => box.classList.remove(s));
           box.classList.add(isValidated ? 'state-passed' : 'state-validated');
@@ -483,7 +483,7 @@
           return;
         }
 
-        const states = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+        const states = ['state-ongoing', 'state-validated', 'state-passed'];
         const currentIndex = states.findIndex(s => box.classList.contains(s));
         const nextIndex = (currentIndex + 1) % states.length;
 
@@ -503,7 +503,7 @@
         const id = box.dataset.id;
 
         if (parentEvent && parentEvent.classList.contains('event-ended')) {
-          const allStates = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+          const allStates = ['state-ongoing', 'state-validated', 'state-passed'];
           const isValidated = box.classList.contains('state-validated');
           allStates.forEach(s => box.classList.remove(s));
           box.classList.add(isValidated ? 'state-passed' : 'state-validated');
@@ -522,7 +522,7 @@
           return;
         }
 
-        const states = ['state-upcoming', 'state-ongoing', 'state-validated', 'state-passed'];
+        const states = ['state-ongoing', 'state-validated', 'state-passed'];
         const currentIndex = states.findIndex(s => box.classList.contains(s));
         const prevIndex = (currentIndex - 1 + states.length) % states.length;
 
@@ -550,9 +550,8 @@
         boxes.forEach(box => {
           const id = box.dataset.id;
           let initialState;
-          if (today < start) initialState = 'state-upcoming';
-          else if (today >= start && today <= end) initialState = 'state-ongoing';
-          else initialState = 'state-passed';
+          if (today > end) initialState = 'state-passed';
+          else initialState = 'state-ongoing';
           box.className = `point-box ${initialState}`;
           savedStates[id] = initialState;
         });
@@ -579,12 +578,10 @@
 
         document.querySelectorAll('.point-box').forEach(box => {
           const parent = box.closest('.event-block');
-          const start = new Date(parent.dataset.start);
           const end = new Date(parent.dataset.end);
           let initialState;
-          if (today < start) initialState = 'state-upcoming';
-          else if (today >= start && today <= end) initialState = 'state-ongoing';
-          else initialState = 'state-passed';
+          if (today > end) initialState = 'state-passed';
+          else initialState = 'state-ongoing';
           box.className = `point-box ${initialState}`;
           savedStates[box.dataset.id] = initialState;
         });
@@ -633,6 +630,74 @@
       }
     });
     return placedEvents;
+  }
+
+  // Groupe les events par catégorie (dungeons / arena / champion / par nom) puis
+  // empile les groupes verticalement, chacun obtenant sa(ses) propre(s) ligne(s).
+  const DUNGEON_NAMES = ['Spider', 'Fire Knight', 'Dragon', 'Ice Golem', 'Iron Twins', 'Sand Devil', 'Magic Keep'];
+
+  function getCategoryKey(event, isTourn) {
+    const name = (event.name || '').trim();
+    const lower = name.toLowerCase();
+    if (isTourn) {
+      const isDungeon = DUNGEON_NAMES.some(d => {
+        const dl = d.toLowerCase();
+        return lower === dl || lower.startsWith(dl + ' ') || lower.startsWith(dl + "'");
+      });
+      if (isDungeon) return 'tournament__dungeons';
+      if (/\barena\b/i.test(name)) return 'tournament__arena';
+      if (/^champion\b/i.test(name)) return 'tournament__champion';
+      return 'tournament__' + name;
+    }
+    if (lower === 'gear hunters') return 'event__gear_hunters';
+    if (lower === 'gear enhancement') return 'event__gear_enhancement';
+    return 'event__other';
+  }
+
+  const TOURNAMENT_CATEGORY_PRIORITY = {
+    'tournament__dungeons': 0,
+    'tournament__arena': 1,
+    'tournament__champion': 2,
+  };
+
+  const EVENT_CATEGORY_PRIORITY = {
+    'event__gear_hunters': 0,
+    'event__gear_enhancement': 1,
+    'event__other': 2,
+  };
+
+  function computeTracksByCategory(events, isTourn, minDate, dayWidth) {
+    if (!events.length) return [];
+
+    const groups = new Map();
+    events.forEach(ev => {
+      const key = getCategoryKey(ev, isTourn);
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(ev);
+    });
+
+    const priority = isTourn ? TOURNAMENT_CATEGORY_PRIORITY : EVENT_CATEGORY_PRIORITY;
+    const keys = [...groups.keys()].sort((a, b) => {
+      const pa = priority[a] ?? 99;
+      const pb = priority[b] ?? 99;
+      if (pa !== pb) return pa - pb;
+      return a.localeCompare(b);
+    });
+
+    const placed = [];
+    let yOffset = 0;
+    const TRACK_HEIGHT = 46;
+
+    keys.forEach(key => {
+      const groupPlaced = computeTracks([...groups.get(key)], minDate, dayWidth);
+      const maxTrackInGroup = groupPlaced.length > 0
+        ? Math.max(...groupPlaced.map(p => p.top))
+        : 0;
+      groupPlaced.forEach(p => placed.push({ event: p.event, top: p.top + yOffset }));
+      yOffset += maxTrackInGroup + TRACK_HEIGHT;
+    });
+
+    return placed;
   }
 
   function updateSummary() {
@@ -697,31 +762,41 @@
         });
       }
 
-      const totalVirtual = fragsValidated + fragsOngoing;
+      // total fragments base (sans extras 1st/2nd place) sommé sur tous les events
+      let totalPossibleBase = 0;
+      (data.events || []).forEach(ev => {
+        const rewards = String(ev.reward || '').split(',').map(r => r.trim().toLowerCase());
+        (ev.points || []).forEach((p, idx) => {
+          if ((rewards[idx] || '').includes('frag')) {
+            totalPossibleBase += parseInt(p, 10) || 0;
+          }
+        });
+      });
+
       const target = type === 'HYBRID' ? 400 : 100;
-      const percent = Math.min((fragsValidated / target) * 100, 100);
+      const denom = Math.max(0, totalPossibleBase - fragsSkipped);
+      const scale = totalPossibleBase || 1;
+
+      const donePct = Math.min((fragsValidated / scale) * 100, 100);
+      const plannedPct = Math.min(((fragsValidated + fragsOngoing) / scale) * 100, 100);
+      const skippedPct = Math.min((fragsSkipped / scale) * 100, 100);
 
       let statusClass = '';
-
-      // 💚 Priorité au vert : si tu as assez de fragments, on s'en fout des skips
       if (fragsValidated >= target) {
         statusClass = 'status-green';
-      } else if (fragsSkipped > 0) {
-        // 🔴 Rouge uniquement si tu n'as PAS encore le total nécessaire
+      } else if (denom < target) {
         statusClass = 'status-red';
       }
 
       panel.innerHTML = `
-        <div class="stat ${statusClass}">
+        <div class="stat stat-fragments ${statusClass}">
           <img class="stat-icon" src="/tools/champions-index/img/champions/Fragments.webp" alt="Fragments"/>
-          <div style="width:100%">
-            <span class="label">${type === 'HYBRID' ? 'Epic Fragments' : 'Fusion Fragments'}</span>
-            <span class="value">${fragsValidated} / ${target}</span>
+          <div class="stat-fragments-body">
+            <span class="value">${fragsValidated} / ${denom}</span>
             <div class="frag-bar">
-              <div class="frag-fill" style="width:${percent}%"></div>
-            </div>
-            <div style="font-size:12px;opacity:.8">
-              Virtual: ${totalVirtual} • Skipped: ${fragsSkipped}
+              <div class="frag-fill frag-fill-skipped" style="width:${skippedPct}%"></div>
+              <div class="frag-fill frag-fill-planned" style="width:${plannedPct}%"></div>
+              <div class="frag-fill frag-fill-done" style="width:${donePct}%"></div>
             </div>
           </div>
         </div>

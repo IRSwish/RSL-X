@@ -18,7 +18,7 @@ body.modal-open {overflow: hidden;}
 /* === FILTERS === */
 .filters-wrapper { display:flex; justify-content:center; gap:40px; flex-wrap:wrap; margin-bottom:25px; }
 .filter-section { text-align:center; width:250px; }
-.section-label { font-family:"Middle Ages","Cormorant Garamond",serif; font-size:16px; font-weight:600; color:#bbb; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
+.section-label { font-family:"Transcend","Cormorant Garamond",serif; font-size:16px; font-weight:600; color:#bbb; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
 .filter-buttons { display:grid; justify-items:center; gap:8px; }
 .rarity-grid { grid-template-columns:repeat(3,1fr); }
 .affinity-grid { grid-template-columns:repeat(2,1fr); }
@@ -70,8 +70,8 @@ body.modal-open {overflow: hidden;}
 .champion-img { width:100%; height:100%; object-fit:cover; display:block; position:relative; z-index:0; }
 .rarity-frame { display: none; }
 .affinity-icon { position:absolute; bottom:14px; left:12px; width:28px; height:28px; z-index:3; pointer-events:none; }
-.champion-name { font-family: "Middle Ages", "Cormorant Garamond", serif; font-size:13px; font-weight:600; margin-top:6px; color: #e8e0d2; }
-.card-sort-value { font-family: "Middle Ages", "Cormorant Garamond", serif; font-size:15px; font-weight:600; opacity:.85; margin-top:2px; color:#c9a96a; }
+.champion-name { font-family: "Transcend", "Cormorant Garamond", serif; font-size:13px; font-weight:600; margin-top:6px; color: #e8e0d2; }
+.card-sort-value { font-family: "Transcend", "Cormorant Garamond", serif; font-size:15px; font-weight:600; opacity:.85; margin-top:2px; color:#c9a96a; }
 .counter { text-align:center; margin-bottom:15px; font-size:15px; opacity:.8; }
 
 /* === SORT BAR === */
@@ -106,7 +106,7 @@ body.modal-open {overflow: hidden;}
   justify-content: center;
   gap: 8px;
   user-select: none;
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-family: "Transcend", "Cormorant Garamond", serif;
   font-size: 20px;
   font-weight: 600;
   text-transform: uppercase;
@@ -196,7 +196,7 @@ body.modal-open {overflow: hidden;}
 
 /* TITRES — cliquables pour collapse */
 .effect-title {
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-family: "Transcend", "Cormorant Garamond", serif;
   font-size: 16px;
   font-weight: 600;
   text-align: center;
@@ -368,7 +368,7 @@ body.modal-open {overflow: hidden;}
 .faction-col, .champion-col {gap:0;}
 
 /* === MODAL TITLES === */
-.modal-name,.modal-col-title { font-family:"Middle Ages","Cormorant Garamond",serif; font-size:20px; font-weight:600; text-align:center; color: #f1ddb1; }
+.modal-name,.modal-col-title { font-family:"Transcend","Cormorant Garamond",serif; font-size:20px; font-weight:600; text-align:center; color: #f1ddb1; }
 
 /* === STATS === */
 .stats-col { justify-content:center; padding: 0 50px 0px 50px; }
@@ -423,7 +423,7 @@ body.modal-open {overflow: hidden;}
 
 .skill-entry{position:relative;display:flex;gap:50px;align-items:flex-start;padding:12px 50px;background:#090807;border:1px solid #333;border-radius:0;align-items:center;}
 .skill-info{display:flex;flex-direction:column;gap:4px;}
-.skill-title{font-family:"Middle Ages","Cormorant Garamond",serif;font-size:16px;font-weight:600;color:#f1ddb1;}
+.skill-title{font-family:"Transcend","Cormorant Garamond",serif;font-size:16px;font-weight:600;color:#f1ddb1;}
 .skill-desc{font-family:"Cormorant Garamond",serif; font-size:18px;line-height:1.35;opacity:.9;}
 .skill-bracket{color:#00c821;font-weight:600;}
 .multiplier-label{font-family:"Cormorant Garamond",serif; color:#c9a96a;font-weight:700;}
@@ -447,7 +447,7 @@ body.modal-open {overflow: hidden;}
 .aura-entry { display:flex; gap:20px; align-items:center; padding:12px 12px; background:#0b0907; border:1px solid rgba(201,169,106,0.2); border-radius:0; margin-bottom:10px; }
 .aura-icon { width:96px; height:96px; object-fit:contain; flex-shrink:0;position:relative;}
 .aura-text { display:flex; flex-direction:column; gap:2px; }
-.aura-title { font-family:"Middle Ages","Cormorant Garamond",serif; font-size:16px; font-weight:600; color:#f1ddb1; }
+.aura-title { font-family:"Transcend","Cormorant Garamond",serif; font-size:16px; font-weight:600; color:#f1ddb1; }
 .aura-desc { font-family:"Cormorant Garamond",serif; font-size:18px; opacity:.85; }
 .aura-icon-wrapper{position:relative;width:96px;height:96px;flex-shrink:0;}
 .aura-icon-wrapper .aura-icon{width:100%;height:100%;object-fit:contain;}
@@ -490,7 +490,7 @@ body.modal-open {overflow: hidden;}
 }
 
 .tomes-title {
-  font-family:"Middle Ages", "Cormorant Garamond", serif;
+  font-family:"Transcend", "Cormorant Garamond", serif;
   font-size:16px;
   font-weight:600;
   color: #f1ddb1;
@@ -715,7 +715,7 @@ body.modal-open {overflow: hidden;}
   gap: 8px;
   padding: 12px 10px;
   margin: 0 !important;
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-family: "Transcend", "Cormorant Garamond", serif;
   font-size: 16px;
   font-weight: 600;
   text-transform: uppercase;
@@ -826,7 +826,7 @@ body.modal-open {overflow: hidden;}
 }
 
 .attributes-title {
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-family: "Transcend", "Cormorant Garamond", serif;
   font-size: 16px;
   font-weight: 600;
   text-align: center;
@@ -885,7 +885,7 @@ body.modal-open {overflow: hidden;}
 }
 
 .advanced-title {
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-family: "Transcend", "Cormorant Garamond", serif;
   font-size: 16px;
   font-weight: 600;
   text-align: center;
@@ -992,7 +992,7 @@ body.modal-open {overflow: hidden;}
 
 /* New title like other sections */
 .factions-title {
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-family: "Transcend", "Cormorant Garamond", serif;
   font-size: 16px;
   font-weight: 600;
   text-align: center;
@@ -1048,7 +1048,7 @@ body.modal-open {overflow: hidden;}
 }
 
 .aura-container .aura-title {
-  font-family: "Middle Ages";
+  font-family: "Transcend";
   font-size: 16px;
   text-align: center;
   margin-bottom: 8px;
@@ -1250,7 +1250,7 @@ body.modal-open {overflow: hidden;}
 .sintranos-toggle:hover { background: rgba(201,169,106,0.06); }
 
 .sint-title {
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-family: "Transcend", "Cormorant Garamond", serif;
   font-size: 16px;
   font-weight: 600;
   color: #f1ddb1;
@@ -1381,7 +1381,7 @@ body.modal-open {overflow: hidden;}
   flex-shrink: 0;
 }
 
-.counter { color: rgba(201,169,106,0.7); font-family: "Middle Ages", "Cormorant Garamond", serif; font-weight: 600; }
+.counter { color: rgba(201,169,106,0.7); font-family: "Transcend", "Cormorant Garamond", serif; font-weight: 600; }
 
 .reset-btn { font-family: "Cormorant Garamond", serif; color: rgba(201,169,106,0.85); }
 .reset-btn:hover { border-color: #c9a96a; color: #f1ddb1; }

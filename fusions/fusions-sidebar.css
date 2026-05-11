@@ -40,9 +40,9 @@
 }
 
 .banner-champ-name {
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
-  font-size: 28px;
-  font-weight: 600;
+  font-family: "Transcend", "Cormorant Garamond", serif;
+  font-size: 32px;
+  font-weight: 700;
   color: #f1ddb1;
   text-transform: uppercase;
     text-shadow: 0 0 6px rgba(201,169,106,0.3);
@@ -61,8 +61,8 @@
 
 .banner-type-pill {
   font-family: "Cormorant Garamond", serif;
-  font-weight: 700;
-  font-size: 13px;
+  font-weight: 400;
+  font-size: 15px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: #c9a96a;
@@ -72,16 +72,17 @@
 }
 
 .banner-datespan {
-  font-family: "Cormorant Garamond", serif;
-  font-size: 16px;
-  font-weight: 600;
+  font-family: "Transcend", "Cormorant Garamond", serif;
+  font-size: 18px;
+  font-weight: 400;
   color: rgba(232,224,210,0.75);
   letter-spacing: 0.5px;
 }
 
 .banner-champ-attrs {
   display: flex;
-  gap: 14px;
+  flex-wrap: wrap;
+  gap: 8px 14px;
   margin-top: 2px;
 }
 
@@ -90,8 +91,8 @@
   align-items: center;
   gap: 6px;
   font-family: "Cormorant Garamond", serif;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 400;
   color: #e8e0d2;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -113,9 +114,9 @@
 }
 
 .banner-progress-header {
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
-  font-size: 16px;
-  font-weight: 600;
+  font-family: "Transcend", "Cormorant Garamond", serif;
+  font-size: 18px;
+  font-weight: 400;
   color: #c9a96a;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -154,8 +155,8 @@
   background: rgba(12,10,9,0.7);
   border: 1px solid rgba(201,169,106,0.18);
   font-family: "Cormorant Garamond", serif;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   color: #e8e0d2;
@@ -176,7 +177,6 @@
 .legend-dot.skipped     { background: #ff3333; }
 .legend-dot.in-progress { background: #ffa500; }
 .legend-dot.done        { background: #4caf50; }
-.legend-dot.not-started { background: #e0e0e0; }
 
 /* ── Resources panel (below legend) ───────────────────────── */
 #resources-panel-wrapper {
@@ -188,9 +188,9 @@
 }
 
 .resources-header {
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
-  font-size: 16px;
-  font-weight: 600;
+  font-family: "Transcend", "Cormorant Garamond", serif;
+  font-size: 18px;
+  font-weight: 400;
   color: #c9a96a;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -216,8 +216,8 @@
   transition: background .3s ease, border-color .3s ease;
 }
 .stat:hover { background: rgba(201,169,106,0.08); border-color: rgba(201,169,106,0.4); }
-.stat .label { font-size:13px; opacity:.85; font-family: "Cormorant Garamond", serif; }
-.stat .value { font-size:17px; font-weight:700; color: #e8e0d2; font-family: "Cormorant Garamond", serif; }
+.stat .label { font-size:14px; opacity:.85; font-family: "Cormorant Garamond", serif; }
+.stat .value { font-size:19px; font-weight: 400; color: #e8e0d2; font-family: "Cormorant Garamond", serif; }
 .stat img.stat-icon { width: 42px; height: 42px; object-fit: contain; }
 .stat.status-green { border-color: #00ff66; box-shadow: 0 0 10px rgba(0,255,100,.35); }
 .stat.status-red   { border-color: #ff4444; box-shadow: 0 0 10px rgba(255,80,80,.25); }
@@ -234,20 +234,45 @@
 .frag-bar {
   position: relative;
   width: 100%;
-  height: 6px;
-  border-radius: 3px;
+  height: 10px;
   background: rgba(255,255,255,0.1);
   margin: 6px 0 4px;
   overflow: hidden;
 }
 .frag-fill {
   position: absolute;
-  left: 0; top: 0;
+  top: 0;
   height: 100%;
-  background: linear-gradient(90deg, #c9a96a, #f8e16c);
-  box-shadow: 0 0 8px rgba(201,169,106,0.6);
-  border-radius: 3px;
   transition: width 0.4s ease;
+}
+.frag-fill-planned {
+  left: 0;
+  background: linear-gradient(90deg, #d4af37, #f8e16c);
+  box-shadow: 0 0 8px rgba(212,175,55,0.6);
+}
+.frag-fill-done {
+  left: 0;
+  background: linear-gradient(90deg, #256d28, #388e3c);
+  box-shadow: 0 0 8px rgba(56,142,60,0.55);
+}
+.frag-fill-skipped {
+  right: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    #ff3333,
+    #ff3333 4px,
+    #b71c1c 4px,
+    #b71c1c 8px
+  );
+}
+.stat-fragments-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stat-fragments-body .frag-bar {
+  margin: 0;
 }
 
 /* ── Resources cards ──────────────────────────────────────── */
@@ -313,7 +338,7 @@
 }
 .res-reset svg { width: 14px; height: 14px; }
 
-.mini-line { font-weight: 600; color: #c9a96a; font-family: "Cormorant Garamond", serif; }
+.mini-line { font-weight: 400; color: #c9a96a; font-family: "Cormorant Garamond", serif; }
 
 .res-card.compact {
   background: linear-gradient(90deg, rgba(0,180,50,0.4), rgba(0,255,100,0.25));
@@ -343,7 +368,7 @@
 }
 .res-card.global .global-line {
   font-family: "Cormorant Garamond", serif;
-  font-weight: 700;
+  font-weight: 400;
   font-size: 16px;
   color: #e8e0d2;
   text-align: center;
@@ -355,7 +380,7 @@
 .total-icons .ico {
   display: flex; align-items: center; gap: 6px;
   font-family: "Cormorant Garamond", serif;
-  font-size: 15px; font-weight: 600; color: #e8e0d2;
+  font-size: 15px; font-weight: 400; color: #e8e0d2;
 }
 .total-icons img { width: 48px; height: 48px; object-fit: contain; }
 
@@ -364,7 +389,7 @@
   margin-left: 10px;
   padding: 2px 8px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 400;
   color: #a8324a;
   border: 1px solid rgba(168,50,74,0.5);
   background: rgba(168,50,74,0.08);
@@ -387,7 +412,7 @@
 /* ── Champion name on each card ─────────────────────────────── */
 .res-card-name {
   font-family: "Cormorant Garamond", serif;
-  font-weight: 600;
+  font-weight: 400;
   font-size: 13px;
   color: #e8e0d2;
   text-align: center;
@@ -411,7 +436,7 @@
 .phantom-badge {
   font-family: "Cormorant Garamond", serif;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: #a8324a;
@@ -442,7 +467,7 @@
   font-family: "Cormorant Garamond", serif;
   font-size: 11px;
   color: #c9a96a;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 /* ── Add-extra card (+1 after shard summon) ─────────────────── */
@@ -462,7 +487,7 @@
 .res-add-btn {
   font-family: "Cormorant Garamond", serif;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
   color: #c9a96a;
   background: rgba(0,0,0,0.4);
   border: 1px solid rgba(201,169,106,0.5);
@@ -494,7 +519,7 @@
   color: #c9a96a;
   padding: 3px 6px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1;
   cursor: pointer;
   display: inline-flex;
@@ -618,7 +643,7 @@
   bottom: 0;
   right: 0;
   font-size: 9px;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 12px;
   padding: 0 2px;
   background: rgba(0,0,0,0.72);
@@ -632,8 +657,6 @@
 .point-box.state-ongoing span   { background: rgba(255,165,0,0.88); color: #111; }
 .point-box.state-passed { border: 1px solid rgba(220,40,40,0.7); }
 .point-box.state-passed span    { background: rgba(220,40,40,0.88); color: #fff; }
-.point-box.state-upcoming { border: 1px solid rgba(223,223,223,0.5); }
-.point-box.state-upcoming span  { background: rgba(0,0,0,0.72); color: #e8e0d2; }
 
 /* Event reset — inline flex item, à gauche */
 .event-reset {
@@ -685,7 +708,7 @@
   background: #090807;
   padding: 3px 14px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 2px;
   text-transform: uppercase;
   font-family: "Cormorant Garamond", serif;
@@ -705,12 +728,12 @@
 /* Date columns */
 .date-column .day {
   font-family: "Cormorant Garamond", serif;
-  font-weight: 700;
+  font-weight: 400;
   font-size: 17px;
 }
 .date-column .date {
   font-family: "Cormorant Garamond", serif;
-  font-weight: 700;
+  font-weight: 400;
   font-size: 15px;
 }
 
@@ -747,7 +770,7 @@
 .event-block.event-ended .event-name,
 .event-block.event-ended.type-tournament .event-name,
 .event-block.event-ended.type-event .event-name {
-  color: rgba(255, 80, 80, 0.9);
+  color: #ff4040;
   text-shadow: none;
 }
 
@@ -767,8 +790,8 @@
 .event-block.event-ended.validated .event-name,
 .event-block.event-ended.validated.type-tournament .event-name,
 .event-block.event-ended.validated.type-event .event-name {
-  color: rgba(5, 136, 1, 0.85);
-  text-shadow: 0 0 8px rgba(0, 255, 150, 0.4);
+  color: #4cc954;
+  text-shadow: none;
 }
 
 .event-block.event-ended.partial,
@@ -787,6 +810,6 @@
 .event-block.event-ended.partial .event-name,
 .event-block.event-ended.partial.type-tournament .event-name,
 .event-block.event-ended.partial.type-event .event-name {
-  color: rgba(255, 160, 0, 0.9);
+  color: #ffb347;
   text-shadow: none;
 }

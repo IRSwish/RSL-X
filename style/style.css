@@ -22,8 +22,28 @@ html, body {
 }
 
 @font-face {
-  font-family: "Middle Ages";
-  src: url('/style/MiddAges.ttf') format('truetype');
+  font-family: "Transcend";
+  src: url('/style/Transcend-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Transcend";
+  src: url('/style/Transcend-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+/* Alias Cormorant Garamond → Transcend (override Google Fonts) */
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url('/style/Transcend-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url('/style/Transcend-Bold.woff2') format('woff2');
+  font-weight: 600 700;
   font-display: swap;
 }
 
@@ -53,7 +73,7 @@ body::before {
 }
 
 #page-title {
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-family: "Transcend", "Cormorant Garamond", serif;
   font-size: 2rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -68,7 +88,7 @@ body::before {
 header {
   display: inline-block;
   text-align: center;
-  font-family: "Middle Ages", "Cormorant Garamond", serif;
+  font-family: "Transcend", "Cormorant Garamond", serif;
   font-size: 2rem;
   margin: 14px 0 10px;
   color: #f1ddb1;
