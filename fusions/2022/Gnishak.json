@@ -75,7 +75,7 @@
     },
     {
       "name": "Gear Hunters",
-      "type": "Tournament",
+      "type": "Event",
       "start_date": "2022-12-15",
       "end_date": "2022-12-18",
       "reward": "Riscarm",
@@ -117,7 +117,7 @@
     },
     {
       "name": "Gear Hunters",
-      "type": "Tournament",
+      "type": "Event",
       "start_date": "2022-12-21",
       "end_date": "2022-12-24",
       "reward": "Riscarm",
@@ -147,7 +147,7 @@
     },
     {
       "name": "Gear Hunters",
-      "type": "Tournament",
+      "type": "Event",
       "start_date": "2022-12-26",
       "end_date": "2022-12-29",
       "reward": "Riscarm",

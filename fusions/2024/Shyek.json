@@ -45,7 +45,7 @@
     },
     {
       "name": "Gear Hunters",
-      "type": "Tournament",
+      "type": "Event",
       "start_date": "2024-07-05",
       "end_date": "2024-07-08",
       "reward": "Fragments",
@@ -75,7 +75,7 @@
     },
     {
       "name": "Gear Hunters",
-      "type": "Tournament",
+      "type": "Event",
       "start_date": "2024-07-09",
       "end_date": "2024-07-12",
       "reward": "Fragments",
@@ -137,7 +137,7 @@
     },
     {
       "name": "Gear Hunters",
-      "type": "Tournament",
+      "type": "Event",
       "start_date": "2024-07-13",
       "end_date": "2024-07-16",
       "reward": "Fragments",

@@ -9,7 +9,7 @@
   "events": [
     {
       "name": "Gear Hunters",
-      "type": "Tournament",
+      "type": "Event",
       "start_date": "2024-05-09",
       "end_date": "2024-05-12",
       "reward": "Rare",
@@ -79,7 +79,7 @@
     },
     {
       "name": "Gear Hunters",
-      "type": "Tournament",
+      "type": "Event",
       "start_date": "2024-05-13",
       "end_date": "2024-05-16",
       "reward": "Rare",
@@ -130,7 +130,7 @@
     },
     {
       "name": "Gear Hunters",
-      "type": "Tournament",
+      "type": "Event",
       "start_date": "2024-05-17",
       "end_date": "2024-05-20",
       "reward": "Rare",

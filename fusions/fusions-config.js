@@ -1,5 +1,9 @@
 // fusions-config.js
 window.fusions = {
+  Masahiro: {
+    name: "Masahiro the Bell Monk Fusion",
+    json: "2026/Masahiro.json"
+  },
   Mavara: {
     name: "Mavara Fusion",
     json: "2026/Mavara.json"
@@ -199,10 +203,6 @@ window.fusions = {
   Nogoryo: {
     name: "Nogoryo Fusion",
     json: "2022/Nogoryo.json"
-  },
-  Lonatharil: {
-    name: "Lonatharil Fusion",
-    json: "2022/Lonatharil.json"
   }
 };
 

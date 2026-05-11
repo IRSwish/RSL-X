@@ -1,31 +1,31 @@
 {
-  "title": "NOLDUA THE GLOAMING",
+  "title": "MASAHIRO THE BELL MONK",
   "type": "FRAGMENT",
-  "datespan": "09/02/2026 - 24/02/2026",
+  "datespan": "07/05/2026 - 21/05/2026",
   "events": [
     {
       "name": "Ice Golem",
-      "start_date": "2026-02-09",
-      "end_date": "2026-02-12",
+      "start_date": "2026-05-14",
+      "end_date": "2026-05-17",
       "type":"Tournament",
       "reward": "Fragments",
       "points": [5]
     },
     {
       "name": "Gear Hunters",
-      "start_date": "2026-02-09",
-      "end_date": "2026-02-12",
+      "start_date": "2026-05-07",
+      "end_date": "2026-05-10",
       "type":"Event",
       "reward": "Fragments",
       "points": [5]
     },
     {
       "name": "Champion Chase",
-      "start_date": "2026-02-13",
-      "end_date": "2026-02-16",
+      "start_date": "2026-05-15",
+      "end_date": "2026-05-18",
       "type":"Tournament",
-      "reward": "Fragments, Fragments",
-      "points": [5,10],
+      "reward": "Fragments",
+      "points": [15],
       "extra_choices": [
         { "label": "1st Place", "fragments": 10 },
         { "label": "2nd Place", "fragments": 5 }
@@ -33,56 +33,56 @@
     },
     {
       "name": "Classic Arena",
-      "start_date": "2026-02-15",
-      "end_date": "2026-02-18",
+      "start_date": "2026-05-09",
+      "end_date": "2026-05-12",
       "type":"Tournament",
       "reward": "Fragments",
       "points": [5]
     },
     {
       "name": "Gear Enhancement",
-      "start_date": "2026-02-10",
-      "end_date": "2026-02-13",
+      "start_date": "2026-05-08",
+      "end_date": "2026-05-11",
       "type":"Event",
       "reward": "Fragments",
       "points": [5]
     },
     {
       "name": "Champion Training",
-      "start_date": "2026-02-18",
-      "end_date": "2026-02-21",
+      "start_date": "2026-05-14",
+      "end_date": "2026-05-18",
       "type":"Event",
       "reward": "Fragments",
-      "points": [10]
+      "points": [15]
     },
     {
       "name": "Dragon",
-      "start_date": "2026-02-19",
-      "end_date": "2026-02-22",
+      "start_date": "2026-05-17",
+      "end_date": "2026-05-20",
       "type":"Tournament",
       "reward": "Fragments",
       "points": [5]
     },
     {
       "name": "Gear Enhancement",
-      "start_date": "2026-02-15",
-      "end_date": "2026-02-18",
+      "start_date": "2026-05-12",
+      "end_date": "2026-05-15",
       "type":"Event",
       "reward": "Fragments",
       "points": [5]
     },
     {
       "name": "Fire Knight",
-      "start_date": "2026-02-16",
-      "end_date": "2026-02-19",
+      "start_date": "2026-05-10",
+      "end_date": "2026-05-13",
       "type":"Tournament",
       "reward": "Fragments",
       "points": [5]
     },
     {
       "name": "Champion Training",
-      "start_date": "2026-02-12",
-      "end_date": "2026-02-16",
+      "start_date": "2026-05-07",
+      "end_date": "2026-05-11",
       "type":"Tournament",
       "reward": "Fragments, Fragments",
       "points": [5,5],
@@ -93,35 +93,44 @@
     },
     {
       "name": "Classic Arena",
-      "start_date": "2026-02-20",
-      "end_date": "2026-02-23",
+      "start_date": "2026-05-16",
+      "end_date": "2026-05-19",
       "type":"Tournament",
       "reward": "Fragments",
       "points": [5]
     },
     {
-      "name": "Hero's Path",
-      "start_date": "2026-02-20",
-      "end_date": "2026-02-23",
+      "name": "Summon Rush",
+      "start_date": "2026-05-08",
+      "end_date": "2026-05-11",
       "type":"Event",
-      "reward": "Fragments, Fragments, Fragments, Fragments, Fragments",
-      "points": [5,5,5,5,5]
+      "reward": "Fragments, Fragments, Fragments, Fragments",
+      "points": [5,5,5,5]
     },
     {
       "name": "Gear Enhancement",
-      "start_date": "2026-02-21",
-      "end_date": "2026-02-24",
+      "start_date": "2026-05-16",
+      "end_date": "2026-05-19",
       "type":"Event",
       "reward": "Fragments",
       "points": [5]
     },
     {
       "name": "Spider",
-      "start_date": "2026-02-12",
-      "end_date": "2026-02-15",
+      "start_date": "2026-05-07",
+      "end_date": "2026-05-10",
       "type":"Tournament",
+      "reward": "Fragments",
+      "points": [5]
+    },
+    {
+      "name": "Gear Hunters",
+      "start_date": "2026-05-16",
+      "end_date": "2026-05-19",
+      "type":"Event",
       "reward": "Fragments",
       "points": [5]
     }
   ]
 }
+
