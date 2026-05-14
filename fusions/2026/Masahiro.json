@@ -24,8 +24,8 @@
       "start_date": "2026-05-15",
       "end_date": "2026-05-18",
       "type":"Tournament",
-      "reward": "Fragments",
-      "points": [15],
+      "reward": "Fragments, Fragments",
+      "points": [5,10]
       "extra_choices": [
         { "label": "1st Place", "fragments": 10 },
         { "label": "2nd Place", "fragments": 5 }
