@@ -1,5 +1,16 @@
 // heros-path-config.js
 window.fusions = {
+    "path-of-power": {
+    name: "Path of Power",
+    json: "/heros-path/2026/path-of-power.json",
+    shardCosts: {
+      ancient: 300,
+      void: 750,
+      primal: 1800,
+      sacred: 4500
+    },
+    initialUnlocked: ["t0-1"]
+  },
     "pirates-path": {
     name: "Pirate's Path",
     json: "/heros-path/2026/pirates-path.json",
