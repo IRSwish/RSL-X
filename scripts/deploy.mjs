@@ -55,7 +55,13 @@ const EXCLUDE_PATTERNS = [
   /^\.gitignore$/,
   /^\.deploy-manifest\.json$/,
   /\.psd$/i,
-  /\.db$/i,
+  // NB : ne PAS exclure tous les .db — plusieurs outils chargent leur base
+  // SQLite au runtime via sql.js (champions-index, fusions, siege, stage-atlas,
+  // relic-crafting). On exclut seulement les .db de dev/backup et les fichiers
+  // de travail SQLite.
+  /(^|\/)building files(\/|$)/,
+  /(^|\/)champions copy\.db$/i,
+  /\.sqlite3-query$/i,
   /\.sqlite$/i,
   /^tmpclaude-/,
   /^vercel\.json$/,
