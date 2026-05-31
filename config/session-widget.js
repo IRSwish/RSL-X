@@ -208,45 +208,52 @@
   const addBtn  = document.getElementById('session-add-btn');
   const SM      = window.SessionManager;
 
-  // Position trigger directly below info-btn, right-aligned with it
-  // Falls back to top-right if no info-btn exists
-  function alignBelowInfoBtn() {
-    const infoBtn = document.getElementById('info-btn');
-    const gap = 8;
-    if (!infoBtn) {
-      trigger.style.top   = '12px';
-      trigger.style.right = '12px';
-      requestAnimationFrame(() => {
-        panel.style.top   = (trigger.getBoundingClientRect().bottom + gap) + 'px';
-        panel.style.right = '12px';
-      });
-      return;
-    }
-    const cs = getComputedStyle(infoBtn);
-    const cssRight  = parseFloat(cs.right)         || 0;
-    const prRight   = parseFloat(cs.paddingRight)  || 0;
-    const pbBottom  = parseFloat(cs.paddingBottom) || 0;
-    const rect = infoBtn.getBoundingClientRect();
-    // Align trigger's right edge with info-btn's icon right edge (strip padding)
-    const rightVal = cssRight + prRight;
-    // Place trigger 8px below info-btn's icon bottom (strip bottom padding)
-    trigger.style.top   = (rect.bottom - pbBottom + gap) + 'px';
-    trigger.style.right = rightVal + 'px';
-    requestAnimationFrame(() => {
-      panel.style.top   = (trigger.getBoundingClientRect().bottom + gap) + 'px';
-      panel.style.right = rightVal + 'px';
-    });
+  // ── Placement ───────────────────────────────────────────────────────────────
+  // Le bouton account vit dans le rail de navigation (slot en bas, sous
+  // Patreon/Discord). Son panneau s'ouvre à droite du rail. Si le rail n'est
+  // pas présent (page sans menu), on retombe sur le flottant en haut à droite.
+  let placed = false;
+  const gap = 8;
+
+  function positionRailPanel() {
+    const rail = document.querySelector('.rsx-rail');
+    if (!rail) return;
+    const r = rail.getBoundingClientRect();
+    panel.style.top    = 'auto';
+    panel.style.bottom = '12px';
+    panel.style.left   = (r.right + gap) + 'px';
+    panel.style.right  = 'auto';
   }
-  // Wait for load, then also watch for Lucide injecting the SVG into info-btn
-  // (ResizeObserver fires as soon as the button gets its real height)
-  window.addEventListener('load', () => {
-    alignBelowInfoBtn();
-    const infoBtn = document.getElementById('info-btn');
-    if (infoBtn) {
-      new ResizeObserver(alignBelowInfoBtn).observe(infoBtn);
-    }
+
+  function floatingFallback() {
+    trigger.style.top    = '12px';
+    trigger.style.right  = '12px';
+    panel.style.bottom   = 'auto';
+    panel.style.left     = 'auto';
+    panel.style.top      = (trigger.getBoundingClientRect().bottom + gap) + 'px';
+    panel.style.right    = '12px';
+  }
+
+  function placeInRail() {
+    const slot = document.getElementById('rail-account-slot');
+    if (!slot) return false;
+    slot.appendChild(trigger);
+    placed = true;
+    positionRailPanel();
+    return true;
+  }
+
+  // Le rail est injecté de façon asynchrone par /script.js → on l'attend.
+  let tries = 0;
+  (function waitForRail() {
+    if (placeInRail()) return;
+    if (++tries > 40) { floatingFallback(); return; }   // ~4 s puis fallback
+    setTimeout(waitForRail, 100);
+  })();
+
+  window.addEventListener('resize', () => {
+    if (placed) positionRailPanel(); else floatingFallback();
   });
-  window.addEventListener('resize', alignBelowInfoBtn);
 
   // Render Lucide icon
   const renderIcon = () => {
@@ -329,7 +336,10 @@
   trigger.addEventListener('click', (e) => {
     e.stopPropagation();
     panel.classList.toggle('open');
-    if (panel.classList.contains('open')) render();
+    if (panel.classList.contains('open')) {
+      if (placed) positionRailPanel(); else floatingFallback();
+      render();
+    }
   });
 
   addBtn.addEventListener('click', () => {

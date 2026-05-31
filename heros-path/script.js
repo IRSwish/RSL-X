@@ -13,6 +13,9 @@ const container = document.getElementById("rewardContainer");
 const svg = document.getElementById("connections");
 const titleEl = document.querySelector("h1");
 
+// Animation d'apparition du tracé : jouée une fois par chargement de path
+let pathIntroPlayed = false;
+
 /* === PANNEAU DU HAUT (remplace la sidebar) === */
 const topPanel = document.createElement("div");
 topPanel.id = "top-panel";
@@ -783,15 +786,28 @@ function drawConnections() {
       const pLeft = parseFloat(pBox.style.left) || pBox.offsetLeft;
       const cLeft = parseFloat(cBox.style.left) || cBox.offsetLeft;
 
-      const x1 = pLeft;
-      const y1 = pRowRect.bottom - svgRect.top;
-      const x2 = cLeft;
-      const y2 = cRowRect.top - svgRect.top;
-      const midY = y1 + (y2 - y1) * 0.45;
+      // Coordonnées arrondies à l'entier : alignées sur la grille de pixels →
+      // épaisseur de trait uniforme (sinon le sous-pixel + anti-aliasing fait
+      // paraître certaines lignes plus épaisses).
+      const x1 = Math.round(pLeft);
+      const y1 = Math.round(pRowRect.bottom - svgRect.top);
+      const x2 = Math.round(cLeft);
+      const y2 = Math.round(cRowRect.top - svgRect.top);
+
+      // La fourche (segment horizontal) doit TOUJOURS se faire dans l'inter-ligne
+      // juste sous la ligne de départ — pas à mi-chemin de la destination. Sinon,
+      // pour une connexion qui saute une ligne, elle tomberait au milieu de la
+      // ligne intermédiaire, derrière ses box. On ancre donc midY sur le haut de
+      // la ligne SUIVANTE (qui vaut y2 dans le cas normal d'une ligne adjacente).
+      const nextRow = pRow.nextElementSibling;
+      const gapBottom = (nextRow && nextRow.classList.contains("reward-row"))
+        ? nextRow.getBoundingClientRect().top - svgRect.top
+        : y2;
+      const midY = Math.round(y1 + (gapBottom - y1) * 0.45);
 
       const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", `M${x1},${y1} L${x1},${midY} L${x2},${midY} L${x2},${y2}`);
-      path.setAttribute("stroke-width", "3.5");
+      path.setAttribute("stroke-width", "2");
       path.setAttribute("fill", "none");
 
       const parentPlanned = planned.has(req);
@@ -819,6 +835,52 @@ function drawConnections() {
   goldPaths.forEach(p => svg.appendChild(p));
   bluePaths.forEach(p => svg.appendChild(p));
   greenPaths.forEach(p => svg.appendChild(p));
+}
+
+/* === ANIMATION D'APPARITION DU TRACÉ === */
+// Masque les lignes jusqu'à ce que le tracé soit dessiné/placé (appelé au boot
+// et à chaque changement de path), pour éviter un flash de lignes statiques.
+function hidePathForIntro() {
+  pathIntroPlayed = false;
+  svg.style.visibility = "hidden";
+  container.style.visibility = "hidden";
+}
+
+// Fait apparaître nœuds + connexions une fois le tracé placé : les box font un
+// fade-in en cascade, puis les lignes se "tracent" (stroke-dashoffset). Ne joue
+// qu'une fois : les redraws suivants (clics, scroll, menu) sont statiques.
+function animatePathIntro() {
+  if (pathIntroPlayed) return;
+  const paths = svg.querySelectorAll("path");
+  const boxes = container.querySelectorAll(".reward-box");
+
+  // Toujours réafficher (même si rien à animer) pour ne jamais rester masqué
+  svg.style.visibility = "";
+  container.style.visibility = "";
+  if (!paths.length && !boxes.length) return;
+
+  pathIntroPlayed = true;
+
+  // Nœuds : fade-in en cascade. On n'anime que l'opacity pour ne pas écraser
+  // le transform de centrage posé par layoutByX.
+  boxes.forEach((b, i) => {
+    b.animate(
+      [{ opacity: 0 }, { opacity: 1 }],
+      { duration: 300, delay: i * 16, easing: "ease-out", fill: "backwards" }
+    );
+  });
+
+  // Lignes : tracé progressif, avec une légère avance laissée aux nœuds.
+  paths.forEach((p, i) => {
+    let len = 0;
+    try { len = p.getTotalLength(); } catch (e) {}
+    if (!len) return;
+    p.style.strokeDasharray = len;
+    p.animate(
+      [{ strokeDashoffset: len }, { strokeDashoffset: 0 }],
+      { duration: 520, delay: 120 + i * 28, easing: "ease-out", fill: "backwards" }
+    );
+  });
 }
 
 function playActivationEffect(box) {
@@ -929,6 +991,7 @@ function layoutByX(callback) {
 }
 
 /* === BOOT === */
+hidePathForIntro();   // masque les lignes jusqu'au placement initial
 init();
 // Force layoutByX après init()
 window.addEventListener("load", () => {
@@ -941,6 +1004,7 @@ window.addEventListener("load", () => {
 window.addEventListener("hashchange", () => {
   container.innerHTML = "";
   svg.innerHTML = "";
+  hidePathForIntro();   // rejoue l'animation pour le nouveau path
   unlocked.clear();
   planned.clear();
   keys = 0;
@@ -967,4 +1031,20 @@ window.addEventListener("hashchange", () => {
       drawConnections();
     });
   }, 300);
+});
+
+// 🎬 Anime le tracé une fois les nœuds chargés et placés (boot + changement de path)
+window.addEventListener("load", () => setTimeout(animatePathIntro, 650));
+window.addEventListener("hashchange", () => setTimeout(animatePathIntro, 650));
+
+// 🔄 Recalcul du layout quand le menu latéral ouvre/ferme (réservation d'espace).
+// Débouncé → un seul recalcul après l'animation, et n'émet pas de 'resize'
+// global (qui ferait sauter le bruit de fond).
+window.addEventListener("rsx-reflow", () => {
+  clearTimeout(window._resizeTimeout);
+  window._resizeTimeout = setTimeout(() => {
+    requestAnimationFrame(() => {
+      layoutByX(() => drawConnections());
+    });
+  }, 60);
 });

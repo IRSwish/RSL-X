@@ -1,6 +1,7 @@
 /* === BASE === */
 body { font-family:'Inter',sans-serif; color:#e8e0d2; margin:0; padding:0; }
-body.modal-open {overflow: hidden;}
+html.modal-open,
+body.modal-open { overflow: hidden; }
 .container { width:95%; max-width:1400px; margin:20px auto; }
 
 
@@ -1463,3 +1464,24 @@ body.modal-open {overflow: hidden;}
   background: rgba(0,0,0,0.7);
   backdrop-filter: blur(6px);
 }
+
+/* === Modal champions : tout en Inter, sauf les titres (qui gardent Transcend) === */
+.modal-content,
+.modal-content *:not(.modal-name):not([class*="title"]) {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Inter rend plus gros que Cormorant à taille égale → on réduit le corps du modal */
+.modal-content .stat-left span,
+.modal-content .stat-value,
+.modal-content .stat-number,
+.modal-content .skill-desc,
+.modal-content .aura-desc { font-size: 16px; }
+
+.modal-content .slider-label,
+.modal-content .compare-header,
+.modal-content .compare-suggestion { font-size: 15px; }
+
+.modal-content .stat-percent { font-size: 14px; }
+
+.modal-content .compare-form-btn { font-size: 12px; }

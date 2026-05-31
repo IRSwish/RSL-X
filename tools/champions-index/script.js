@@ -1192,6 +1192,7 @@ function openChampionModal(champ) {
   // charger la forme 0 (Base)
   loadForm(0);
     document.body.classList.add("modal-open");
+    document.documentElement.classList.add("modal-open");
     modal.classList.add("active");
   }
 
@@ -1301,12 +1302,14 @@ compareInput.addEventListener("keydown", (e) => {
 document.querySelector(".modal-close").addEventListener("click", () => {
   modal.classList.remove("active");
   document.body.classList.remove("modal-open");
+  document.documentElement.classList.remove("modal-open");
 });
 
 modal.addEventListener("click", e => {
   if (e.target === modal) {
     modal.classList.remove("active");
     document.body.classList.remove("modal-open");
+    document.documentElement.classList.remove("modal-open");
   }
 });
 
@@ -1316,6 +1319,7 @@ document.addEventListener("keydown", (e) => {
     if (modal.classList.contains("active")) {
       modal.classList.remove("active");
       document.body.classList.remove("modal-open");
+      document.documentElement.classList.remove("modal-open");
       comparing = false;
       resetCompareUI();
     }

@@ -1,6 +1,12 @@
 /* ============================================================
-   RSL-X — Menu V2  |  Dark Fantasy
+   RSL-X — Navigation V2  |  Rail + persistent panel
    ============================================================ */
+
+@font-face {
+  font-family: "MiddAges";
+  src: url('/style/MiddAges.ttf') format('truetype');
+  font-display: swap;
+}
 
 /* ── Palette ──────────────────────────────────────────────── */
 :root {
@@ -8,287 +14,331 @@
   --gold-light:  #f1ddb1;
   --gold-dim:    rgba(201,169,106,0.55);
   --gold-subtle: rgba(201,169,106,0.08);
-  --gold-hover:  rgba(201,169,106,0.12);
+  --gold-hover:  rgba(201,169,106,0.14);
   --text:        #e8e0d2;
   --text-dim:    rgba(232,224,210,0.55);
   --bg-menu:     #080706;
+  --bg-panel:    #0c0a09;
+
+  --rail-w:  60px;
+  --panel-w: 244px;
 }
 
-/* ── Burger ───────────────────────────────────────────────── */
-.burger-btn {
-  position: fixed;
-  top: 14px;
-  left: 14px;
-  background: none;
-  border: none;
-  color: var(--text);
-  cursor: pointer;
-  z-index: 10001;
-  padding: 6px;
-  transition: color 0.2s ease;
+/* ── Réservation d'espace globale ─────────────────────────── */
+body {
+  padding-left: var(--rail-w);
+  transition: padding-left 0.26s cubic-bezier(0.4,0,0.2,1);
+}
+body.rsx-panel-open {
+  padding-left: calc(var(--rail-w) + var(--panel-w));
 }
 
-.burger-btn:hover { color: var(--gold-light); }
-
-.burger-btn svg,
-#menu-container svg {
-  width: 28px;
-  height: 28px;
-  stroke-width: 1.75;
-  vertical-align: middle;
-  stroke-linecap: square;
-  stroke-linejoin: miter;
+/* ── Conteneur ────────────────────────────────────────────── */
+.rsx-nav {
+  font-family: "Transcend", "Cormorant Garamond", serif;
 }
 
-/* ── Sidebar ──────────────────────────────────────────────── */
-.sidebar {
+/* ── Rail (toujours affiché) ──────────────────────────────── */
+.rsx-rail {
   position: fixed;
   top: 0;
-  left: -280px;
-  width: 260px;
+  left: 0;
+  width: var(--rail-w);
   height: 100%;
-  background: var(--bg-menu);
-  border-right: 1px solid var(--gold-dim);
-  box-shadow:
-    4px 0 32px rgba(0,0,0,0.85),
-    inset -1px 0 0 rgba(201,169,106,0.06),
-    0 0 40px rgba(201,169,106,0.04);
-  transition: left 0.28s cubic-bezier(0.4,0,0.2,1);
   z-index: 10000;
-  overflow-y: auto;
-  overflow-x: hidden;
-  isolation: isolate;
-}
-
-.sidebar.open { left: 0; }
-
-/* ── En-tête sidebar ──────────────────────────────────────── */
-.sidebar-header {
-  padding: 22px 20px 18px;
-  border-bottom: 1px solid rgba(201,169,106,0.18);
-  margin-bottom: 8px;
-}
-
-.sidebar-logo {
-  font-family: "Transcend", "Cormorant Garamond", serif;
-  font-size: 1.35rem;
-  color: var(--gold-light);
-  text-transform: uppercase;
-  text-shadow: 0 0 14px rgba(201,169,106,0.3);
-}
-
-/* ── Contenu ──────────────────────────────────────────────── */
-.sidebar-content {
-  padding: 60px 14px 40px;
-}
-
-.menu-links,
-.dropdown-content,
-.dropdown-sub-content {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.menu-links li { margin: 1px 0; }
-
-/* ── Items principaux ─────────────────────────────────────── */
-.menu-links a,
-.dropdown-toggle {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text);
+  flex-direction: column;
+  align-items: stretch;
+  background: var(--bg-menu);
+  box-shadow: 2px 0 18px rgba(0,0,0,0.6);
+}
+
+/* Logo */
+.rail-logo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: var(--rail-w);
   text-decoration: none;
-  font-family: "Transcend", "Cormorant Garamond", serif;
-  font-size: 16px;
+}
+.rail-logo::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+  right: 10px;
+  height: 1px;
+  background: rgba(201,169,106,0.18);
+}
+.rail-logo-mark {
+  font-family: "MiddAges", "Transcend", serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  text-shadow: 0 0 14px rgba(201,169,106,0.4);
+  letter-spacing: 1px;
+}
+
+/* Items */
+.rail-items {
+  display: flex;
+  flex-direction: column;
+  margin-top: 6px;
+}
+
+.rail-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  padding: 10px 2px;
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
+  color: var(--gold);            /* icônes dorées comme l'app */
+  cursor: pointer;
+  text-decoration: none;
+  opacity: 0.55;                 /* état repos */
+  transition: color 0.16s ease, background 0.16s ease, opacity 0.16s ease;
+}
+
+.rail-item i,
+.rail-item svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.6;
+  filter: drop-shadow(0 0 4px rgba(201,169,106,0.25));
+}
+
+.rail-label {
+  font-size: 9.5px;
   font-weight: 600;
   text-transform: uppercase;
-  padding: 7px 10px;
-  border-radius: 0;
-  cursor: pointer;
-  transition: background 0.18s ease, color 0.18s ease;
-  border-left: 2px solid transparent;
-}
-
-.menu-links a:hover,
-.dropdown-toggle:hover {
-  background: var(--gold-subtle);
-  color: var(--gold-light);
-  border-left-color: var(--gold);
-}
-
-/* ── Flèches dropdown ─────────────────────────────────────── */
-.dropdown-toggle::after,
-.dropdown-sub-toggle::after {
-  content: "›";
-  margin-left: auto;
-  font-size: 15px;
-  color: var(--gold);
-  opacity: 0.6;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  letter-spacing: 0.4px;
   line-height: 1;
 }
 
-.dropdown.open > .dropdown-toggle::after,
-.dropdown-sub-toggle.open::after {
-  transform: rotate(90deg);
-  opacity: 1;
-}
-
-/* ── Sous-listes ──────────────────────────────────────────── */
-.dropdown-content {
-  display: none;
-  margin-left: 0;
-  border-left: 1px solid rgba(201,169,106,0.15);
-  margin-left: 10px;
-  padding-left: 0;
-  margin-top: 2px;
-  margin-bottom: 2px;
-}
-
-.dropdown.open > .dropdown-content { display: block; }
-
-.dropdown-content > li > a {
-  font-size: 15px;
-}
-
-
-/* ── Sous-dropdowns (années) ──────────────────────────────── */
-.dropdown-sub-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--gold);
-  font-family: "Cormorant Garamond", serif;
-  font-weight: 600;
-  font-size: 22px;
-  text-transform: uppercase;
-  padding: 5px 10px;
-  border-radius: 0;
-  cursor: pointer;
-  transition: background 0.18s ease, color 0.18s ease;
-}
-
-.dropdown-sub-toggle:hover {
+.rail-item:hover {
+  opacity: 0.85;
   background: var(--gold-subtle);
+}
+
+.rail-item.active {
+  opacity: 1;
+  color: var(--gold-light);
+  background: var(--gold-hover);
+  border-left-color: var(--gold);
+}
+
+/* CTA de l'app : mis en avant + séparé des catégories */
+.rail-app {
+  position: relative;
+  opacity: 0.95;
   color: var(--gold-light);
 }
-
-.dropdown-sub-content {
-  display: none;
-  border-left: 1px dashed rgba(201,169,106,0.12);
-  margin-left: 10px;
-  padding-left: 0;
+.rail-app:hover { opacity: 1; background: var(--gold-subtle); }
+.rail-app::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10px;
+  right: 10px;
+  height: 1px;
+  background: rgba(201,169,106,0.18);
 }
 
-.dropdown-sub-toggle.open + .dropdown-sub-content { display: block; }
+/* Spacer pousse les socials en bas */
+.rail-spacer { flex: 1 1 auto; }
 
-/* ── Liens feuilles ───────────────────────────────────────── */
-.dropdown-sub-content a {
+/* Socials */
+.rail-social-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 0 14px;
+}
+.rail-social-group::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10px;
+  right: 10px;
+  height: 1px;
+  background: rgba(201,169,106,0.18);
+}
+.rail-social {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  transition: background 0.16s ease, transform 0.16s ease;
+}
+.rail-social:hover { background: var(--gold-subtle); }
+.rail-social:hover .social-ico { opacity: 0.9; }
+
+/* Logos blancs masqués → teintés or (comme l'app), suivent la couleur du rail */
+.social-ico {
+  display: block;
+  width: 22px;
+  height: 22px;
+  background-color: var(--gold);
+  -webkit-mask: var(--ico) center / contain no-repeat;
+          mask: var(--ico) center / contain no-repeat;
+  opacity: 0.6;
+  transition: opacity 0.16s ease;
+}
+
+/* ── Slot + icône account (session-trigger) relogés dans le rail ─ */
+.rail-account-slot {
+  display: flex;
+  justify-content: center;
+}
+.rsx-rail #session-trigger {
+  position: static !important;
+  width: 40px;
+  height: 40px;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 8px;
+  color: var(--gold) !important;
+  opacity: 0.6;
+  transition: background 0.16s ease, opacity 0.16s ease, color 0.16s ease;
+}
+.rsx-rail #session-trigger:hover {
+  background: var(--gold-subtle) !important;
+  color: var(--gold-light) !important;
+  opacity: 1;
+}
+.rsx-rail #session-trigger svg { width: 22px; height: 22px; }
+
+/* ── Panneau de sous-navigation ───────────────────────────── */
+.rsx-panel {
+  position: fixed;
+  top: 0;
+  left: var(--rail-w);
+  width: var(--panel-w);
+  height: 100%;
+  z-index: 9999;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--gold-dim);
+  box-shadow: 4px 0 32px rgba(0,0,0,0.7);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 18px 0 40px;
+
+  transform: translateX(-112%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.26s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease;
+}
+body.rsx-panel-open .rsx-panel {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Panes */
+.rsx-pane { display: none; padding: 0 14px; }
+.rsx-pane.active { display: block; }
+
+.pane-title {
+  margin: 0 0 14px;
+  padding: 0 6px 12px;
+  font-family: "MiddAges", "Transcend", serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--gold-light);
+  border-bottom: 1px solid rgba(201,169,106,0.18);
+  text-shadow: 0 0 14px rgba(201,169,106,0.25);
+}
+
+.pane-group { margin-bottom: 14px; }
+
+.pane-year {
+  margin: 0 0 4px;
+  padding: 4px 6px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gold);
+}
+
+.pane-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: 1px dashed rgba(201,169,106,0.14);
+  margin-left: 8px;
+}
+.pane-links li { margin: 0; }
+
+.pane-links a {
+  display: block;
+  padding: 6px 10px;
   font-family: "Cormorant Garamond", serif;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 400;
   text-transform: uppercase;
-  padding: 5px 10px;
   color: var(--text-dim);
-  display: block;
-  border-radius: 0;
-  transition: background 0.15s ease, color 0.15s ease;
+  text-decoration: none;
   border-left: 2px solid transparent;
+  margin-left: -1px;
+  transition: background 0.15s ease, color 0.15s ease;
 }
-
-.dropdown-sub-content a:hover {
+.pane-links a:hover {
   background: var(--gold-subtle);
   color: var(--gold-light);
   border-left-color: var(--gold);
 }
 
-/* ── Lien actif ───────────────────────────────────────────── */
-.active-link {
-  color: var(--gold-light) !important;
-  font-weight: 600 !important;
-  background: var(--gold-hover) !important;
-  border-left-color: var(--gold) !important;
-  border-radius: 0 !important;
+/* Lien actif */
+.pane-links a.active-link {
+  color: var(--gold-light);
+  background: var(--gold-hover);
+  border-left-color: var(--gold);
 }
 
-/* ── Overlay ──────────────────────────────────────────────── */
-body::after {
-  content: "";
+/* ── Scrollbar panneau ────────────────────────────────────── */
+.rsx-panel { scrollbar-width: thin; scrollbar-color: rgba(201,169,106,0.35) var(--bg-panel); }
+.rsx-panel::-webkit-scrollbar { width: 5px; }
+.rsx-panel::-webkit-scrollbar-track { background: var(--bg-panel); }
+.rsx-panel::-webkit-scrollbar-thumb { background: rgba(201,169,106,0.35); }
+.rsx-panel::-webkit-scrollbar-thumb:hover { background: rgba(201,169,106,0.6); }
+
+/* ── Backdrop (mobile) ────────────────────────────────────── */
+.rsx-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.55);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.28s ease;
   z-index: 9998;
+  transition: opacity 0.24s ease;
 }
 
-body.menu-opened::after {
-  opacity: 1;
-  pointer-events: auto;
-}
+/* ── Mobile ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root { --rail-w: 52px; }
 
-/* ── Scrollbar ────────────────────────────────────────────── */
-.sidebar::-webkit-scrollbar { width: 4px; }
+  /* Le rail réserve sa place, mais le panneau passe en overlay */
+  body { padding-left: var(--rail-w); }
+  body.rsx-panel-open { padding-left: var(--rail-w); }
 
-.sidebar::-webkit-scrollbar-track {
-  background: var(--bg-menu);
-}
+  .rail-label { display: none; }
 
-.sidebar::-webkit-scrollbar-thumb {
-  background: rgba(201,169,106,0.35);
-  border-radius: 0;
-}
+  .rsx-panel { width: min(78vw, 300px); }
 
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(201,169,106,0.65);
-}
-
-.sidebar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(201,169,106,0.35) var(--bg-menu);
-}
-
-/* ── No-blur (homepage auto-open) ────────────────────────── */
-body.no-menu-blur::after {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-/* ── Mobile portrait ──────────────────────────────────────── */
-@media (max-width: 768px) and (orientation: portrait) {
-  .sidebar {
-    width: 260px;
-  }
-
-  .burger-btn { top: 14px; left: 14px; }
-
-  .sidebar-content { padding: 72px 14px 60px; }
-
-  .menu-links a,
-  .dropdown-toggle,
-  .dropdown-sub-toggle {
-    font-size: 19px;
-    padding: 11px 12px;
-  }
-
-  .dropdown-sub-content a {
-    font-size: 15px;
-    padding: 9px 12px;
-  }
-
-  .menu-links li { margin: 4px 0; }
-
-  body.menu-opened::after { opacity: 1; }
-
-  .sidebar.open {
-    animation: slideIn 0.28s cubic-bezier(0.4,0,0.2,1);
-  }
-
-  @keyframes slideIn {
-    from { opacity: 0.6; transform: translateX(-12px); }
-    to   { opacity: 1;   transform: translateX(0); }
+  body.rsx-panel-open .rsx-backdrop {
+    opacity: 1;
+    pointer-events: auto;
   }
 }

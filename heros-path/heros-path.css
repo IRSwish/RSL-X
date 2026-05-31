@@ -2,6 +2,16 @@
    Hero's Path — V2 Dark Fantasy
    ============================================================ */
 
+@font-face {
+  font-family: "MiddAges";
+  src: url('/style/MiddAges.ttf') format('truetype');
+  font-display: swap;
+}
+
+#page-title {
+  font-family: "MiddAges", "Transcend", "Cormorant Garamond", serif;
+}
+
 .reset-btn {
   margin-top: auto;
   margin-bottom: 10px;
@@ -207,6 +217,7 @@ svg.connections {
   height: 100%;
   pointer-events: none;
   z-index: 2;
+  shape-rendering: crispEdges; /* lignes H/V nettes, épaisseur uniforme */
 }
 
 .reward-container {

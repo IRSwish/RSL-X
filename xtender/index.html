@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HNK5S7EBCJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-HNK5S7EBCJ');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xtender | RSL-X</title>
+  <meta name="description" content="RSL-Xtender — the desktop companion app for Raid: Shadow Legends. Live dashboards, champion & artifact insights, auto-battle and more.">
+  <script src="/config/site-config.js"></script>
+  <script src="/config/ad-banner.js" defer></script>
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+  <link rel="stylesheet" href="/style/style.css">
+  <link rel="preload" href="/menu.html" as="fetch" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    @font-face {
+      font-family: "Transcend";
+      src: url('/style/Transcend-Bold.woff2') format('woff2');
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "MiddAges";
+      src: url('/style/MiddAges.ttf') format('truetype');
+      font-display: swap;
+    }
+
+    * { box-sizing: border-box; }
+
+    /* ── Background animé (version compacte) ── */
+    .df-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .df-orb { position: absolute; border-radius: 50%; }
+    .df-orb-1 { width: 70vmax; height: 70vmax; top: -15%; left: -15%; background: radial-gradient(circle, rgba(201,169,106,0.10) 0%, transparent 65%); filter: blur(65px); animation: orbDrift1 28s ease-in-out infinite alternate; }
+    .df-orb-2 { width: 55vmax; height: 55vmax; bottom: -10%; right: -10%; background: radial-gradient(circle, rgba(90,70,145,0.08) 0%, transparent 65%); filter: blur(75px); animation: orbDrift2 35s ease-in-out infinite alternate; }
+    .df-scratches { position: absolute; inset: -5%; background-image: repeating-linear-gradient(58deg, transparent 0px, transparent 172px, rgba(255,255,255,0.028) 172px, rgba(255,255,255,0.028) 172.5px), repeating-linear-gradient(45deg, transparent 0px, transparent 157px, rgba(255,255,255,0.032) 157px, rgba(255,255,255,0.032) 158px), repeating-linear-gradient(67deg, transparent 0px, transparent 167px, rgba(201,169,106,0.034) 167px, rgba(201,169,106,0.034) 167.5px); animation: scratchShimmer 28s ease-in-out infinite alternate; }
+    .df-embers { position: absolute; inset: 0; background-image: radial-gradient(circle at 12% 68%, rgba(201,169,106,0.16) 0 1px, transparent 2px), radial-gradient(circle at 76% 20%, rgba(201,169,106,0.13) 0 1px, transparent 2px), radial-gradient(circle at 52% 12%, rgba(201,169,106,0.10) 0 1.5px, transparent 2.5px); animation: embersFloat 11s ease-in-out infinite alternate; }
+    .df-noise { position: absolute; inset: 0; opacity: 0.35; mix-blend-mode: overlay; }
+
+    @keyframes orbDrift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(8%,10%) scale(1.1); } }
+    @keyframes orbDrift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-10%,-8%) scale(1.12); } }
+    @keyframes scratchShimmer { from { opacity: 0.7; } to { opacity: 1; } }
+    @keyframes embersFloat { from { opacity: 0.5; transform: translate(0,0); } to { opacity: 0.95; transform: translate(0.5%,-0.5%); } }
+
+    body::before { display: none; }
+    body {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(110,85,45,0.08), transparent 30%),
+        radial-gradient(circle at 80% 30%, rgba(80,70,120,0.08), transparent 28%),
+        linear-gradient(160deg, #050505, #0c0b0a 45%, #14110f);
+      min-height: 100vh;
+    }
+
+    #menu-container { position: relative; z-index: 10; }
+
+    /* ── Layout ── */
+    .x-wrap { position: relative; z-index: 2; width: min(1600px, 100%); margin: 0 auto; padding: 34px 24px 20px; }
+
+    /* ── Hero ── */
+    .x-hero { text-align: center; margin-bottom: 30px; }
+
+    .x-badge {
+      display: inline-block;
+      font-family: "Inter", sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(241,221,177,0.7);
+      border: 1px solid rgba(201,169,106,0.35);
+      padding: 5px 14px;
+      margin-bottom: 22px;
+    }
+
+    .x-title {
+      font-family: "MiddAges", "Transcend", "Cormorant Garamond", serif;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      color: #f2e3c4;
+      line-height: 1;
+      margin: 0 0 20px;
+      text-shadow: 0 0 22px rgba(201,169,106,0.28), 0 2px 24px rgba(0,0,0,0.6);
+    }
+    .x-title .accent { color: var(--accent, #c9a96a); }
+
+    .x-tagline {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+      font-weight: 600;
+      color: #e8e0d2;
+      max-width: 620px;
+      margin: 0 auto 34px;
+      line-height: 1.5;
+    }
+
+    /* ── Download CTA ── */
+    .x-cta-row { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+
+    .x-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: "Transcend", "Cormorant Garamond", serif;
+      font-size: 1.25rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #0a0a0a;
+      background: linear-gradient(180deg, #f1ddb1, #c9a96a);
+      border: 1px solid rgba(241,221,177,0.6);
+      padding: 16px 34px;
+      text-decoration: none;
+      box-shadow: 0 8px 30px rgba(201,169,106,0.25), inset 0 0 0 1px rgba(255,255,255,0.2);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+    }
+    .x-download:hover { transform: translateY(-2px); filter: brightness(1.05); box-shadow: 0 12px 38px rgba(201,169,106,0.4); }
+    .x-download svg { width: 26px; height: 26px; }
+
+    .x-meta {
+      font-family: "Inter", sans-serif;
+      font-size: 13px;
+      color: rgba(232,224,210,0.6);
+      letter-spacing: 0.5px;
+    }
+    .x-meta strong { color: #f1ddb1; font-weight: 600; }
+
+    /* ── Heads-up / install notice ── */
+    .x-notice {
+      width: 100%;
+      margin: 30px auto 0;
+      padding: 18px 22px;
+      background: linear-gradient(180deg, rgba(34,27,18,0.92), rgba(14,11,8,0.9));
+      border: 1px solid rgba(201,169,106,0.32);
+      border-left: 3px solid #c9a96a;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+    }
+    .x-notice-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Transcend", "Cormorant Garamond", serif;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #f1ddb1;
+      margin-bottom: 12px;
+    }
+    .x-notice-head svg { width: 20px; height: 20px; color: #c9a96a; }
+    .x-notice p {
+      font-family: "Inter", sans-serif;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: rgba(232,224,210,0.78);
+      margin: 0 0 12px;
+    }
+    .x-notice ol {
+      margin: 0;
+      padding-left: 20px;
+      font-family: "Inter", sans-serif;
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: rgba(232,224,210,0.78);
+    }
+    .x-notice li { margin-bottom: 9px; }
+    .x-notice li:last-child { margin-bottom: 0; }
+    .x-notice strong { color: #f1ddb1; font-weight: 600; }
+    .x-notice .x-kbd {
+      display: inline-block;
+      font-family: "Inter", sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: #f2e3c4;
+      background: rgba(201,169,106,0.14);
+      border: 1px solid rgba(201,169,106,0.4);
+      border-radius: 3px;
+      padding: 1px 7px;
+    }
+    .x-notice-foot {
+      margin-top: 12px;
+      font-size: 12.5px !important;
+      color: rgba(232,224,210,0.6) !important;
+    }
+
+    /* ── Features ── */
+    .x-features {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 36px;
+    }
+    @media (max-width: 880px) {
+      .x-features { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px) {
+      .x-features { grid-template-columns: 1fr; }
+    }
+
+    .x-card {
+      position: relative;
+      padding: 16px 18px;
+      background: linear-gradient(180deg, rgba(22,18,16,0.92), rgba(8,7,7,0.9));
+      border: 1px solid rgba(201,169,106,0.22);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+      transition: border-color 0.18s ease, transform 0.18s ease;
+
+      /* icône (col 1) + titre (col 2) sur une ligne, texte sur toute la largeur en dessous */
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      column-gap: 14px;
+      row-gap: 12px;
+    }
+    .x-card:hover { border-color: rgba(201,169,106,0.5); transform: translateY(-3px); }
+
+    .x-card-ico {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(180deg, rgba(201,169,106,0.18), rgba(201,169,106,0.05));
+      border: 1px solid rgba(201,169,106,0.6);
+      color: #f1ddb1;
+    }
+    .x-card-ico svg { width: 22px; height: 22px; }
+
+    .x-card h3 {
+      font-family: "Transcend", "Cormorant Garamond", serif;
+      font-size: 1.05rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #f1ddb1;
+      margin: 0;
+    }
+    .x-card p {
+      grid-column: 1 / -1;          /* texte sous l'icône + titre, pleine largeur */
+      font-family: "Inter", sans-serif;
+      font-size: 14px;
+      line-height: 1.55;
+      color: rgba(232,224,210,0.72);
+      margin: 0;
+      text-align: justify;
+    }
+
+    /* ── Note bas de page ── */
+    .x-footnote {
+      text-align: center;
+      margin-top: 16px;
+      font-family: "Inter", sans-serif;
+      font-size: 13px;
+      color: rgba(232,224,210,0.5);
+      line-height: 1.6;
+    }
+    .x-footnote a { color: #c9a96a; text-decoration: none; }
+    .x-footnote a:hover { text-decoration: underline; }
+
+    .ad-banner-footer {
+      background: rgba(8,6,5,0.97) !important;
+      border-top: 1px solid rgba(201,169,106,0.45) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background animé -->
+  <div class="df-bg">
+    <div class="df-orb df-orb-1"></div>
+    <div class="df-orb df-orb-2"></div>
+    <div class="df-noise" id="df-noise"></div>
+    <div class="df-scratches"></div>
+    <div class="df-embers"></div>
+  </div>
+
+  <!-- Menu -->
+  <div id="menu-container"></div>
+
+  <main class="x-wrap">
+
+    <!-- Hero -->
+    <section class="x-hero">
+      <h1 class="x-title">RSL-<span class="accent">Xtender</span></h1>
+
+      <div class="x-cta-row">
+        <a class="x-download" href="https://rsl-x.gg/xtender/stable/RSL-Xtender-win-Setup.exe" download>
+          <i data-lucide="download"></i>
+          Download for Windows
+        </a>
+        <div class="x-meta">
+          Windows 10 / 11 · <strong id="x-version">v1.0.90</strong> · Free
+        </div>
+      </div>
+    </section>
+
+    <!-- Heads-up : installation & avertissements -->
+    <section class="x-notice">
+      <div class="x-notice-head">
+        <i data-lucide="shield-alert"></i>
+        Before you install — please read
+      </div>
+      <p>
+        RSL-Xtender is a brand-new independent app, so Windows and some antivirus software
+        don't recognize it yet and may show scary-looking warnings. These are
+        <strong>false positives</strong> — the app is safe. Here's how to get through them:
+      </p>
+      <ol>
+        <li>
+          <strong>Your browser may block the download.</strong> If it says the file
+          “isn't commonly downloaded” or “may be dangerous”, click the “⋯” / arrow next to it
+          and choose <span class="x-kbd">Keep</span> (or <span class="x-kbd">Keep anyway</span>).
+        </li>
+        <li>
+          <strong>Windows SmartScreen may pop up</strong> when you run the installer
+          (“Windows protected your PC”). Click <span class="x-kbd">More info</span>, then
+          <span class="x-kbd">Run anyway</span>.
+        </li>
+        <li>
+          <strong>Your antivirus may flag it.</strong> If the installer disappears or is
+          quarantined, restore it and add an exception for RSL-Xtender, then run it again.
+        </li>
+      </ol>
+      <p class="x-notice-foot">
+        These warnings fade over time as the app builds reputation. Still unsure?
+        Ask us on <a href="https://discord.gg/uejPcZj5cM" target="_blank" rel="noopener noreferrer" style="color:#c9a96a;text-decoration:none;">Discord</a> before installing.
+      </p>
+    </section>
+
+    <!-- Features -->
+    <section class="x-features">
+      <div class="x-card">
+        <div class="x-card-ico"><i data-lucide="hammer"></i></div>
+        <h3>Workshop</h3>
+        <p>Auto-build your champions in seconds — the app equips and optimizes a full gear set for you, no more manual swapping.</p>
+      </div>
+      <div class="x-card">
+        <div class="x-card-ico"><i data-lucide="package"></i></div>
+        <h3>Inventory</h3>
+        <p>Manage your gear straight from the app — filter, sell and upgrade artifacts in bulk without juggling the in-game menus.</p>
+      </div>
+      <div class="x-card">
+        <div class="x-card-ico"><i data-lucide="history"></i></div>
+        <h3>Snapshots &amp; Squads</h3>
+        <p>Save your teams as squads and snapshot your account — roll back to an earlier state any time, so you can experiment without fear.</p>
+      </div>
+      <div class="x-card">
+        <div class="x-card-ico"><i data-lucide="layout-dashboard"></i></div>
+        <h3>Dashboard</h3>
+        <p>A clear overview of your activities, energy, resources and daily progress at a glance.</p>
+      </div>
+      <div class="x-card">
+        <div class="x-card-ico"><i data-lucide="users"></i></div>
+        <h3>Champions</h3>
+        <p>Browse your full roster with detailed stats and masteries to plan upgrades and team building.</p>
+      </div>
+      <div class="x-card">
+        <div class="x-card-ico"><i data-lucide="swords"></i></div>
+        <h3>Auto Battle</h3>
+        <p>Automate repetitive fights and farming so you can focus on the decisions that matter.</p>
+      </div>
+      <div class="x-card">
+        <div class="x-card-ico"><i data-lucide="shield"></i></div>
+        <h3>Clan &amp; activities</h3>
+        <p>Track clan progress and time-limited activities so you never miss a reward window.</p>
+      </div>
+      <div class="x-card">
+        <div class="x-card-ico"><i data-lucide="refresh-cw"></i></div>
+        <h3>Auto-updates</h3>
+        <p>The app keeps itself up to date in the background — always on the latest build.</p>
+      </div>
+    </section>
+
+    <p class="x-footnote">
+      RSL-Xtender is a free companion tool and is not affiliated with or endorsed by Plarium.<br>
+      Questions or feedback? Join us on <a href="https://discord.gg/uejPcZj5cM" target="_blank" rel="noopener noreferrer">Discord</a>
+      or support the project on <a href="/community/patreon/">Patreon</a>.
+    </p>
+
+  </main>
+
+  <!-- Grain noise -->
+  <script>
+    (function() {
+      const SIZE = 256;
+      const c = document.createElement('canvas');
+      c.width = c.height = SIZE;
+      const ctx = c.getContext('2d');
+      const img = ctx.createImageData(SIZE, SIZE);
+      for (let i = 0; i < img.data.length; i += 4) {
+        const v = (Math.random() * 255) | 0;
+        img.data[i] = img.data[i+1] = img.data[i+2] = v;
+        img.data[i+3] = (Math.random() * 32) | 0;
+      }
+      ctx.putImageData(img, 0, 0);
+      const el = document.getElementById('df-noise');
+      el.style.backgroundImage  = 'url(' + c.toDataURL() + ')';
+      el.style.backgroundRepeat = 'repeat';
+      el.style.backgroundSize   = SIZE + 'px ' + SIZE + 'px';
+    })();
+  </script>
+
+  <!-- Version dynamique : lit le feed Velopack (same-origin), fallback sur la valeur en dur -->
+  <script>
+    (function() {
+      fetch('/xtender/stable/releases.win.json', { cache: 'no-store' })
+        .then(r => r.ok ? r.text() : Promise.reject())
+        .then(txt => {
+          const vers = (txt.match(/\d+\.\d+\.\d+/g) || [])
+            .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+          const latest = vers[vers.length - 1];
+          if (latest) document.getElementById('x-version').textContent = 'v' + latest;
+        })
+        .catch(() => { /* garde la version par défaut */ });
+    })();
+  </script>
+
+  <script src="/script.js"></script>
+</body>
+</html>

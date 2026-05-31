@@ -1,278 +1,262 @@
-<link rel="stylesheet" href="/style/menu.css">
+<!-- ============================================================
+     RSL-X — Navigation V2  |  Rail + persistent panel
+     ============================================================ -->
+<nav id="rsx-nav" class="rsx-nav" aria-label="Main navigation">
 
-<!-- Bouton burger -->
-<button id="burger-btn" class="burger-btn" aria-label="Menu">
-  <i data-lucide="menu"></i>
-</button>
+  <!-- ── Rail (toujours affiché) ───────────────────────────── -->
+  <div class="rsx-rail">
 
-<!-- Menu latéral gauche -->
-<nav id="sidebar" class="sidebar">
-  <div class="sidebar-content">
-    <ul class="menu-links">
-      <li class="dropdown"><a href="/">Home</a></li>
-      <li class="dropdown">
-        <div class="dropdown-toggle">Titan Events</div>
-        <ul class="dropdown-content">
-          <li class="dropdown-sub">
-            <div class="dropdown-sub-toggle">2026</div>
-            <ul class="dropdown-sub-content">
-              <li><a href="/titan/#Anomalous">Anomalous</a></li>
-              <li><a href="/titan/#Victorious">Victorious</a></li>
-              <li><a href="/titan/#Odyssey">Odyssey</a></li>
-            </ul>
-          </li>
-          <li class="dropdown-sub">
-            <div class="dropdown-sub-toggle">2025</div>
-            <ul class="dropdown-sub-content">
-              <li><a href="/titan/#Ace-Reporter">Ace Reporter</a></li>
-              <li><a href="/titan/#Smart-Fella">Smart Fella</a></li>
-              <li><a href="/titan/#Demonslayer">Demonslayer</a></li>
-              <li><a href="/titan/#Tea-Party">Tea Party</a></li>
-            </ul>
-          </li>
+    <a class="rail-logo" href="/" title="Home">
+      <span class="rail-logo-mark">X</span>
+    </a>
+
+    <div class="rail-items">
+      <button class="rail-item" type="button" data-section="titans" title="Titan Events">
+        <i data-lucide="swords"></i>
+        <span class="rail-label">Titans</span>
+      </button>
+
+      <button class="rail-item" type="button" data-section="fusions" title="Fusions">
+        <i data-lucide="flame"></i>
+        <span class="rail-label">Fusions</span>
+      </button>
+
+      <button class="rail-item" type="button" data-section="paths" title="Hero's Paths">
+        <i data-lucide="route"></i>
+        <span class="rail-label">Paths</span>
+      </button>
+
+      <button class="rail-item" type="button" data-section="tools" title="Tools">
+        <i data-lucide="wrench"></i>
+        <span class="rail-label">Tools</span>
+      </button>
+
+      <a class="rail-item rail-app" href="/xtender/" title="Xtender — our desktop app">
+        <i data-lucide="download"></i>
+        <span class="rail-label">Xtender</span>
+      </a>
+    </div>
+
+    <div class="rail-spacer"></div>
+
+    <div class="rail-social-group">
+      <a class="rail-social" href="/community/patreon/" title="Support us on Patreon">
+        <span class="social-ico" style="--ico:url('/assets/Patreon_Icon.webp')"></span>
+      </a>
+      <a class="rail-social" href="https://discord.gg/uejPcZj5cM" target="_blank" rel="noopener noreferrer" title="Join our Discord">
+        <span class="social-ico" style="--ico:url('/assets/Discord_Icon.webp')"></span>
+      </a>
+      <!-- L'icône account (#session-trigger) est injectée ici par session-widget.js -->
+      <div class="rail-account-slot" id="rail-account-slot"></div>
+    </div>
+  </div>
+
+  <!-- ── Panneau de sous-navigation (persistant) ───────────── -->
+  <div class="rsx-panel" id="rsx-panel">
+
+    <!-- TITANS -->
+    <section class="rsx-pane" data-section="titans">
+      <h2 class="pane-title">Titan Events</h2>
+      <div class="pane-group">
+        <h3 class="pane-year">2026</h3>
+        <ul class="pane-links">
+          <li><a href="/titan/#Anomalous">Anomalous</a></li>
+          <li><a href="/titan/#Victorious">Victorious</a></li>
+          <li><a href="/titan/#Odyssey">Odyssey</a></li>
         </ul>
-      </li>
-
-      <li class="dropdown">
-        <div class="dropdown-toggle">Fusions</div>
-        <ul class="dropdown-content">
-          <!-- === 2026 === -->
-          <li class="dropdown-sub">
-            <div class="dropdown-sub-toggle">2026 </div>
-            <ul class="dropdown-sub-content">
-              <li><a href="/fusions/#Mavara">Mavara</a></li>
-              <li><a href="/fusions/#Pelops">Pelops</a></li>
-              <li><a href="/fusions/#Noldua">Noldua</a></li>
-              <li><a href="/fusions/#Kassandra">Kassandra</a></li>
-            </ul>
-          </li>
-          <!-- === 2025 === -->
-          <li class="dropdown-sub">
-            <div class="dropdown-sub-toggle">2025 </div>
-            <ul class="dropdown-sub-content">
-              <li><a href="/fusions/#Yukimasa">Yukimasa</a></li>
-              <li><a href="/fusions/#Kroz">Kroz</a></li>
-              <li><a href="/fusions/#Maria">Maria</a></li>
-              <li><a href="/fusions/#Granyt">Granyt</a></li>
-              <li><a href="/fusions/#Donatello">Donatello</a></li>
-              <li><a href="/fusions/#KroKhad">Kro'Khad</a></li>
-              <li><a href="/fusions/#Titus">Titus</a></li>
-              <li><a href="/fusions/#Tholin">Tholin</a></li>
-              <li><a href="/fusions/#Ishiyama">Ishiyama</a></li>
-              <li><a href="/fusions/#Lysanthir">Lysanthir</a></li>
-              <li><a href="/fusions/#Fabian">Fabian</a></li>
-              <li><a href="/fusions/#Esme">Esme</a></li>
-              <li><a href="/fusions/#MadHatter">Mad Hatter</a></li>
-            </ul>
-          </li>
-          <!-- === 2024 === -->
-          <li class="dropdown-sub">
-            <div class="dropdown-sub-toggle">2024 </div>
-            <ul class="dropdown-sub-content">
-              <li><a href="/fusions/#Noelle">Noelle</a></li>
-              <li><a href="/fusions/#Stokk">Stokk</a></li>
-              <li><a href="/fusions/#Gretel">Gretel</a></li>
-              <li><a href="/fusions/#Jeroboam">Jeroboam</a></li>
-              <li><a href="/fusions/#Thor">Thor</a></li>
-              <li><a href="/fusions/#Skorid">Skorid</a></li>
-              <li><a href="/fusions/#Shyek">Shy’ek</a></li>
-              <li><a href="/fusions/#Incarnate">Incarnate</a></li>
-              <li><a href="/fusions/#Wixwell">Wixwell</a></li>
-              <li><a href="/fusions/#Eostrid">Eostrid</a></li>
-              <li><a href="/fusions/#Armanz">Armanz</a></li>
-              <li><a href="/fusions/#Ankora">Ankora</a></li>
-              <li><a href="/fusions/#Zinogre">Zinogre</a></li>
-            </ul>
-          </li>
-
-          <!-- === 2023 === -->
-          <li class="dropdown-sub">
-            <div class="dropdown-sub-toggle">2023 </div>
-            <ul class="dropdown-sub-content">
-              <li><a href="/fusions/#Blizaar">Blizaar</a></li>
-              <li><a href="/fusions/#Ugir">Ugir</a></li>
-              <li><a href="/fusions/#Timit">Timit</a></li>
-              <li><a href="/fusions/#Bambus">Bambus</a></li>
-              <li><a href="/fusions/#Islin">Islin</a></li>
-              <li><a href="/fusions/#Emic">Emic</a></li>
-              <li><a href="/fusions/#Gnut">Gnut</a></li>
-              <li><a href="/fusions/#Loriaca">Loriaca</a></li>
-              <li><a href="/fusions/#Jetni">Jetni</a></li>
-              <li><a href="/fusions/#Razelvarg">Razelvarg</a></li>
-              <li><a href="/fusions/#Supreme-Elhain">Supreme Elhain</a></li>
-              <li><a href="/fusions/#Oella">Oella</a></li>
-              <li><a href="/fusions/#Pythion">Pythion</a></li>
-            </ul>
-          </li>
-        <li class="dropdown-sub">
-          <div class="dropdown-sub-toggle">
-            2022 
-          </div>
-          <ul class="dropdown-sub-content">
-            <li><a href="/fusions/#Gnishak">Gnishak</a></li>
-            <li><a href="/fusions/#Hoskarul">Hoskarul</a></li>
-            <li><a href="/fusions/#Morrigaine">Morrigaine</a></li>
-            <li><a href="/fusions/#Maranix">Maranix</a></li>
-            <li><a href="/fusions/#Ukko">Ukko</a></li>
-            <li><a href="/fusions/#Nogoryo">Nogoryo</a></li>
-            <li><a href="/fusions/#Lonatharil">Lonatharil</a></li>
-            <li><a href="/fusions/#Walking-Tomb-Dreng">Walking Tomb Dreng</a></li>
-            <li><a href="/fusions/#Helicath">Helicath</a></li>
-            <li><a href="/fusions/#Bivald">Bivald</a></li>
-            <li><a href="/fusions/#Gaius">Gaius</a></li>
-            <li><a href="/fusions/#Nari">Nari</a></li>
-            <li><a href="/fusions/#Karato">Karato</a></li>
-            <li><a href="/fusions/#Opardin">Opardin</a></li>
-          </ul>
-        </li>
-        <li class="dropdown-sub">
-          <div class="dropdown-sub-toggle">
-            2021 
-          </div>
-          <ul class="dropdown-sub-content">
-			<li><a href="/fusions/#Tatura">Tatura</a></li>
-			<li><a href="/fusions/#Vildrax">Vildrax</a></li>
-			<li><a href="/fusions/#Vlad">Vlad</a></li>
-			<li><a href="/fusions/#Sigmund">Sigmund</a></li>
-			<li><a href="/fusions/#Roric">Roric</a></li>
-			<li><a href="/fusions/#Cybele">Cybele</a></li>
-			<li><a href="/fusions/#Versulf">Versulf</a></li>
-			<li><a href="/fusions/#Hurndig">Hurndig</a></li>
-			<li><a href="/fusions/#Ruel">Ruel</a></li>
-			<li><a href="/fusions/#Brogni">Brogni</a></li>
-			<li><a href="/fusions/#Yoshi">Yoshi</a></li>
-			<li><a href="/fusions/#Astralon">Astralon</a></li>
-			<li><a href="/fusions/#Brago">Brago</a></li>
-          </ul>
-        </li>
-        <li class="dropdown-sub">
-          <div class="dropdown-sub-toggle">
-            2020 
-          </div>
-          <ul class="dropdown-sub-content">
-			<li><a href="/fusions/#Pyxniel">Pyxniel</a></li>
-			<li><a href="/fusions/#Bergoth">Bergoth</a></li>
-			<li><a href="/fusions/#Elegaius">Elegaius</a></li>
-			<li><a href="/fusions/#Vergumkaar">Vergumkaar</a></li>
-			<li><a href="/fusions/#Drokgul">Drokgul</a></li>
-			<li><a href="/fusions/#Kreela">Kreela</a></li>
-			<li><a href="/fusions/#Kantra">Kantra</a></li>
-			<li><a href="/fusions/#Gurptuk">Gurptuk</a></li>
-			<li><a href="/fusions/#Var-Gall">Var-Gall</a></li>
-			<li><a href="/fusions/#Cillian">Cillian the Lucky</a></li>
-			<li><a href="/fusions/#Rotos">Rotos the Lost Groom</a></li>			
-          </ul>
-        </li>
-        <li class="dropdown-sub">
-          <div class="dropdown-sub-toggle">
-            2019 
-          </div>
-          <ul class="dropdown-sub-content">
-			<li><a href="/fusions/#Tormin">Tormin</a></li>
-			<li><a href="/fusions/#Brakus">Brakus</a></li>
-			<li><a href="/fusions/#Jack">Jack</a></li>
-			<li><a href="/fusions/#Foli">Foli</a></li>
-			<li><a href="/fusions/#Shamrock">Shamrock</a></li>
-			<li><a href="/fusions/#Nicholas">Nicholas</a></li>
-          </ul>
-        </li>
-      </ul>
-    </li>
-       <li class="dropdown">
-        <div class="dropdown-toggle">Hero's Paths</div>
-        <ul class="dropdown-content">
-          <li class="dropdown-sub">
-            <div class="dropdown-sub-toggle">2026</div>
-            <ul class="dropdown-sub-content">
-              <li><a href="/heros-path/#mavara-path">Mavara</a></li>
-              <li><a href="/heros-path/#pirates-path">Pirate's</a></li>
-              <li><a href="/heros-path/#anniversary-path">Anniversary</a></li>
-              <li><a href="/heros-path/#sweethearts-path">Sweethearts</a></li>
-              <li><a href="/heros-path/#frosted-path">Frosted</a></li>
-            </ul>
-          </li>
-          <li class="dropdown-sub">
-            <div class="dropdown-sub-toggle">2025</div>
-            <ul class="dropdown-sub-content">
-              <li><a href="/heros-path/#predators-path">Predator</a></li>
-              <li><a href="/heros-path/#swordmasters-path">Swordmaster</a></li>
-              <li><a href="/heros-path/#halloween-path-2025">Halloween</a></li>
-              <li><a href="/heros-path/#doorkeeps-path">Doorkeep</a></li>
-              <li><a href="/heros-path/#orcs-path">Orc</a></li>
-              <li><a href="/heros-path/#lost-path">Lost</a></li>
-              <li><a href="/heros-path/#spring-path-2025">Spring</a></li>
-              <li><a href="/heros-path/#alice-path">Alice</a></li>
-              <li><a href="/heros-path/#afterparty-path">Afterparty</a></li>
-              <li><a href="/heros-path/#dancers-path">Dancer</a></li>
-              <li><a href="/heros-path/#winters-path-2025">Winter</a></li>
-            </ul>
-          </li>
+      </div>
+      <div class="pane-group">
+        <h3 class="pane-year">2025</h3>
+        <ul class="pane-links">
+          <li><a href="/titan/#Ace-Reporter">Ace Reporter</a></li>
+          <li><a href="/titan/#Smart-Fella">Smart Fella</a></li>
+          <li><a href="/titan/#Demonslayer">Demonslayer</a></li>
+          <li><a href="/titan/#Tea-Party">Tea Party</a></li>
         </ul>
-      </li>
+      </div>
+    </section>
 
-      <li class="dropdown">
-        <div class="dropdown-toggle">Tools</div>
-        <ul class="dropdown-content">
+    <!-- FUSIONS -->
+    <section class="rsx-pane" data-section="fusions">
+      <h2 class="pane-title">Fusions</h2>
+      <div class="pane-group">
+        <h3 class="pane-year">2026</h3>
+        <ul class="pane-links">
+          <li><a href="/fusions/#Masahiro">Masahiro</a></li>
+          <li><a href="/fusions/#Mavara">Mavara</a></li>
+          <li><a href="/fusions/#Pelops">Pelops</a></li>
+          <li><a href="/fusions/#Noldua">Noldua</a></li>
+          <li><a href="/fusions/#Kassandra">Kassandra</a></li>
+        </ul>
+      </div>
+      <div class="pane-group">
+        <h3 class="pane-year">2025</h3>
+        <ul class="pane-links">
+          <li><a href="/fusions/#Yukimasa">Yukimasa</a></li>
+          <li><a href="/fusions/#Kroz">Kroz</a></li>
+          <li><a href="/fusions/#Maria">Maria</a></li>
+          <li><a href="/fusions/#Granyt">Granyt</a></li>
+          <li><a href="/fusions/#Donatello">Donatello</a></li>
+          <li><a href="/fusions/#KroKhad">Kro'Khad</a></li>
+          <li><a href="/fusions/#Titus">Titus</a></li>
+          <li><a href="/fusions/#Tholin">Tholin</a></li>
+          <li><a href="/fusions/#Ishiyama">Ishiyama</a></li>
+          <li><a href="/fusions/#Lysanthir">Lysanthir</a></li>
+          <li><a href="/fusions/#Fabian">Fabian</a></li>
+          <li><a href="/fusions/#Esme">Esme</a></li>
+          <li><a href="/fusions/#MadHatter">Mad Hatter</a></li>
+        </ul>
+      </div>
+      <div class="pane-group">
+        <h3 class="pane-year">2024</h3>
+        <ul class="pane-links">
+          <li><a href="/fusions/#Noelle">Noelle</a></li>
+          <li><a href="/fusions/#Stokk">Stokk</a></li>
+          <li><a href="/fusions/#Gretel">Gretel</a></li>
+          <li><a href="/fusions/#Jeroboam">Jeroboam</a></li>
+          <li><a href="/fusions/#Thor">Thor</a></li>
+          <li><a href="/fusions/#Skorid">Skorid</a></li>
+          <li><a href="/fusions/#Shyek">Shy’ek</a></li>
+          <li><a href="/fusions/#Incarnate">Incarnate</a></li>
+          <li><a href="/fusions/#Wixwell">Wixwell</a></li>
+          <li><a href="/fusions/#Eostrid">Eostrid</a></li>
+          <li><a href="/fusions/#Armanz">Armanz</a></li>
+          <li><a href="/fusions/#Ankora">Ankora</a></li>
+          <li><a href="/fusions/#Zinogre">Zinogre</a></li>
+        </ul>
+      </div>
+      <div class="pane-group">
+        <h3 class="pane-year">2023</h3>
+        <ul class="pane-links">
+          <li><a href="/fusions/#Blizaar">Blizaar</a></li>
+          <li><a href="/fusions/#Ugir">Ugir</a></li>
+          <li><a href="/fusions/#Timit">Timit</a></li>
+          <li><a href="/fusions/#Bambus">Bambus</a></li>
+          <li><a href="/fusions/#Islin">Islin</a></li>
+          <li><a href="/fusions/#Emic">Emic</a></li>
+          <li><a href="/fusions/#Gnut">Gnut</a></li>
+          <li><a href="/fusions/#Loriaca">Loriaca</a></li>
+          <li><a href="/fusions/#Jetni">Jetni</a></li>
+          <li><a href="/fusions/#Razelvarg">Razelvarg</a></li>
+          <li><a href="/fusions/#Supreme-Elhain">Supreme Elhain</a></li>
+          <li><a href="/fusions/#Oella">Oella</a></li>
+          <li><a href="/fusions/#Pythion">Pythion</a></li>
+        </ul>
+      </div>
+      <div class="pane-group">
+        <h3 class="pane-year">2022</h3>
+        <ul class="pane-links">
+          <li><a href="/fusions/#Gnishak">Gnishak</a></li>
+          <li><a href="/fusions/#Hoskarul">Hoskarul</a></li>
+          <li><a href="/fusions/#Morrigaine">Morrigaine</a></li>
+          <li><a href="/fusions/#Maranix">Maranix</a></li>
+          <li><a href="/fusions/#Ukko">Ukko</a></li>
+          <li><a href="/fusions/#Nogoryo">Nogoryo</a></li>
+          <li><a href="/fusions/#Lonatharil">Lonatharil</a></li>
+          <li><a href="/fusions/#Walking-Tomb-Dreng">Walking Tomb Dreng</a></li>
+          <li><a href="/fusions/#Helicath">Helicath</a></li>
+          <li><a href="/fusions/#Bivald">Bivald</a></li>
+          <li><a href="/fusions/#Gaius">Gaius</a></li>
+          <li><a href="/fusions/#Nari">Nari</a></li>
+          <li><a href="/fusions/#Karato">Karato</a></li>
+          <li><a href="/fusions/#Opardin">Opardin</a></li>
+        </ul>
+      </div>
+      <div class="pane-group">
+        <h3 class="pane-year">2021</h3>
+        <ul class="pane-links">
+          <li><a href="/fusions/#Tatura">Tatura</a></li>
+          <li><a href="/fusions/#Vildrax">Vildrax</a></li>
+          <li><a href="/fusions/#Vlad">Vlad</a></li>
+          <li><a href="/fusions/#Sigmund">Sigmund</a></li>
+          <li><a href="/fusions/#Roric">Roric</a></li>
+          <li><a href="/fusions/#Cybele">Cybele</a></li>
+          <li><a href="/fusions/#Versulf">Versulf</a></li>
+          <li><a href="/fusions/#Hurndig">Hurndig</a></li>
+          <li><a href="/fusions/#Ruel">Ruel</a></li>
+          <li><a href="/fusions/#Brogni">Brogni</a></li>
+          <li><a href="/fusions/#Yoshi">Yoshi</a></li>
+          <li><a href="/fusions/#Astralon">Astralon</a></li>
+          <li><a href="/fusions/#Brago">Brago</a></li>
+        </ul>
+      </div>
+      <div class="pane-group">
+        <h3 class="pane-year">2020</h3>
+        <ul class="pane-links">
+          <li><a href="/fusions/#Pyxniel">Pyxniel</a></li>
+          <li><a href="/fusions/#Bergoth">Bergoth</a></li>
+          <li><a href="/fusions/#Elegaius">Elegaius</a></li>
+          <li><a href="/fusions/#Vergumkaar">Vergumkaar</a></li>
+          <li><a href="/fusions/#Drokgul">Drokgul</a></li>
+          <li><a href="/fusions/#Kreela">Kreela</a></li>
+          <li><a href="/fusions/#Kantra">Kantra</a></li>
+          <li><a href="/fusions/#Gurptuk">Gurptuk</a></li>
+          <li><a href="/fusions/#Var-Gall">Var-Gall</a></li>
+          <li><a href="/fusions/#Cillian">Cillian the Lucky</a></li>
+          <li><a href="/fusions/#Rotos">Rotos the Lost Groom</a></li>
+        </ul>
+      </div>
+      <div class="pane-group">
+        <h3 class="pane-year">2019</h3>
+        <ul class="pane-links">
+          <li><a href="/fusions/#Tormin">Tormin</a></li>
+          <li><a href="/fusions/#Brakus">Brakus</a></li>
+          <li><a href="/fusions/#Jack">Jack</a></li>
+          <li><a href="/fusions/#Foli">Foli</a></li>
+          <li><a href="/fusions/#Shamrock">Shamrock</a></li>
+          <li><a href="/fusions/#Nicholas">Nicholas</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- HERO'S PATHS -->
+    <section class="rsx-pane" data-section="paths">
+      <h2 class="pane-title">Hero's Paths</h2>
+      <div class="pane-group">
+        <h3 class="pane-year">2026</h3>
+        <ul class="pane-links">
+          <li><a href="/heros-path/#path-of-power">Path of Power</a></li>
+          <li><a href="/heros-path/#mavara-path">Mavara</a></li>
+          <li><a href="/heros-path/#pirates-path">Pirate's</a></li>
+          <li><a href="/heros-path/#anniversary-path">Anniversary</a></li>
+          <li><a href="/heros-path/#sweethearts-path">Sweethearts</a></li>
+          <li><a href="/heros-path/#frosted-path">Frosted</a></li>
+        </ul>
+      </div>
+      <div class="pane-group">
+        <h3 class="pane-year">2025</h3>
+        <ul class="pane-links">
+          <li><a href="/heros-path/#predators-path">Predator</a></li>
+          <li><a href="/heros-path/#swordmasters-path">Swordmaster</a></li>
+          <li><a href="/heros-path/#halloween-path-2025">Halloween</a></li>
+          <li><a href="/heros-path/#doorkeeps-path">Doorkeep</a></li>
+          <li><a href="/heros-path/#orcs-path">Orc</a></li>
+          <li><a href="/heros-path/#lost-path">Lost</a></li>
+          <li><a href="/heros-path/#spring-path-2025">Spring</a></li>
+          <li><a href="/heros-path/#alice-path">Alice</a></li>
+          <li><a href="/heros-path/#afterparty-path">Afterparty</a></li>
+          <li><a href="/heros-path/#dancers-path">Dancer</a></li>
+          <li><a href="/heros-path/#winters-path-2025">Winter</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- TOOLS -->
+    <section class="rsx-pane" data-section="tools">
+      <h2 class="pane-title">Tools</h2>
+      <div class="pane-group">
+        <ul class="pane-links">
           <li><a href="/tools/champions-index/">Champions Index</a></li>
           <li><a href="/tools/efficiency-lab/">Efficiency Lab</a></li>
           <li><a href="/tools/mercy-tracker/">Mercy Tracker</a></li>
           <li><a href="/tools/minotaur-farming/">Minotaur Farming</a></li>
           <li><a href="/tools/mastery-builder/">Mastery Builder</a></li>
         </ul>
-      </li>
+      </div>
+    </section>
 
-      <li class="dropdown">
-        <div class="dropdown-toggle">Community</div>
-        <ul class="dropdown-content">
-          <li><a href="https://discord.gg/uejPcZj5cM" target="_blank" rel="noopener noreferrer">Discord</a></li>
-          <li><a href="/community/patreon/">Patreon</a></li>
-        </ul>
-      </li>
-
-      <li class="dropdown">
-        <div class="dropdown-toggle">Changelogs</div>
-        <ul class="dropdown-content">
-          <li><a href="/changelogs/whatsnext/">What's next ?</a></li>
-          <li><a href="/changelogs/versions/">Versions</a></li>
-        </ul>
-      </li>
-    </ul>
   </div>
+
+  <!-- Backdrop (mobile only) -->
+  <div class="rsx-backdrop" id="rsx-backdrop"></div>
 </nav>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // Important : re-rendre les icônes après l'injection du menu
-    lucide.createIcons();
-
-    const burgerBtn = document.getElementById("burger-btn");
-    const sidebar = document.getElementById("sidebar");
-    let open = false;
-
-    function toggleSidebar() {
-      open = !open;
-      sidebar.classList.toggle("open", open);
-      burgerBtn.innerHTML = open
-        ? '<i data-lucide="x"></i>'
-        : '<i data-lucide="menu"></i>';
-      lucide.createIcons(); // re-transforme l'icône en SVG
-    }
-
-    burgerBtn.addEventListener("click", toggleSidebar);
-
-    sidebar.querySelectorAll("a").forEach(link => {
-      link.addEventListener("click", () => {
-        if (open) toggleSidebar();
-      });
-    });
-
-    document.querySelectorAll(".dropdown-sub-toggle").forEach(t => {
-      t.addEventListener("click", e => {
-        e.stopPropagation();
-        const c = t.nextElementSibling;
-        c.classList.toggle("open");
-        t.classList.toggle("open");
-      });
-    });
-  });
-</script>

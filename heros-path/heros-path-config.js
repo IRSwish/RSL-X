@@ -63,6 +63,16 @@ window.fusions = {
     },
     initialUnlocked: ["t0-1"]
   },
+  "path-of-power": {
+    name: "Path of Power",
+    json: "/heros-path/2026/path-of-power.json",
+    shardCosts: {
+      ancient: 300,
+      void: 750,
+      primal: 1800,
+      sacred: 4500
+    }
+  },
   "predators-path": {
     name: "Predator's Path",
     json: "/heros-path/2025/predators-path.json",

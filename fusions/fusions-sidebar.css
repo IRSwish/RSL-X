@@ -39,8 +39,14 @@
   min-width: 0;
 }
 
+@font-face {
+  font-family: "MiddAges";
+  src: url('/style/MiddAges.ttf') format('truetype');
+  font-display: swap;
+}
+
 .banner-champ-name {
-  font-family: "Transcend", "Cormorant Garamond", serif;
+  font-family: "MiddAges", "Transcend", "Cormorant Garamond", serif;
   font-size: 32px;
   font-weight: 700;
   color: #f1ddb1;

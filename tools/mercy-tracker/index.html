@@ -85,27 +85,7 @@
     .section-label::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(201,169,106,0.5), transparent); }
     .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(201,169,106,0.35), transparent); margin: 24px 0; }
 
-    /* ── Import bar ── */
-    .import-bar { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 4px; }
-    .import-hint { font-family: 'Inter', sans-serif; font-size: 0.72rem; color: rgba(232,224,210,0.4); text-align: center; }
-    .import-hint code { background: rgba(255,255,255,0.06); padding: 2px 6px; font-size: 0.68rem; }
-    .import-btn {
-      font-family: 'Inter', sans-serif;
-      background: transparent;
-      border: 1px solid rgba(201,169,106,0.45);
-      color: #c9a96a;
-      padding: 9px 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s, border-color 0.2s;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .import-btn:hover { background: rgba(201,169,106,0.12); border-color: #c9a96a; color: #f1ddb1; }
-    .import-btn svg { width: 16px; height: 16px; }
-    #importFileInput { display: none; }
-
-    /* ── Cards grid ── */
+/* ── Cards grid ── */
     .shards-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; width: 100%; }
 
     /* ── Shard card ── */
@@ -214,7 +194,16 @@
     /* ── Responsive ── */
     @media (max-width: 1100px) { .shards-container { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 680px)  { .shards-container { grid-template-columns: 1fr; } }
-  </style>
+      /* ── Titre en MiddAges ── */
+    @font-face {
+      font-family: "MiddAges";
+      src: url('/style/MiddAges.ttf') format('truetype');
+      font-display: swap;
+    }
+    #page-title {
+      font-family: "MiddAges", "Transcend", "Cormorant Garamond", serif;
+    }
+</style>
 </head>
 <body>
 
@@ -270,20 +259,7 @@
       <line x1="36" y1="9" x2="36" y2="18" stroke="#c9a96a" stroke-width="1.5" opacity="0.65"/>
     </svg>
 
-    <!-- Import -->
-    <div class="section-label">Import Data</div>
-    <div class="import-bar">
-      <input type="file" id="importFileInput" accept="text/plain,.ini,.txt">
-      <button type="button" class="import-btn" id="importRSLHelperBtn">
-        <i data-lucide="upload"></i>
-        Import from RSL Helper
-      </button>
-      <span class="import-hint">File location: <code>%appdata%/RslHelper/Config</code></span>
-    </div>
-
-    <div class="section-divider"></div>
-
-    <!-- Shards -->
+<!-- Shards -->
     <div class="section-label">Shard Tracker</div>
     <div class="shards-container"></div>
 
@@ -390,18 +366,6 @@
     return data;
   }
 
-  function importRSLHelperData(mercyData) {
-    for (const [type, data] of Object.entries(mercyData)) {
-      if (data.value !== undefined) LS.setItem("pity_" + type, data.value);
-      if (data.legendaryValue !== undefined) LS.setItem("pity_legendary_" + type, data.legendaryValue);
-      if (data.lastHeroId) LS.setItem("lastHero_" + type, data.lastHeroId);
-      if (data.needFor) LS.setItem("lastPull_" + type, data.needFor);
-      if (cardSetProgressFunctions[type]) cardSetProgressFunctions[type](data.value || 0, data.legendaryValue);
-      updateLastHeroDisplay(type);
-    }
-    lucide.createIcons();
-  }
-
   function updateLastHeroDisplay(type) {
     const card = document.querySelector(`.shard-card[data-type="${type}"]`);
     if (!card) return;
@@ -441,22 +405,6 @@
   (async () => {
     await Promise.all([loadBoostedRates(), loadChampionsDB()]);
     const container = document.querySelector(".shards-container");
-    const importBtn = document.getElementById('importRSLHelperBtn');
-    const importInput = document.getElementById('importFileInput');
-
-    importBtn.addEventListener('click', () => importInput.click());
-    importInput.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      try {
-        const content = await file.text();
-        const iniData = parseINI(content);
-        const mercyData = extractMercyData(iniData);
-        if (mercyData) { importRSLHelperData(mercyData); alert('Data imported successfully from RSL Helper!'); }
-        else alert('[MercySystem] section not found in file. Make sure you selected the correct .ini file.');
-      } catch (err) { console.error('Import error:', err); alert('Error importing file. Please check the file format.'); }
-      importInput.value = '';
-    });
 
     shards.forEach(shard => {
       const isPrimal = shard.type === "Primal";

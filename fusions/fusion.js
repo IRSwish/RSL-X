@@ -130,6 +130,8 @@
   window.addEventListener('load', () => { fetchAndRenderTimeline(); });
   window.addEventListener('hashchange', fetchAndRenderTimeline);
   window.addEventListener('resize', () => { if (timelineData) renderTimeline(timelineData); });
+  // Recalcul fluide quand le menu latéral ouvre/ferme (réservation d'espace)
+  window.addEventListener('rsx-reflow', () => { if (timelineData) renderTimeline(timelineData); });
 
   // --- Rendu principal ---
   function renderTimeline(data) {
