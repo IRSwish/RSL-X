@@ -65,6 +65,12 @@
       font-display: swap;
     }
 
+    @font-face {
+      font-family: "MiddAges";
+      src: url('/style/MiddAges.ttf') format('truetype');
+      font-display: swap;
+    }
+
     /* ── Background animé ── */
     .df-bg {
       position: fixed;
@@ -196,7 +202,7 @@
     .df-wrap {
       position: relative;
       z-index: 2;
-      width: min(720px, 100%);
+      width: min(920px, 100%);
       margin: 48px auto 56px;
       padding: 0 24px;
     }
@@ -304,7 +310,7 @@
 
     .df-sitename {
       display: block;
-      font-family: "Transcend", "Cormorant Garamond", serif;
+      font-family: "MiddAges", "Transcend", "Cormorant Garamond", serif;
       font-size: clamp(3rem, 6vw, 5rem);
       text-transform: uppercase;
       color: #f2e3c4;
@@ -345,17 +351,41 @@
     }
 
     .df-content {
-      font-family: "Cormorant Garamond", serif;
-      font-size: 1.2rem;
-      font-weight: 600;
-      line-height: 1.9;
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 1.02rem;
+      font-weight: 400;
+      line-height: 1.8;
       color: #e8e0d2;
+      text-align: justify;
     }
 
     .df-content p { margin: 0 0 16px; }
     .df-content p:last-child { margin-bottom: 0; color: #b9ae9b; }
 
     .df-content strong { color: #f2e3c4; font-weight: 600; }
+
+    /* ── Liens sociaux ── */
+    .df-social {
+      margin-top: 26px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(201,169,106,0.18);
+      text-align: center;
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 0.97rem;
+      color: #b9ae9b;
+    }
+
+    .df-social a {
+      color: #f2e3c4;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(201,169,106,0.45);
+      transition: color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .df-social a:hover {
+      color: #fff;
+      border-color: rgba(201,169,106,0.9);
+    }
 
     /* ── Ad footer ── */
     .ad-banner-footer {
@@ -484,9 +514,16 @@
           Each tool focuses on clarity and usability, wrapped in a golden, dark aesthetic that reflects the spirit of Teleria.
         </p>
         <p>
+          Want even more? <strong>Xtender</strong> is our desktop companion app — bringing live dashboards, champion &amp; artifact insights, and auto-battle straight to your PC. Its <strong>Workshop</strong> auto-builds and gears your champions in seconds, equipping and optimizing a full set for you — no more manual swapping. Grab it from the <strong>Xtender</strong> tab to take everything a step further.
+        </p>
+        <p>
           Your data is stored locally in your browser — clearing your cache will reset your information.<br>
           Enjoy exploring, and may the RNG gods smile upon your shards!
         </p>
+      </div>
+
+      <div class="df-social">
+        Join the community on <a href="https://discord.gg/uejPcZj5cM" target="_blank" rel="noopener noreferrer">Discord</a> and support us on <a href="/community/patreon/">Patreon</a>.
       </div>
 
     </section>
