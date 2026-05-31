@@ -1,0 +1,395 @@
+[
+  {
+    "id": "t1-1",
+    "name": "Silver x50000",
+    "image": "silver",
+    "cost": 250,
+    "x": 2
+  },
+  {
+    "id": "t1-2",
+    "name": "Starstone x25",
+    "image": "starstone",
+    "cost": 250,
+    "x": 3
+  },
+  {
+    "id": "t2-1",
+    "name": "Rank 1 Basalt",
+    "image": "rank-1-basalt",
+    "cost": 500,
+    "x": 2.5,
+    "requires": [
+      "t1-1",
+      "t1-2"
+    ]
+  },
+  {
+    "id": "t3-1",
+    "name": "Arcane Superior Potion",
+    "image": "arcane-superior",
+    "cost": 750,
+    "x": 2.5,
+    "requires": [
+      "t2-1"
+    ]
+  },
+  {
+    "id": "t4-1",
+    "name": "Plarium Points x30",
+    "image": "plarium-points",
+    "cost": 1000,
+    "x": 0,
+    "requires": [
+      "t3-1"
+    ]
+  },
+  {
+    "id": "t4-2",
+    "name": "Corehammer x5",
+    "image": "corehammer",
+    "cost": 1000,
+    "x": 1,
+    "requires": [
+      "t3-1"
+    ]
+  },
+  {
+    "id": "t4-3",
+    "name": "Xp Booster 1 Day",
+    "image": "xp-boost-1d",
+    "cost": 1000,
+    "x": 2,
+    "requires": [
+      "t3-1"
+    ]
+  },
+  {
+    "id": "t4-4",
+    "name": "Mythical Charm x5",
+    "image": "mythical-charm",
+    "cost": 1000,
+    "x": 3,
+    "requires": [
+      "t3-1"
+    ]
+  },
+  {
+    "id": "t4-5",
+    "name": "Rank 2 Basalt",
+    "image": "rank-2-basalt",
+    "cost": 1000,
+    "x": 4,
+    "requires": [
+      "t3-1"
+    ]
+  },
+  {
+    "id": "t4-6",
+    "name": "Mortal Soul Coin x1000",
+    "image": "mortal-soul-coin",
+    "cost": 1000,
+    "x": 5,
+    "requires": [
+      "t3-1"
+    ]
+  },
+  {
+    "id": "t5-1",
+    "name": "4* Chicken",
+    "image": "chicken-4",
+    "cost": 2500,
+    "x": 0.5,
+    "requires": [
+      "t4-1",
+      "t4-6",
+      "t4-5",
+      "t4-4",
+      "t4-3",
+      "t4-2"
+    ]
+  },
+  {
+    "id": "t5-2",
+    "name": "Lock",
+    "image": "lock",
+    "cost": 1,
+    "x": 1.5,
+    "requires": [
+      "t4-1",
+      "t4-6",
+      "t4-5",
+      "t4-4",
+      "t4-3",
+      "t4-2"
+    ]
+  },
+  {
+    "id": "t5-3",
+    "name": "Lock",
+    "image": "lock",
+    "cost": 1,
+    "x": 3.5,
+    "requires": [
+      "t4-1",
+      "t4-6",
+      "t4-5",
+      "t4-4",
+      "t4-3",
+      "t4-2"
+    ]
+  },
+  {
+    "id": "t5-4",
+    "name": "Greater Oil x80",
+    "image": "oil-greater",
+    "cost": 2500,
+    "x": 4.5,
+    "requires": [
+      "t4-1",
+      "t4-6",
+      "t4-5",
+      "t4-4",
+      "t4-3",
+      "t4-2"
+    ]
+  },
+  {
+    "id": "t6-1",
+    "name": "Chaos Dust x3",
+    "image": "chaos-dust",
+    "cost": 3500,
+    "x": 0.5,
+    "requires": [
+      "t5-1"
+    ]
+  },
+  {
+    "id": "t6-2",
+    "name": "Avatar Frame",
+    "image": "Power-Frame-1",
+    "cost": 5000,
+    "x": 1.5,
+    "requires": [
+      "t5-2"
+    ]
+  },
+  {
+    "id": "t6-3",
+    "name": "XP Barrel",
+    "image": "xp-barrel",
+    "cost": 9000,
+    "x": 2.5,
+    "requires": [
+      "t4-1",
+      "t4-6",
+      "t4-5",
+      "t4-4",
+      "t4-3",
+      "t4-2"
+    ]
+  },
+  {
+    "id": "t6-4",
+    "name": "Avatar Frame",
+    "image": "Power-Frame-2",
+    "cost": 5000,
+    "x": 3.5,
+    "requires": [
+      "t5-3"
+    ]
+  },
+  {
+    "id": "t6-5",
+    "name": "Chaos Powder x3",
+    "image": "chaos-powder",
+    "cost": 3500,
+    "x": 4.5,
+    "requires": [
+      "t5-4"
+    ]
+  },
+  {
+    "id": "t7-1",
+    "name": "Epic Chaos Ore",
+    "image": "epic-chaos-ore",
+    "cost": 4000,
+    "x": 1,
+    "requires": [
+      "t6-1",
+      "t6-2"
+    ]
+  },
+  {
+    "id": "t7-2",
+    "name": "Key",
+    "image": "path-key",
+    "cost": 1000,
+    "x": 2.5,
+    "requires": [
+      "t6-3"
+    ]
+  },
+  {
+    "id": "t7-3",
+    "name": "Magic Brews x40",
+    "image": "brew-magic",
+    "cost": 4000,
+    "x": 4,
+    "requires": [
+      "t6-5",
+      "t6-4"
+    ]
+  },
+  {
+    "id": "t8-1",
+    "name": "Eternal Soul Coin x200",
+    "image": "eternal-soul-coin",
+    "cost": 6000,
+    "x": 1.5,
+    "requires": [
+      "t7-1"
+    ]
+  },
+  {
+    "id": "t8-2",
+    "name": "Legendary Chaos Ore",
+    "image": "legendary-chaos-ore",
+    "cost": 6000,
+    "x": 3.5,
+    "requires": [
+      "t7-3"
+    ]
+  },
+  {
+    "id": "t9-1",
+    "name": "Rank 4 Basalt",
+    "image": "rank-4-basalt",
+    "cost": 10000,
+    "x": 1.5,
+    "requires": [
+      "t8-1"
+    ]
+  },
+  {
+    "id": "t9-2",
+    "name": "Legendary Skill Tome",
+    "image": "skill-tome-legendary",
+    "cost": 10000,
+    "x": 3.5,
+    "requires": [
+      "t8-2"
+    ]
+  },
+  {
+    "id": "t10-1",
+    "name": "Mortal Soulstone",
+    "image": "mortal-soulstone",
+    "cost": 1000,
+    "x": 2,
+    "requires": [
+      "t9-1"
+    ]
+  },
+  {
+    "id": "t10-2",
+    "name": "He-Man 1* Soul",
+    "image": "he-man-1",
+    "cost": 1000,
+    "x": 3,
+    "requires": [
+      "t9-2"
+    ]
+  },
+  {
+    "id": "t11-1",
+    "name": "Immortal Essence x10",
+    "image": "immortal-soul-essence",
+    "cost": 3500,
+    "x": 2,
+    "requires": [
+      "t10-1"
+    ]
+  },
+  {
+    "id": "t11-2",
+    "name": "He-Man 2* Split Soul",
+    "image": "he-man-2",
+    "cost": 3000,
+    "x": 3,
+    "requires": [
+      "t10-2"
+    ]
+  },
+  {
+    "id": "t12-1",
+    "name": "Immortal Soulstone",
+    "image": "immortal-soulstone",
+    "cost": 7000,
+    "x": 2,
+    "requires": [
+      "t11-1"
+    ]
+  },
+  {
+    "id": "t12-2",
+    "name": "He-Man 3* Split Soul",
+    "image": "he-man-3",
+    "cost": 5000,
+    "x": 3,
+    "requires": [
+      "t11-2"
+    ]
+  },
+  {
+    "id": "t13-1",
+    "name": "Eternal Essence x10",
+    "image": "eternal-soul-essence",
+    "cost": 15000,
+    "x": 2,
+    "requires": [
+      "t12-1"
+    ]
+  },
+  {
+    "id": "t13-2",
+    "name": "He-Man 4* Split Soul",
+    "image": "he-man-4",
+    "cost": 10000,
+    "x": 3,
+    "requires": [
+      "t12-2"
+    ]
+  },
+  {
+    "id": "t14-1",
+    "name": "Eternal Soulstone",
+    "image": "eternal-soulstone",
+    "cost": 30000,
+    "x": 2,
+    "requires": [
+      "t13-1"
+    ]
+  },
+  {
+    "id": "t14-2",
+    "name": "He-Man 5* Split Soul",
+    "image": "he-man-5",
+    "cost": 35000,
+    "x": 3,
+    "requires": [
+      "t13-2"
+    ]
+  },
+  {
+    "id": "t15-1",
+    "name": "Key",
+    "image": "path-key",
+    "cost": 1000,
+    "x": 2.5,
+    "requires": [
+      "t14-1",
+      "t14-2"
+    ]
+  }
+]
