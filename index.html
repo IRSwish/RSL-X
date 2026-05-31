@@ -198,6 +198,21 @@
       z-index: 10;
     }
 
+    /* Les labels du rail : les <button> (Titans/Fusions/Tools) n'héritent
+       pas de la police de .rsx-nav, mais le <a> Xtender oui (Transcend).
+       On uniformise tout en Inter ici, ce qui aligne Xtender sur les autres
+       et évite que « XTENDER » (plus large en Transcend) déborde du rail. */
+    #menu-container .rail-label {
+      font-family: "Inter", system-ui, sans-serif;
+    }
+
+    /* Le <a> Xtender est en content-box (défaut des liens) : width:100% +
+       padding + border-left le rendent plus large que le rail (60px) et il
+       déborde à droite au survol. On force border-box comme les <button>. */
+    #menu-container .rail-item {
+      box-sizing: border-box;
+    }
+
     /* ── Panel wrapper ── */
     .df-wrap {
       position: relative;
