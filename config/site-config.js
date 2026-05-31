@@ -44,6 +44,7 @@
   // --- Page brandée « We've moved! » ---
   var css = document.createElement("style");
   css.textContent =
+    "@font-face{font-family:'MiddAges';src:url('/style/MiddAges.ttf') format('truetype');font-display:swap}" +
     "@keyframes rslxDots{0%,20%{opacity:0}50%{opacity:1}100%{opacity:0}}" +
     "@keyframes rslxGlow{0%,100%{opacity:.55}50%{opacity:1}}" +
     "#rslx-moved{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;" +
@@ -55,7 +56,7 @@
       "border:1px solid rgba(255,228,170,.14);box-shadow:0 25px 70px rgba(0,0,0,.75),inset 0 0 30px rgba(201,169,106,.05)}" +
     "#rslx-moved .card::before{content:'';position:absolute;inset:10px;border:1px solid rgba(201,169,106,.72);" +
       "box-shadow:0 0 8px rgba(201,169,106,.22);animation:rslxGlow 4.8s ease-in-out infinite;pointer-events:none}" +
-    "#rslx-moved h1{margin:0 0 6px;font-size:2.6rem;line-height:1.05;text-transform:uppercase;letter-spacing:1px;" +
+    "#rslx-moved h1{margin:0 0 6px;font-family:'MiddAges','Cormorant Garamond',serif;font-size:3.2rem;line-height:1.05;text-transform:uppercase;letter-spacing:1px;" +
       "background:linear-gradient(to bottom,#feeec1,#e09f40);-webkit-background-clip:text;background-clip:text;" +
       "-webkit-text-fill-color:transparent;color:transparent;text-shadow:0 0 18px rgba(201,169,106,.25)}" +
     "#rslx-moved .sub{margin:0 0 22px;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:rgba(241,221,177,.55)}" +
