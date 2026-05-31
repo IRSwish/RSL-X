@@ -3,6 +3,7 @@ import { Client } from 'basic-ftp';
 import { readdir, stat, readFile, writeFile } from 'node:fs/promises';
 import { join, sep } from 'node:path';
 import { Readable } from 'node:stream';
+import { createHash } from 'node:crypto';
 
 const REPO_ROOT = process.cwd();
 const MANIFEST_PATH = join(REPO_ROOT, '.deploy-manifest.json');
@@ -28,6 +29,12 @@ const FTP_PASS = process.env.FTP_PASS;
 const FTP_SECURE = process.env.FTP_SECURE !== 'false';
 const UNLOCK_TOKEN = process.env.UNLOCK_TOKEN;
 const REMOTE_ROOT = process.env.REMOTE_ROOT || '/www';
+
+// Bascule publique automatique : à partir de cette date/heure (format
+// %{TIME} de mod_rewrite = YYYYMMDDHHMMSS, en heure locale serveur, qui est
+// Europe/Paris sur OVH), le gating tombe et le site devient public.
+// Mettre '' pour désactiver la bascule auto (gating jusqu'au déverrouillage manuel).
+const PUBLIC_AT = process.env.PUBLIC_AT || '20260602140000';
 
 if (!/^[A-Za-z0-9-]+$/.test(UNLOCK_TOKEN)) {
   console.error(`[deploy] UNLOCK_TOKEN must be alphanumeric + dashes only.`);
@@ -84,7 +91,14 @@ RewriteRule ^_unlock_${UNLOCK_TOKEN}/?$ /_unlock.html [L]
 # fetches RELEASES / *.nupkg without any cookie. Keep before the gating
 # rules so it short-circuits.
 RewriteRule ^xtender/ - [L]
-
+${PUBLIC_AT ? `
+# ── Bascule publique automatique (migration) ──
+# À partir de PUBLIC_AT (heure locale serveur = Europe/Paris), on sert tout
+# normalement : plus de gating, le site est ouvert à tous. %{TIME} est au
+# format YYYYMMDDHHMMSS, la comparaison lexicographique suit l'ordre chrono.
+RewriteCond %{TIME} >${PUBLIC_AT}
+RewriteRule ^ - [L]
+` : ''}
 # If the unlock cookie is set, serve everything normally
 RewriteCond %{HTTP_COOKIE} rslx_unlock=${UNLOCK_TOKEN}
 RewriteRule ^ - [L]
@@ -140,7 +154,9 @@ async function saveManifest(manifest) {
 }
 
 function hashGating() {
-  return [UNLOCK_TOKEN, HTACCESS, BLANK_HTML, UNLOCK_HTML].join('\n').length + ':' + UNLOCK_TOKEN;
+  // Hash du contenu réel : détecte tout changement (même à longueur égale,
+  // ex. changer la date PUBLIC_AT). L'ancien hash basé sur la longueur ratait ces cas.
+  return createHash('sha1').update([UNLOCK_TOKEN, HTACCESS, BLANK_HTML, UNLOCK_HTML].join('\n')).digest('hex');
 }
 
 function fmtBytes(n) {
