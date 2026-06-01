@@ -14,7 +14,7 @@
    Code temporaire — à retirer une fois la migration terminée.
    ============================================================ */
 (function migrateRedirect() {
-  var CUTOVER = Date.parse("2026-06-02T14:00:00+02:00"); // bascule (heure de Paris)
+  var CUTOVER = Date.parse("2026-06-01T14:00:00+02:00"); // bascule (heure de Paris)
   var TARGET  = "https://rsl-x.gg/";
   var DELAY   = 2500; // ms avant redirection auto
   var onOldSite = /(^|\.)vercel\.app$/.test(location.hostname);
